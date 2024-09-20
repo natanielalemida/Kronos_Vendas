@@ -83,6 +83,12 @@ android {
         versionName "1.0"
     }
     signingConfigs {
+        realse {
+            storeFile file('your_key_name.keystore')
+            storePassword 'arc2024'
+            keyAlias 'your_key_alias'
+            keyPassword 'arc2024'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -115,4 +121,5 @@ dependencies {
     }
 }
 
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

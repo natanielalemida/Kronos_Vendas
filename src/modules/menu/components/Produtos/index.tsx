@@ -1,0 +1,129 @@
+import {StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native';
+import Search from '../../../components/search';
+import {useEffect, useState, useRef, useCallback} from 'react';
+import UseGetProdutos from './hooks/useGetProdutos';
+import Init from './hooks/init';
+import {ProdutoDto} from '../../../../sync/products/type';
+import {colors} from '../../../styles';
+import Loading from '../../../components/loading/Loading';
+import {useFocusEffect} from '@react-navigation/native';
+
+export default function Produto() {
+  const {handleGetProdutos, produtos, isLoading} = UseGetProdutos();
+  const [textFilter, setTextFilter] = useState<string>('');
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Inicializa a busca de produtos
+  Init({handleGetProdutos});
+
+  useFocusEffect(
+    useCallback(() => {
+      setTextFilter('');
+      return () => {};
+    }, []),
+  );
+
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    debounceRef.current = setTimeout(() => {
+      handleGetProdutos(textFilter);
+    }, 500); // Aguarda 500ms após o último caractere digitado
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [textFilter]);
+
+  const renderItem = ({item}: {item: ProdutoDto}) => (
+    <TouchableOpacity style={styles.itemContainer} key={item.Codigo}>
+      <View style={styles.itemTopRow}>
+        <View style={styles.itemLeft}>
+          <Text style={styles.itemCode}>{item.Codigo}</Text>
+          <Text style={styles.itemDescription}>{item.Descricao}</Text>
+        </View>
+        <Text style={styles.itemPrice}>R$ {item.ValorVenda.toFixed(2)}</Text>
+      </View>
+      <View style={styles.itemBottomRow}>
+        <View style={styles.itemDetailsLeft}>
+          <Text>{item.UnidadeMedida}</Text>
+          <Text>Est. 10</Text>
+        </View>
+        <Text>EAN: {item.CodigoDeBarras}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <Search
+        placeholder="Pesquisar..."
+        value={textFilter}
+        onChangeText={setTextFilter}
+      />
+      <View style={styles.top}>
+        <Loading isModalLoadingActive={isLoading} />
+        <FlatList
+          data={produtos}
+          renderItem={renderItem}
+          keyExtractor={item => item.Codigo.toString()}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+  },
+  top: {
+    flex: 1,
+    width: '100%',
+  },
+  itemContainer: {
+    padding: 15,
+  },
+  itemTopRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  itemLeft: {
+    width: '75%',
+    flexDirection: 'row',
+  },
+  itemCode: {
+    marginRight: 5,
+    fontSize: 16,
+    color: colors.black,
+    fontWeight: 'bold',
+  },
+  itemDescription: {
+    marginHorizontal: 10,
+    width: '80%',
+    fontSize: 16,
+    color: colors.black,
+    fontWeight: 'bold',
+  },
+  itemPrice: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: colors.black,
+    fontWeight: 'bold',
+  },
+  itemBottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  itemDetailsLeft: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '30%',
+  },
+});

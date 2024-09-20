@@ -1,0 +1,58 @@
+import React, {useState} from 'react';
+import {StyleSheet, TextInput, View, TouchableOpacity} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {ShowIf} from '../../../../../../../components/showIf';
+import {colors} from '../../../../../../../styles';
+import {SearchProps} from '../../../../../../../components/search/type/searchProps';
+
+export default function SearchMunicipio({
+  value,
+  onChangeText,
+  placeholder,
+}: SearchProps) {
+  return (
+    <View style={styles.container}>
+      <Icon
+        name="search"
+        size={15}
+        color={colors.graySearch}
+        style={styles.icon}
+      />
+      <TextInput
+        style={styles.input}
+        value={value}
+        placeholder={placeholder}
+        onChangeText={onChangeText}
+        placeholderTextColor={colors.graySearch}
+      />
+      <ShowIf condition={!!value}>
+        <TouchableOpacity
+          style={styles.icon_block}
+          onPress={() => onChangeText('')}>
+          <Icon size={19} color="black" name="close-circle" />
+        </TouchableOpacity>
+      </ShowIf>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    maxHeight: '12%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#d4d4d4',
+    borderRadius: 30,
+    paddingHorizontal: 10,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 14,
+    color: '#000',
+  },
+  icon_block: {},
+});
