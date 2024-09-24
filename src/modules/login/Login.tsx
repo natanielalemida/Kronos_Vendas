@@ -34,6 +34,7 @@ import {createContatoTable} from '../../database/migration/createContatoMigratio
 import {createPedidoTable} from '../../database/migration/createPedidoMigration';
 import {createPedidoVinculoMeioPagamentoTable} from '../../database/migration/createPedidoVinculoMeioPagamentoMigration';
 import {createPedidoVinculoProdutoTable} from '../../database/migration/createPedidoVinculoProdutoMigration';
+import {getNomeUsuario} from '../../storage';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -53,6 +54,13 @@ export default function Login({navigation}) {
   const {organizations, getOrganizations} = useFetch();
   const {handleLogin, progress} = UseLogin();
 
+  const handleSetLastUser = async () => {
+    const nome = await getNomeUsuario();
+    console.log(nome);
+    if (!nome) return;
+    setCpf(nome);
+  };
+
   useFocusEffect(
     useCallback(() => {
       getOrganizations();
@@ -63,6 +71,7 @@ export default function Login({navigation}) {
   );
 
   useEffect(() => {
+    handleSetLastUser();
     createSettingsTable();
     createProductsMigration();
     createFormaPagamentoTable();

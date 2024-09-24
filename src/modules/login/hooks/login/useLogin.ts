@@ -1,7 +1,7 @@
 import {Alert} from 'react-native';
 import ApiInstace from '../../../../api/ApiInstace';
 import {MainResponse} from '../type';
-import {setAuth} from '../../../../storage';
+import {setAuth, setNomeUsuario} from '../../../../storage';
 import runSync from '../../../../sync/runSync/runSync';
 import {setEmpresa} from '../../../../storage/empresaStorage';
 import {useNavigation} from '@react-navigation/native';
@@ -14,7 +14,11 @@ export function UseLogin() {
   const navigation = useNavigation();
   const {setUsuario, setOrganizationCode} = useCliente();
 
-  const verify = async (data: MainResponse, organizationCode: number) => {
+  const verify = async (
+    data: MainResponse,
+    organizationCode: number,
+    cpf: string,
+  ) => {
     const successfully = Array.isArray(data.Mensagens);
     if (!successfully) {
       //@ts-ignore
@@ -23,7 +27,7 @@ export function UseLogin() {
       return;
     }
 
-    console.log(data.Resultado.Usuario.Hash);
+    await setNomeUsuario(cpf);
     await setAuth(JSON.stringify(data.Resultado.Usuario));
     setUsuario(data.Resultado.Usuario);
     await setEmpresa(JSON.stringify(organizationCode));
@@ -64,7 +68,7 @@ export function UseLogin() {
 
     setProgress({message: 'Iniciando sincronização...'});
 
-    verify(data, organizationCode);
+    verify(data, organizationCode, cpf);
   };
 
   return {

@@ -20,10 +20,17 @@ export default class PedidoMapper {
         CodigoPessoa: pedido.Pessoa.Codigo,
       },
       ProdutosRelacao: pedido.Itens.map(produto => {
+        console.log({valorDesconto: produto.ValorDesconto});
         return {
           CodigoPedido: pedido.Codigo,
           CodigoProduto: produto.CodigoProduto,
           Quantidade: produto.Quantidade,
+          ValorVendaDesconto: parseFloat(produto.ValorDesconto)
+            ? (parseFloat(produto.ValorDesconto) -
+                parseFloat(produto.ValorProduto)) /
+                parseFloat(produto.Quantidade) +
+              parseFloat(produto.ValorProduto)
+            : null,
         };
       }),
       MeioPagamentoRelacao: pedido.MeiosPagamentos.map(pagamento => {

@@ -9,6 +9,7 @@ type Item = {
 export default class mapPedido {
   mapearDados(dados) {
     const itensUnicos = dados.reduce((acc, item) => {
+      console.log({item});
       const existente = acc.find(i => i.CodigoProduto === item.CodigoProduto);
       if (!existente) {
         acc.push({
@@ -19,7 +20,15 @@ export default class mapPedido {
           ValorVenda: item.ValorVenda,
           ValorTotal: item.ValorVenda * item.Quantidade,
           UnidadeMedida: item.UnidadeMedida,
-          ValorVendaDesconto: item.ValorVenda,
+          ValorVendaDesconto: item.ValorVendaDesconto
+            ? item.ValorVendaDesconto
+            : item.ValorVenda,
+          ValorDesconto: Number(
+            (
+              (item.ValorVenda - item.ValorVendaDesconto) *
+              item.Quantidade
+            ).toFixed(2),
+          ),
         });
       }
       return acc;

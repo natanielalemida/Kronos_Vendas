@@ -59,22 +59,43 @@ export default class PedidoRepository {
   }
 
   async updateVinculoProduto(produtos: any, id: number) {
+    console.log({produtos});
+    console.log({id});
+
+    const trx = await knexConfig.transaction();
+
     try {
-      await knexConfig('PedidoVinculoProduto')
-        .update(produtos)
-        .where('CodigoPedido', id);
+      for (const produto of produtos) {
+        await trx('PedidoVinculoProduto')
+          .update(produto)
+          .where({CodigoPedido: id});
+      }
+
+      // Confirma (commit) as alterações após todas as operações
+      await trx.commit();
     } catch (error) {
-      console.log(error);
+      // Desfaz (rollback) as alterações em caso de erro
+      await trx.rollback();
+      console.error(error);
     }
   }
 
   async updateVinculoMeioPagamento(meioPagamentos: any, id: number) {
+    const trx = await knexConfig.transaction();
+
     try {
-      await knexConfig('PedidoVinculoMeioPagamento')
-        .update(meioPagamentos)
-        .where('CodigoPedido', id);
+      for (const meioPagamento of meioPagamentos) {
+        await trx('PedidoVinculoMeioPagamento')
+          .update(meioPagamento)
+          .where({CodigoPedido: id});
+      }
+
+      // Confirma (commit) as alterações após todas as operações
+      await trx.commit();
     } catch (error) {
-      console.log(error);
+      // Desfaz (rollback) as alterações em caso de erro
+      await trx.rollback();
+      console.error(error);
     }
   }
 }

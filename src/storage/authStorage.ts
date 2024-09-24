@@ -5,6 +5,16 @@ export async function setAuth(params: string) {
   await AsyncStorage.setItem('auth', params);
 }
 
+export async function setNomeUsuario(params: string) {
+  await AsyncStorage.removeItem('nomeUsuario');
+  await AsyncStorage.setItem('nomeUsuario', params);
+}
+
+export async function getNomeUsuario() {
+  const data = await AsyncStorage.getItem('nomeUsuario');
+  return data;
+}
+
 export async function getAuth(): Promise<UsuarioDto> {
   const data = await AsyncStorage.getItem('auth');
   return JSON.parse(data as string);

@@ -15,17 +15,11 @@ export default function FormaPagamento() {
   const router = useRoute();
   const {params} = router;
   const {id} = params || {};
-  const {ProdutosSelecionados, valorPago, formaPagamento} = useCliente();
+  const {ProdutosSelecionados, valorPago, formaPagamento, finalizarVenda} =
+    useCliente();
   const [isModalPagamentoAtivo, setModalPagamento] = useState<boolean>(false);
   const {handleCloseModal, setIsModalActive, isActive} = UseModal();
   const {handleSave} = SavePedido();
-
-  const calcularTotal = () => {
-    return ProdutosSelecionados.reduce(
-      (acc, item) => acc + item.Quantidade * item.ValorVendaDesconto,
-      0,
-    ).toFixed(2);
-  };
 
   const renderIcon = (iconName: string, label: string, onPress: () => void) => (
     <TouchableOpacity style={styles.iconContainer} onPress={onPress}>
@@ -72,7 +66,9 @@ export default function FormaPagamento() {
         <View style={styles.leftIcon}>
           <View style={styles.totalContainer}>
             <Text style={styles.totalText}>Total</Text>
-            <Text style={styles.totalText}>R$ {calcularTotal()}</Text>
+            <Text style={styles.totalText}>
+              R$ {finalizarVenda?.ValorTotal.toFixed(2)}
+            </Text>
           </View>
         </View>
         <View style={styles.totalContainer}>
@@ -83,7 +79,7 @@ export default function FormaPagamento() {
           <ShowIf
             condition={
               ProdutosSelecionados.length > 0 &&
-              valorPago.toFixed(2) !== calcularTotal()
+              valorPago.toFixed(2) !== finalizarVenda?.ValorTotal.toFixed(2)
             }>
             {renderIcon('add-sharp', 'Pagamento', () =>
               setModalPagamento(true),
@@ -92,7 +88,7 @@ export default function FormaPagamento() {
           <ShowIf
             condition={
               ProdutosSelecionados.length > 0 &&
-              valorPago.toFixed(2) === calcularTotal()
+              valorPago.toFixed(2) === finalizarVenda?.ValorTotal.toFixed(2)
             }>
             {renderIcon('checkmark-outline', 'Finalizar', () => handleSave(id))}
           </ShowIf>

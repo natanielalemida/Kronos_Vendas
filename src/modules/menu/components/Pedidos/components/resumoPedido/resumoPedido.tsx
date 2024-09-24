@@ -1,4 +1,11 @@
-import {Text, View, StyleSheet, Alert, TouchableOpacity} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import {useState} from 'react';
 import PedidoRepository from '../../repository/pedidoRepository';
 import Init from '../../../Clientes/hooks/init';
@@ -13,7 +20,8 @@ import Toast from 'react-native-toast-message';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
-  const {setClienteOnContext, setProdutosSelecionados} = useCliente();
+  const {setClienteOnContext, setProdutosSelecionados, finalizarVenda} =
+    useCliente();
   const {params} = route;
   const {id, Codigo, goBack} = params || {};
   const {teste} = UseRepository();
@@ -103,7 +111,7 @@ export default function ResumoPedido({navigation}) {
 
   const renderProdutos = () => {
     return (
-      <View style={styles.section}>
+      <View>
         <Text style={styles.sectionTitle}>Produtos</Text>
         {data?.Itens.length > 0 &&
           data.Itens.map((produto, index) => (
@@ -112,17 +120,18 @@ export default function ResumoPedido({navigation}) {
                 <Text style={{width: '74%'}}>{produto.Descricao}</Text>
                 <Text>R$ {produto.ValorUnitario.toFixed(2)}</Text>
               </View>
-              <View style={styles.row}>
-                <View style={styles.detailColumn}>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{alignItems: 'center'}}>
                   <Text>DESC</Text>
-                  <Text>{produto.ValorUnitario}</Text>
+                  <Text>{produto.ValorVendaDesconto}</Text>
                 </View>
-                <View style={styles.detailColumn}>
+                <View style={{alignItems: 'center'}}>
                   <Text>QTD</Text>
                   <Text>{produto.Quantidade}</Text>
                 </View>
-                <View style={styles.detailColumn}>
-                  <Text>VLR UN</Text>
+                <View>
+                  <Text style={{alignSelf: 'flex-end'}}>VLR UN</Text>
                   <Text>R$ {produto.ValorUnitario.toFixed(2)}</Text>
                 </View>
               </View>
@@ -149,8 +158,29 @@ export default function ResumoPedido({navigation}) {
     );
   };
 
+  const {valorTotal, porcentagemTotal} = data?.Itens.reduce(
+    (acc, item) => {
+      const valorDesconto = item.ValorUnitario - item.ValorVendaDesconto;
+
+      const porcentagemDesconto = calcularPorcentagemDesconto(
+        item.ValorUnitario,
+        item.ValorVendaDesconto,
+      );
+
+      const descontoValido = isNaN(parseFloat(porcentagemDesconto))
+        ? 0
+        : parseFloat(porcentagemDesconto);
+
+      acc.valorTotal += valorDesconto;
+      acc.porcentagemTotal += descontoValido;
+
+      return acc;
+    },
+    {valorTotal: 0, porcentagemTotal: 0},
+  ) || {valorTotal: 0, porcentagemTotal: 0};
+
   return (
-    <>
+    <View style={{flex: 1}}>
       <HeaderProducts
         label="Resumo Pedido"
         leftColor="white"
@@ -168,7 +198,7 @@ export default function ResumoPedido({navigation}) {
         onPressRightIcon={handleDelete}
         leftSize={25}
       />
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Text style={styles.title}>Pedido nº {data?.Codigo}</Text>
         <View style={styles.row}>
           <Text>Cliente</Text>
@@ -183,8 +213,9 @@ export default function ResumoPedido({navigation}) {
 
         {renderProdutos()}
         <View style={styles.totalRow}>
+          <Text style={styles.sectionTitle}>Total</Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text>Valor Total Bruto</Text>
+            <Text>Total Bruto</Text>
             <Text>
               R$
               {data?.Itens.reduce(
@@ -195,20 +226,15 @@ export default function ResumoPedido({navigation}) {
           </View>
 
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            {data?.Itens.map((item, index) => (
-              <Text key={index}>
-                Percentual desconto
-                {calcularPorcentagemDesconto(
-                  item.ValorUnitario,
-                  item.ValorVendaDesconto,
-                )}
-                %
-              </Text>
-            ))}
+            <Text>Desconto:</Text>
+            {/* Exibe o valor total do desconto e a porcentagem total */}
+            <Text>
+              {`${valorTotal.toFixed(2)} (${porcentagemTotal.toFixed(2)}%)`}
+            </Text>
           </View>
 
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text>Valor Total Liquido</Text>
+            <Text>Total Liquido</Text>
             <Text>
               R$
               {data?.Itens.reduce(
@@ -219,48 +245,38 @@ export default function ResumoPedido({navigation}) {
           </View>
         </View>
         {renderMeiosPagamentos()}
+      </ScrollView>
 
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-            justifyContent: 'flex-end',
-          }}>
-          <TouchableOpacity
-            style={{
-              padding: 10,
-              backgroundColor: colors.arcGreen,
-              borderRadius: 8,
-            }}>
-            <Text style={{color: colors.white}}>Compartilhar</Text>
-          </TouchableOpacity>
-          <ShowIf condition={!Codigo} style={{paddingHorizontal: 10}}>
-            <TouchableOpacity
-              onPress={() => enviarPedido(id)}
-              style={{
-                padding: 10,
-                backgroundColor: colors.confirmButton,
-                borderRadius: 8,
-              }}>
-              <Text style={{color: colors.white}}>Sincronizar</Text>
-            </TouchableOpacity>
-          </ShowIf>
-        </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Compartilhar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => enviarPedido(id)}
+          style={[styles.button, {backgroundColor: colors.confirmButton}]}>
+          <Text style={styles.buttonText}>Sincronizar</Text>
+        </TouchableOpacity>
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
+    padding: 20,
+  },
+  section: {
+    marginVertical: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '900',
-    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   row: {
@@ -268,45 +284,45 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
-  rightAlignedText: {
-    width: '80%',
-    textAlign: 'right',
-  },
-  section: {
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-  },
-  sectionTitle: {
-    textAlign: 'center',
-    paddingVertical: 5,
-    fontWeight: 'bold',
-  },
   productRow: {
-    justifyContent: 'space-between',
-    marginBottom: 5,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
+    marginBottom: 10,
   },
   productDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  detailColumn: {
-    marginRight: 15,
-  },
   paymentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   paymentDetails: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '40%',
   },
-  totalRow: {
+  totalRow: {},
+  buttonContainer: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 20,
+    padding: 10,
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
+    borderColor: 'gray',
+    backgroundColor: colors.arcGreen,
+  },
+  button: {
+    backgroundColor: colors.graySearch,
+    flex: 1,
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: colors.white,
+    fontWeight: 'bold',
+  },
+  rightAlignedText: {
+    textAlign: 'right',
   },
 });

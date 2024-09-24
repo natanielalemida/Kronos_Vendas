@@ -71,6 +71,7 @@ export default function SavePedido() {
         CodigoPedido: id,
         CodigoProduto: currentProduto.Codigo,
         Quantidade: currentProduto.Quantidade,
+        ValorVendaDesconto: currentProduto.ValorVendaDesconto,
       };
     });
 
@@ -100,6 +101,7 @@ export default function SavePedido() {
         CodigoPedido: id,
         CodigoProduto: currentProduto.Codigo,
         Quantidade: currentProduto.Quantidade,
+        ValorVendaDesconto: currentProduto.ValorVendaDesconto,
       };
     });
 

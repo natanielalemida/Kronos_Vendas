@@ -210,18 +210,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   itemCode: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },
   itemDescription: {
     width: '62%',
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },
   itemPrice: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },

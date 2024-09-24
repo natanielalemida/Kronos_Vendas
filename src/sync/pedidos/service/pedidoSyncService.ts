@@ -26,7 +26,7 @@ export default class PedidoService {
         id,
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
