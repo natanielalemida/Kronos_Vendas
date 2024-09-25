@@ -49,7 +49,7 @@ export default function UseSetSelecteds({
     quantidade: number,
     observacao: string,
     valorVenda: string,
-    desconto: string,
+    isAtacado: boolean,
   ) => {
     const produtoExistenteIndex = ProdutosSelecionados.findIndex(
       produtoSelecionado => produtoSelecionado.Codigo === produto.Codigo,
@@ -63,6 +63,7 @@ export default function UseSetSelecteds({
         Quantidade: quantidade,
         Observacao: observacao,
         ValorVendaDesconto: Number(valorVenda),
+        isAtacado,
       };
       setProdutosSelecionados(ProdutosAtualizados);
     } else {
@@ -74,6 +75,7 @@ export default function UseSetSelecteds({
           Quantidade: quantidade,
           Observacao: observacao,
           ValorVendaDesconto: Number(valorVenda),
+          isAtacado,
         },
       ]);
     }

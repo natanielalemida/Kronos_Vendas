@@ -14,11 +14,11 @@ import UseForm from './hooks/useForm';
 import UseSetSelecteds from '../../hooks/useSetSelecteds';
 import {ProdutoDto} from '../../../../../../../../sync/products/type';
 import {useCliente} from '../../../../../Clientes/context/clientContext';
-import {useEffect} from 'react';
 
 export default function ModalVenda({
   isActive,
   produto,
+  isAtacado,
   setIsActive,
 }: ModalType) {
   const {usuario} = useCliente();
@@ -33,7 +33,7 @@ export default function ModalVenda({
     desconto,
     observacao,
     quantidade,
-  } = UseForm({produto, setIsActive});
+  } = UseForm({produto, isAtacado, setIsActive});
 
   const {addQuantidadeAndObsToProduct, selectedProduto} = UseSetSelecteds({
     setIsActive,
@@ -45,56 +45,35 @@ export default function ModalVenda({
   });
 
   const handleValorVenda = () => {
-    if (!usuario?.DescontoMaximoVenda || !valorVenda || !desconto) {
-      setDesconto('0.00');
-      setValorVenda(produto?.ValorVenda.toFixed(2));
-      return;
-    }
+    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+    const maxDesconto = usuario?.DescontoMaximoVenda / 100 || 0;
+    const descontoMaximo = total * maxDesconto;
+    const valorNumerico = parseFloat(valorVenda.replace(/[^0-9.]/g, ''));
 
-    // Substitui qualquer caractere que não seja número ou ponto, para garantir que números decimais sejam processados
-    const number = valorVenda.replace(/[^0-9.]/g, '');
-    const valor = parseFloat(number);
-
-    const total = parseFloat(produto?.ValorVenda); // valor total do produto
-    const totalMaximoDesconto = (usuario?.DescontoMaximoVenda / 100) * total; // valor máximo de desconto permitido
-
-    if (valor > total) {
-      // Se o valor fornecido for maior que o valor do produto, define o desconto com base na diferença
-      const descontoCalculado = ((total - valor) / total) * 100;
-      setDesconto(descontoCalculado.toFixed(2)); // Define o desconto em percentual
-      setValorVenda(valor.toFixed(2));
-    } else if (valor < total - totalMaximoDesconto) {
-      // Se o valor for menor do que o permitido, ajusta para o valor máximo possível
-      setValorVenda((total - totalMaximoDesconto).toFixed(2));
-      setDesconto(usuario?.DescontoMaximoVenda.toFixed(2)); // Define o desconto máximo
+    if (valorNumerico > total) {
+      const descontoCalculado = ((total - valorNumerico) / total) * 100;
+      setDesconto(descontoCalculado.toFixed(2));
+    } else if (valorNumerico < total - descontoMaximo) {
+      setValorVenda((total - descontoMaximo).toFixed(2));
+      setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
     } else {
-      // Calcula o desconto normalmente
-      const descontoCalculado = ((total - valor) / total) * 100;
-      setDesconto(descontoCalculado.toFixed(2)); // Define o desconto com base no valor inserido
-      setValorVenda(valor.toFixed(2));
+      const descontoCalculado = ((total - valorNumerico) / total) * 100;
+      setDesconto(descontoCalculado.toFixed(2));
     }
   };
+
   const handleDesconto = () => {
-    if (!usuario?.DescontoMaximoVenda || !desconto) {
-      setDesconto('0.00');
-      setValorVenda(produto?.ValorVenda.toFixed(2));
-      return;
-    }
+    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+    const maxDesconto = usuario?.DescontoMaximoVenda || 0;
+    const descontoNumerico = parseFloat(desconto.replace(/[^0-9.]/g, ''));
 
-    // Substitui qualquer caractere que não seja número ou ponto
-    const number = desconto.replace(/[^0-9.]/g, '');
-    const valor = parseFloat(number);
-
-    if (valor > usuario?.DescontoMaximoVenda) {
-      setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
-      const porcentagemDesconto = usuario?.DescontoMaximoVenda / 100;
-      const taxa = porcentagemDesconto * Number(produto?.ValorVenda);
-      setValorVenda((Number(produto?.ValorVenda) - taxa).toFixed(2));
+    if (descontoNumerico > maxDesconto) {
+      setDesconto(maxDesconto.toFixed(2));
+      const valorComDesconto = total - (maxDesconto / 100) * total;
+      setValorVenda(valorComDesconto.toFixed(2));
     } else {
-      setDesconto(valor.toFixed(2));
-      const porcentagemDesconto = valor / 100;
-      const taxa = porcentagemDesconto * Number(produto?.ValorVenda);
-      setValorVenda((Number(produto?.ValorVenda) - taxa).toFixed(2));
+      const valorComDesconto = total - (descontoNumerico / 100) * total;
+      setValorVenda(valorComDesconto.toFixed(2));
     }
   };
 
@@ -104,9 +83,7 @@ export default function ModalVenda({
       transparent={true}
       statusBarTranslucent
       visible={isActive}
-      onRequestClose={() => {
-        cleanForm();
-      }}>
+      onRequestClose={cleanForm}>
       <View style={styles.modalBackground}>
         <KeyboardAvoidingView behavior="padding" style={styles.modalContent}>
           <Text style={styles.modalTitle}>{selectedProduto?.Descricao}</Text>
@@ -120,7 +97,10 @@ export default function ModalVenda({
                 <View style={styles.column}>
                   <Text style={styles.centeredText}>Valor Produto</Text>
                   <Text style={styles.centeredTextInput}>
-                    R$ {selectedProduto?.ValorVenda.toFixed(2)}
+                    R$
+                    {isAtacado
+                      ? selectedProduto?.ValorVendaAtacado.toFixed(2)
+                      : selectedProduto?.ValorVenda.toFixed(2)}
                   </Text>
                 </View>
               </View>
@@ -155,18 +135,19 @@ export default function ModalVenda({
                 <Text style={styles.boldCenteredText}>Quantidade</Text>
                 <View style={styles.rowSpaceAround}>
                   <Icon
-                    onPress={() => setQuantidade(value => value - 1)}
+                    onPress={() =>
+                      setQuantidade(value => Math.max(value - 1, 1))
+                    }
                     name="remove-circle-sharp"
                     size={25}
                     color={colors.cancelButton}
                   />
                   <TextInput
                     value={`${quantidade}`}
-                    onChangeText={value => handleTextChange(value)}
+                    onChangeText={handleTextChange}
                     keyboardType="numeric"
                     style={styles.quantityInput}
                   />
-
                   <Icon
                     name="add-circle-sharp"
                     onPress={() => setQuantidade(value => Number(value) + 1)}
@@ -197,7 +178,7 @@ export default function ModalVenda({
             <View style={styles.inputContainerWithPaddingBottom}>
               <View style={styles.rowSpaceAroundWithPaddingTop}>
                 <TouchableOpacity
-                  onPress={() => cleanForm()}
+                  onPress={cleanForm}
                   style={styles.cancelButton}>
                   <Icon name="close-circle-sharp" size={25} color={'white'} />
                 </TouchableOpacity>
@@ -209,7 +190,7 @@ export default function ModalVenda({
                       quantidade,
                       observacao,
                       valorVenda,
-                      desconto,
+                      isAtacado,
                     )
                   }>
                   <Icon

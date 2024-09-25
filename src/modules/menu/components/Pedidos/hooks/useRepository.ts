@@ -40,17 +40,28 @@ export default function UseRepository() {
   };
 
   const teste = async (id: number) => {
-    const data = await repositoy.getPedidoById(id);
-    const result = await ApiInstace.openUrl({
-      method: 'post',
-      endPoint: 'arc/operacao/prevenda',
-      data,
-      headers: {
-        Empresa: 1,
-        Auth: usuario?.Hash,
-      },
-    });
-    await verify(id, result);
+    setLoading(true);
+    try {
+      const data = await repositoy.getPedidoById(id);
+      const result = await ApiInstace.openUrl({
+        method: 'post',
+        endPoint: 'arc/operacao/prevenda',
+        data,
+        headers: {
+          Empresa: 1,
+          Auth: usuario?.Hash,
+        },
+      });
+      await verify(id, result);
+
+      setLoading(false);
+    } catch (error) {
+      const err = error as Error;
+      Alert.alert('Erro', err.message);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {

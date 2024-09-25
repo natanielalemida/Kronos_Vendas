@@ -182,6 +182,7 @@ export default class ClienteRepository {
         'pessoa.NomeFantasia',
         'pessoa.CNPJCPF',
         'pessoa.isSincronizado',
+        'pessoa.TipoPreco',
       )
       .limit(50)
       .orderBy('pessoa.NomeFantasia');

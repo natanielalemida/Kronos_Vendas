@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import PedidoRepository from '../../repository/pedidoRepository';
 import Init from '../../../Clientes/hooks/init';
 import {useRoute} from '@react-navigation/native';
@@ -17,6 +17,10 @@ import {colors} from '../../../../../styles';
 import {ShowIf} from '../../../../../components/showIf';
 import UseRepository from '../../hooks/useRepository';
 import Toast from 'react-native-toast-message';
+import Loading from '../../../../../components/loading/Loading';
+import ViewShot from 'react-native-view-shot';
+import Share from 'react-native-share';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
@@ -24,7 +28,9 @@ export default function ResumoPedido({navigation}) {
     useCliente();
   const {params} = route;
   const {id, Codigo, goBack} = params || {};
-  const {teste} = UseRepository();
+  const {teste, isLoading} = UseRepository();
+
+  const viewRef = useRef(null);
 
   const [data, setData] = useState<PedidoSearchDto>();
   const repository = new PedidoRepository();
@@ -98,6 +104,21 @@ export default function ResumoPedido({navigation}) {
     const valorDesconto = valorOriginal - valorFinal;
     const porcentagemDesconto = (valorDesconto / valorOriginal) * 100;
     return porcentagemDesconto.toFixed(2);
+  };
+
+  const handleSharePDF = async () => {
+    const uri = await viewRef.current.capture(); // Captura a imagem do ScrollView
+    const html = `<h1>Pedido nº ${data?.Codigo}</h1><img src="${uri}" />`; // Cria um HTML simples com a imagem
+
+    // Converte o HTML para PDF
+    const pdf = await RNHTMLtoPDF.convert({
+      html,
+      fileName: 'pedido',
+      directory: 'Documents',
+    });
+
+    // Compartilha o PDF
+    await Share.open({url: `file://${pdf.filePath}`});
   };
 
   Init({handleGetUsers: handleGetPedido});
@@ -190,70 +211,81 @@ export default function ResumoPedido({navigation}) {
         onPressRightIcon={handleDelete}
         leftSize={25}
       />
-      <ScrollView
-        style={{
-          padding: 20,
-        }}>
-        <Text style={styles.title}>Pedido nº {data?.Codigo}</Text>
-        <View style={styles.row}>
-          <Text>Cliente</Text>
-          <Text style={styles.rightAlignedText}>
-            {data?.Pessoa?.NomeFantasia}
-          </Text>
-        </View>
-        <View style={styles.row}>
-          <Text>CNPJ/CPF</Text>
-          <Text style={styles.rightAlignedText}>{data?.Pessoa?.CNPJCPF}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text>Emissão</Text>
-          <Text style={{fontWeight: 'bold'}}>
-            {formatDate(data?.DataEmissao)}
-          </Text>
-        </View>
-
-        {renderProdutos()}
-        <View style={styles.totalRow}>
-          <Text style={styles.sectionTitle}>Total</Text>
-          <View style={styles.totalInfo}>
-            <Text>Total Bruto</Text>
-            <Text style={{fontWeight: 'bold'}}>R$ {calculateTotalBruto}</Text>
+      <ViewShot
+        ref={viewRef}
+        options={{format: 'jpg', quality: 0.9}}
+        style={{flex: 1}}>
+        <ScrollView
+          style={{
+            padding: 20,
+          }}>
+          <Loading isModalLoadingActive={isLoading} />
+          <Text style={styles.title}>Pedido nº {data?.Codigo}</Text>
+          <View style={styles.row}>
+            <Text>Cliente</Text>
+            <Text style={styles.rightAlignedText}>
+              {data?.Pessoa?.NomeFantasia}
+            </Text>
           </View>
-
-          <View style={styles.totalInfo}>
-            <Text>Desconto:</Text>
+          <View style={styles.row}>
+            <Text>CNPJ/CPF</Text>
+            <Text style={styles.rightAlignedText}>{data?.Pessoa?.CNPJCPF}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text>Emissão</Text>
             <Text style={{fontWeight: 'bold'}}>
-              R$
-              {(
-                Number(calculateTotalBruto) - Number(calculateTotalLiquido)
-              ).toFixed(2)}
-              (
-              {(
-                ((Number(calculateTotalBruto) - Number(calculateTotalLiquido)) /
-                  Number(calculateTotalBruto)) *
-                100
-              ).toFixed(2)}
-              %)
+              {formatDate(data?.DataEmissao)}
             </Text>
           </View>
 
-          <View style={styles.totalInfo}>
-            <Text>Total Líquido</Text>
-            <Text style={{fontWeight: 'bold'}}>R$ {calculateTotalLiquido}</Text>
+          {renderProdutos()}
+          <View style={styles.totalRow}>
+            <Text style={styles.sectionTitle}>Total</Text>
+            <View style={styles.totalInfo}>
+              <Text>Total Bruto</Text>
+              <Text style={{fontWeight: 'bold'}}>R$ {calculateTotalBruto}</Text>
+            </View>
+
+            <View style={styles.totalInfo}>
+              <Text>Desconto:</Text>
+              <Text style={{fontWeight: 'bold'}}>
+                R$
+                {(
+                  Number(calculateTotalBruto) - Number(calculateTotalLiquido)
+                ).toFixed(2)}
+                (
+                {(
+                  ((Number(calculateTotalBruto) -
+                    Number(calculateTotalLiquido)) /
+                    Number(calculateTotalBruto)) *
+                  100
+                ).toFixed(2)}
+                %)
+              </Text>
+            </View>
+
+            <View style={styles.totalInfo}>
+              <Text>Total Líquido</Text>
+              <Text style={{fontWeight: 'bold'}}>
+                R$ {calculateTotalLiquido}
+              </Text>
+            </View>
           </View>
-        </View>
-        {renderMeiosPagamentos()}
-      </ScrollView>
+          {renderMeiosPagamentos()}
+        </ScrollView>
+      </ViewShot>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleSharePDF}>
           <Text style={styles.buttonText}>Compartilhar</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => enviarPedido(id)}
-          style={[styles.button, styles.confirmButton]}>
-          <Text style={styles.buttonText}>Sincronizar</Text>
-        </TouchableOpacity>
+        <ShowIf condition={!Codigo}>
+          <TouchableOpacity
+            onPress={() => enviarPedido(id)}
+            style={[styles.button, styles.confirmButton]}>
+            <Text style={styles.buttonText}>Sincronizar</Text>
+          </TouchableOpacity>
+        </ShowIf>
       </View>
     </View>
   );
@@ -320,12 +352,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-end',
     paddingVertical: 10,
     backgroundColor: colors.arcGreen,
   },
   button: {
     paddingVertical: 10,
+    marginHorizontal: 10,
     paddingHorizontal: 20,
     backgroundColor: colors.graySearch,
     borderRadius: 5,

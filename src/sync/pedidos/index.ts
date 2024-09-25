@@ -55,7 +55,9 @@ export default class SincronizarPedidos {
       method: 'get',
       endPoint: `arc/operacao/prevenda?DataInicial=${encodeURIComponent(
         dataInicialFormatada,
-      )}&DataFinal=${encodeURIComponent(dataFinal)}`,
+      )}&DataFinal=${encodeURIComponent(dataFinal)}&CodigoVendedor=${
+        this.usuario.Codigo
+      }`,
       headers: {
         Auth: this.usuario.Hash,
         Empresa: this.organizationCode,

@@ -1,15 +1,20 @@
 import {useEffect, useState} from 'react';
 import {UseFormPros} from '../type';
 
-export default function UseForm({produto, setIsActive}: UseFormPros) {
+export default function UseForm({
+  produto,
+  isAtacado,
+  setIsActive,
+}: UseFormPros) {
   const [quantidade, setQuantidade] = useState<number>(1);
   const [observacao, setObservacao] = useState('');
   const [desconto, setDesconto] = useState('0.00');
   const [valorVenda, setValorVenda] = useState('0.00');
 
   useEffect(() => {
+    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
     if (produto?.ValorVenda) {
-      setValorVenda(produto?.ValorVenda.toFixed(2));
+      setValorVenda(total?.toFixed(2));
     }
   }, [produto]);
 

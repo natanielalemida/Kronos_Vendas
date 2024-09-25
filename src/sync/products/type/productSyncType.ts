@@ -35,6 +35,7 @@ export type ProdutoBodyCreateQtAndObsDto = {
   CodigoMarca: number | null;
   Quantidade: number;
   Observacao: string;
+  isAtacado: boolean;
 };
 
 export type ResultadoDto = {

@@ -2,11 +2,10 @@ import {knexConfig} from '../../../database/connection';
 import {ProdutoDto} from '../type';
 
 export default class ProdutoRepository {
-  async saveProduto(produto: ProdutoDto) {
-    await knexConfig('produtos').insert({
-      ...produto,
-    });
+  async saveProdutos(produtos: ProdutoDto[]) {
+    await knexConfig('produtos').insert(produtos);
   }
+
   async getProdutos(
     textFilter?: string,
   ): Promise<{data: ProdutoDto[]; total: number}> {

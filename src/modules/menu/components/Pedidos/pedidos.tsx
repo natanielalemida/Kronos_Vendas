@@ -66,6 +66,14 @@ export default function Pedidos() {
     setPedidosSelecionados(selectedPedidos);
   };
 
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const navigateResumo = (item: PedidoSearchDto) => {
     navigation.navigate('resumoPedidoNavigation', {
       id: item.id,
@@ -130,7 +138,7 @@ export default function Pedidos() {
           </Text>
         </View>
         <View style={styles.bottomRow}>
-          <Text>Emissão: {item.DataEmissao.slice(0, 10)}</Text>
+          <Text>Emissão: {formatDate(item.DataEmissao)}</Text>
           <View style={styles.neonContainer}>
             <Text style={styles.neonText}>Sinc</Text>
             <CheckBox

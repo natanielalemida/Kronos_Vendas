@@ -11,16 +11,14 @@ export default class SyncProductsService {
     this.mapper = new ProdutoMapper();
   }
 
-  async saveProdutcts(produtos: ProdutoDto[]) {
-    await Promise.all(
-      produtos.map(async produto => {
-        await this.save(produto);
-      }),
-    );
-  }
-
-  private async save(produto: ProdutoDto) {
-    const result = await this.mapper.mapOne(produto);
-    await this.repository.saveProduto(result);
+  async saveProducts(produtos: ProdutoDto[], batchSize = 10) {
+    // Divide os produtos em lotes do tamanho batchSize
+    for (let i = 0; i < produtos.length; i += batchSize) {
+      const batch = produtos.slice(i, i + batchSize);
+      const mappedBatch = await Promise.all(
+        batch.map(produto => this.mapper.mapOne(produto)),
+      );
+      await this.repository.saveProdutos(mappedBatch); // Salvando em lotes
+    }
   }
 }

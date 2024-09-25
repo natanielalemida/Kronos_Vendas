@@ -9,11 +9,14 @@ import {colors} from '../../../../../styles';
 import UseModal from './hooks/useModal';
 import ModalVenda from './components/modalVenda';
 import UseSetSelecteds from './hooks/useSetSelecteds';
+import {ShowIf} from '../../../../../components/showIf';
+import {useCliente} from '../../../Clientes/context/clientContext';
 
 export default function Produto() {
   const {handleGetProdutos, produtos, isLoading} = UseGetProdutos();
   const {findIndex} = UseSetSelecteds({});
   const {isActive, produtoModal, setIsActive, handleOpenModal} = UseModal();
+  const {clienteOnContext} = useCliente();
 
   const [textFilter, setTextFilter] = useState<string>('');
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -40,25 +43,102 @@ export default function Produto() {
   const renderItem = ({item}: {item: ProdutoDto}) => {
     const color = findIndex(item);
     return (
-      <TouchableOpacity
-        style={[styles.itemContainer, {backgroundColor: color}]}
-        key={item.Codigo}
-        onPress={() => handleOpenModal(item)}>
-        <View style={styles.itemTopRow}>
-          <View style={styles.itemLeft}>
-            <Text style={styles.itemCode}>{item.Codigo}</Text>
-            <Text style={styles.itemDescription}>{item.Descricao}</Text>
-          </View>
-          <Text style={styles.itemPrice}>R$ {item.ValorVenda.toFixed(2)}</Text>
-        </View>
-        <View style={styles.itemBottomRow}>
-          <View style={styles.itemDetailsLeft}>
-            <Text>{item.UnidadeMedida}</Text>
-            <Text>Est. 10</Text>
-          </View>
-          <Text>EAN: {item.CodigoDeBarras}</Text>
-        </View>
-      </TouchableOpacity>
+      <View>
+        <ShowIf condition={clienteOnContext?.TipoPreco === null}>
+          <TouchableOpacity
+            style={[styles.itemContainer, {backgroundColor: color}]}
+            key={item.Codigo}
+            onPress={() => handleOpenModal(item)}>
+            <View style={styles.itemTopRow}>
+              <Text
+                style={
+                  styles.itemDescription
+                }>{`${item.Codigo} - ${item.Descricao}`}</Text>
+            </View>
+
+            <View style={styles.itemBottomRow}>
+              <View style={styles.itemDetailsLeft}>
+                <Text>{item.UnidadeMedida}</Text>
+                <Text>Est. 10</Text>
+              </View>
+              <Text>EAN: {item.CodigoDeBarras}</Text>
+            </View>
+            <View>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: 12,
+                  }}>
+                  Valor Varejo: R$ {item.ValorVenda.toFixed(2)}
+                </Text>
+                <Text style={{color: 'black', fontSize: 12}}>
+                  Valor Atac: R$ {item.ValorVendaAtacado.toFixed(2)}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </ShowIf>
+
+        <ShowIf condition={Number(clienteOnContext?.TipoPreco) === 1}>
+          <TouchableOpacity
+            style={[styles.itemContainer, {backgroundColor: color}]}
+            key={item.Codigo}
+            onPress={() => handleOpenModal(item)}>
+            <View style={styles.itemTopRow}>
+              <Text
+                style={
+                  styles.itemDescription
+                }>{`${item.Codigo} - ${item.Descricao}`}</Text>
+            </View>
+
+            <View style={styles.itemBottomRow}>
+              <View style={styles.itemDetailsLeft}>
+                <Text>{item.UnidadeMedida}</Text>
+                <Text>Est. 10</Text>
+              </View>
+              <Text>EAN: {item.CodigoDeBarras}</Text>
+            </View>
+            <View>
+              <Text style={{color: 'black', fontSize: 14}}>
+                Valor Varejo: R$ {item.ValorVenda.toFixed(2)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </ShowIf>
+
+        <ShowIf
+          condition={
+            Number(clienteOnContext?.TipoPreco) === 2 &&
+            Number(item.VendeProdutoNoAtacado) === 1
+          }>
+          <TouchableOpacity
+            style={[styles.itemContainer, {backgroundColor: color}]}
+            key={item.Codigo}
+            onPress={() => handleOpenModal(item)}>
+            <View style={styles.itemTopRow}>
+              <Text
+                style={
+                  styles.itemDescription
+                }>{`${item.Codigo} - ${item.Descricao}`}</Text>
+            </View>
+
+            <View style={styles.itemBottomRow}>
+              <View style={styles.itemDetailsLeft}>
+                <Text>{item.UnidadeMedida}</Text>
+                <Text>Est. 10</Text>
+              </View>
+              <Text>EAN: {item.CodigoDeBarras}</Text>
+            </View>
+            <View>
+              <Text style={{color: 'black', fontSize: 14}}>
+                Valor Atacado: R$ {item.ValorVendaAtacado.toFixed(2)}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </ShowIf>
+      </View>
     );
   };
 
@@ -72,6 +152,7 @@ export default function Produto() {
       <ModalVenda
         isActive={isActive}
         setIsActive={setIsActive}
+        isAtacado={true}
         produto={produtoModal}
       />
       <View style={styles.top}>
@@ -110,20 +191,18 @@ const styles = StyleSheet.create({
   },
   itemCode: {
     marginRight: 5,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },
   itemDescription: {
-    marginHorizontal: 10,
-    width: '80%',
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },
   itemPrice: {
     marginLeft: 10,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },

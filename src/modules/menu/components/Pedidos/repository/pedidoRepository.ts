@@ -99,7 +99,8 @@ export default class PedidoRepository {
             ),
           );
         });
-      });
+      })
+      .orderBy('pedido.id', 'desc');
 
     if (options.notSyncd && !options.syncds) {
       const result = await data.andWhere('pedido.Codigo', null);

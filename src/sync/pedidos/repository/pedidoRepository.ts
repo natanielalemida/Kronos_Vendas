@@ -68,7 +68,8 @@ export default class PedidoRepository {
       for (const produto of produtos) {
         await trx('PedidoVinculoProduto')
           .update(produto)
-          .where({CodigoPedido: id});
+          .where({CodigoPedido: id})
+          .andWhere({CodigoProduto: produto.CodigoProduto});
       }
 
       // Confirma (commit) as alterações após todas as operações

@@ -26,7 +26,7 @@ export default class SincronizarProdutos {
 
   private async save(produtos: ProdutoDto[]) {
     try {
-      await this.service.saveProdutcts(produtos);
+      await this.service.saveProducts(produtos);
     } catch (error) {
       const er = error as Error;
       Alert.alert(`${er.name}`, `${er.message}`);
