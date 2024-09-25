@@ -43,25 +43,23 @@ export default function ResumoPedido({navigation}) {
   const enviarPedido = async (id: number) => {
     try {
       await teste(id);
-      await Toast.show({
+      Toast.show({
         type: 'success',
         text1: 'Sucesso',
-        text1Style: {fontSize: 18, fontWeight: 'bold'},
         text2: 'Pedido enviado com sucesso',
-        text2Style: {fontSize: 14},
         visibilityTime: 1000,
+        ...toastStyles.success,
       });
       setTimeout(() => {
         navigation.navigate('Menu');
       }, 500);
     } catch (error) {
-      await Toast.show({
+      Toast.show({
         type: 'error',
         text1: 'Falha',
-        text1Style: {fontSize: 18, fontWeight: 'bold'},
         text2: 'Falha ao enviar pedido',
-        text2Style: {fontSize: 14},
         visibilityTime: 1000,
+        ...toastStyles.error,
       });
     }
   };
@@ -74,9 +72,7 @@ export default function ResumoPedido({navigation}) {
   const handleTeste = () => {
     setClienteOnContext(data?.Pessoa);
     setProdutosSelecionados(data?.Itens);
-    navigation.navigate('Novo Pedido', {
-      id: id,
-    });
+    navigation.navigate('Novo Pedido', {id});
   };
 
   const handleDelete = () => {
@@ -90,97 +86,93 @@ export default function ResumoPedido({navigation}) {
     );
   };
 
-  // Função para formatar a data
   const formatDate = dateString => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() retorna o mês de 0-11, então adicione +1
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-
     return `${day}/${month}/${year}`;
   };
 
-  function calcularPorcentagemDesconto(valorOriginal, valorFinal) {
+  const calcularPorcentagemDesconto = (valorOriginal, valorFinal) => {
     const valorDesconto = valorOriginal - valorFinal;
     const porcentagemDesconto = (valorDesconto / valorOriginal) * 100;
-    console.log({porcentagemDesconto});
-    return porcentagemDesconto.toFixed(2); // Arredonda para duas casas decimais
-  }
+    return porcentagemDesconto.toFixed(2);
+  };
 
   Init({handleGetUsers: handleGetPedido});
 
-  const renderProdutos = () => {
-    return (
-      <View>
-        <Text style={styles.sectionTitle}>Produtos</Text>
-        {data?.Itens.length > 0 &&
-          data.Itens.map((produto, index) => (
-            <View key={index} style={styles.productRow}>
-              <View style={styles.productDetails}>
-                <Text style={{width: '74%'}}>{produto.Descricao}</Text>
-                <Text>R$ {produto.ValorUnitario.toFixed(2)}</Text>
-              </View>
-              <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <View style={{alignItems: 'center'}}>
-                  <Text>DESC</Text>
-                  <Text>{produto.ValorVendaDesconto}</Text>
-                </View>
-                <View style={{alignItems: 'center'}}>
-                  <Text>QTD</Text>
-                  <Text>{produto.Quantidade}</Text>
-                </View>
-                <View>
-                  <Text style={{alignSelf: 'flex-end'}}>VLR UN</Text>
-                  <Text>R$ {produto.ValorUnitario.toFixed(2)}</Text>
-                </View>
-              </View>
+  const renderProdutos = () => (
+    <View>
+      <Text style={styles.sectionTitle}>Produtos</Text>
+      {data?.Itens.map((produto, index) => (
+        <View key={index} style={styles.productRow}>
+          <View style={styles.productDetails}>
+            <Text style={styles.productName}>{produto.Descricao}</Text>
+            <Text style={{fontWeight: 'bold', color: colors.confirmButton}}>
+              R$ {produto.ValorUnitario.toFixed(2)}
+            </Text>
+          </View>
+          <View style={styles.productInfo}>
+            <View style={styles.productInfoBlock}>
+              <Text>DESC</Text>
+              <Text>
+                {produto.ValorVendaDesconto !== produto.ValorUnitario
+                  ? (
+                      (produto.ValorUnitario - produto.ValorVendaDesconto) *
+                      produto.Quantidade
+                    ).toFixed(2)
+                  : '0.00'}
+                {produto.ValorVendaDesconto !== produto.ValorUnitario
+                  ? ` (${calcularPorcentagemDesconto(
+                      produto.ValorUnitario,
+                      produto.ValorVendaDesconto,
+                    )}%)`
+                  : ''}
+              </Text>
             </View>
-          ))}
-      </View>
-    );
-  };
-
-  const renderMeiosPagamentos = () => {
-    return (
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Forma de Pagamento</Text>
-        {data?.MeiosPagamentos.length > 0 &&
-          data.MeiosPagamentos.map((meio, index) => (
-            <View key={index} style={styles.paymentRow}>
-              <Text>{meio.FormaPagamento.Descricao}</Text>
-              <View style={styles.paymentDetails}>
-                <Text>R$ {meio.ValorRecebido.toFixed(2)}</Text>
-              </View>
+            <View style={styles.productInfoBlock}>
+              <Text>QTD</Text>
+              <Text>{produto.Quantidade}</Text>
             </View>
-          ))}
-      </View>
-    );
-  };
+            <View style={styles.productInfoBlock}>
+              <Text>VLR UN</Text>
+              <Text>R$ {produto.ValorUnitario.toFixed(2)}</Text>
+            </View>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
 
-  const {valorTotal, porcentagemTotal} = data?.Itens.reduce(
-    (acc, item) => {
-      const valorDesconto = item.ValorUnitario - item.ValorVendaDesconto;
+  const renderMeiosPagamentos = () => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Forma de Pagamento</Text>
+      {data?.MeiosPagamentos.map((meio, index) => (
+        <View key={index} style={styles.paymentRow}>
+          <Text>{meio.FormaPagamento.Descricao}</Text>
+          <View style={styles.paymentDetails}>
+            <Text style={{fontWeight: 'bold'}}>
+              R$ {meio.ValorRecebido.toFixed(2)}
+            </Text>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
 
-      const porcentagemDesconto = calcularPorcentagemDesconto(
-        item.ValorUnitario,
-        item.ValorVendaDesconto,
-      );
+  const calculateTotalBruto = data?.Itens.reduce(
+    (acc, item) => acc + item.Quantidade * item.ValorUnitario,
+    0,
+  ).toFixed(2);
 
-      const descontoValido = isNaN(parseFloat(porcentagemDesconto))
-        ? 0
-        : parseFloat(porcentagemDesconto);
-
-      acc.valorTotal += valorDesconto;
-      acc.porcentagemTotal += descontoValido;
-
-      return acc;
-    },
-    {valorTotal: 0, porcentagemTotal: 0},
-  ) || {valorTotal: 0, porcentagemTotal: 0};
+  const calculateTotalLiquido = data?.MeiosPagamentos.reduce(
+    (acc, item) => acc + item.ValorRecebido,
+    0,
+  ).toFixed(2);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={styles.container}>
       <HeaderProducts
         label="Resumo Pedido"
         leftColor="white"
@@ -189,16 +181,19 @@ export default function ResumoPedido({navigation}) {
           goBack ? () => navigation.pop(2) : () => navigation.goBack()
         }
         rightColor="white"
+        rightColor2="white"
         rightIcon={!Codigo ? 'trash-outline' : undefined}
         rightSize={25}
-        rightColor2="white"
         rightIcon2={!Codigo ? 'create-outline' : undefined}
         rightSize2={25}
         onPressRightIcon2={handleTeste}
         onPressRightIcon={handleDelete}
         leftSize={25}
       />
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={{
+          padding: 20,
+        }}>
         <Text style={styles.title}>Pedido nº {data?.Codigo}</Text>
         <View style={styles.row}>
           <Text>Cliente</Text>
@@ -207,41 +202,44 @@ export default function ResumoPedido({navigation}) {
           </Text>
         </View>
         <View style={styles.row}>
+          <Text>CNPJ/CPF</Text>
+          <Text style={styles.rightAlignedText}>{data?.Pessoa?.CNPJCPF}</Text>
+        </View>
+        <View style={styles.row}>
           <Text>Emissão</Text>
-          <Text>{formatDate(data?.DataEmissao)}</Text>
+          <Text style={{fontWeight: 'bold'}}>
+            {formatDate(data?.DataEmissao)}
+          </Text>
         </View>
 
         {renderProdutos()}
         <View style={styles.totalRow}>
           <Text style={styles.sectionTitle}>Total</Text>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={styles.totalInfo}>
             <Text>Total Bruto</Text>
-            <Text>
-              R$
-              {data?.Itens.reduce(
-                (acc, item) => acc + item.Quantidade * item.ValorUnitario,
-                0,
-              ).toFixed(2)}
-            </Text>
+            <Text style={{fontWeight: 'bold'}}>R$ {calculateTotalBruto}</Text>
           </View>
 
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={styles.totalInfo}>
             <Text>Desconto:</Text>
-            {/* Exibe o valor total do desconto e a porcentagem total */}
-            <Text>
-              {`${valorTotal.toFixed(2)} (${porcentagemTotal.toFixed(2)}%)`}
+            <Text style={{fontWeight: 'bold'}}>
+              R$
+              {(
+                Number(calculateTotalBruto) - Number(calculateTotalLiquido)
+              ).toFixed(2)}
+              (
+              {(
+                ((Number(calculateTotalBruto) - Number(calculateTotalLiquido)) /
+                  Number(calculateTotalBruto)) *
+                100
+              ).toFixed(2)}
+              %)
             </Text>
           </View>
 
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text>Total Liquido</Text>
-            <Text>
-              R$
-              {data?.Itens.reduce(
-                (acc, item) => acc + item.Quantidade * item.ValorVendaDesconto,
-                0,
-              ).toFixed(2)}
-            </Text>
+          <View style={styles.totalInfo}>
+            <Text>Total Líquido</Text>
+            <Text style={{fontWeight: 'bold'}}>R$ {calculateTotalLiquido}</Text>
           </View>
         </View>
         {renderMeiosPagamentos()}
@@ -253,7 +251,7 @@ export default function ResumoPedido({navigation}) {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => enviarPedido(id)}
-          style={[styles.button, {backgroundColor: colors.confirmButton}]}>
+          style={[styles.button, styles.confirmButton]}>
           <Text style={styles.buttonText}>Sincronizar</Text>
         </TouchableOpacity>
       </View>
@@ -264,7 +262,6 @@ export default function ResumoPedido({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
   section: {
     marginVertical: 20,
@@ -291,6 +288,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  productName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colors.confirmButton,
+    width: '70%',
+  },
+  productInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 5,
+  },
+  productInfoBlock: {
+    marginRight: 10,
+  },
   paymentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -298,31 +309,48 @@ const styles = StyleSheet.create({
   },
   paymentDetails: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    width: '40%',
   },
-  totalRow: {},
-  buttonContainer: {
+  totalRow: {
+    marginTop: 20,
+  },
+  totalInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: 'gray',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
     backgroundColor: colors.arcGreen,
   },
   button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     backgroundColor: colors.graySearch,
-    flex: 1,
-    padding: 10,
     borderRadius: 5,
-    marginHorizontal: 5,
+  },
+  confirmButton: {
+    backgroundColor: colors.confirmButton,
   },
   buttonText: {
-    textAlign: 'center',
-    color: colors.white,
+    color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   rightAlignedText: {
     textAlign: 'right',
+    fontWeight: 'bold',
   },
 });
+
+const toastStyles = {
+  success: {
+    position: 'top',
+    bottomOffset: 50,
+  },
+  error: {
+    position: 'top',
+    bottomOffset: 50,
+  },
+};

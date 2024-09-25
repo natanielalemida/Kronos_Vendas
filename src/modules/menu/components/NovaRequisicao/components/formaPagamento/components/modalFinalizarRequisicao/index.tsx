@@ -106,25 +106,28 @@ export default function ModalFinalizarRequisicao({
 
     // Obtém o total calculado
     const total = parseFloat(calcularTotal());
-
+    const totalSemDesconto = parseFloat(calcularTotalSemDesconto());
     // Verifica se existe um valor de desconto válido
     const valorPorcentagem = parseFloat(usuario?.DescontoMaximoVenda) / 100;
-    const totalMaximoDesconto = valorPorcentagem * total;
+    const totalMaximoDesconto = valorPorcentagem * totalSemDesconto;
 
     if (valor > total) {
       // Se o valorTotal for maior que o total calculado, restaura para o total
       setValorTotal(total.toFixed(2));
-      setDesconto('0.00'); // Desconto zerado quando o valor total excede o limite
+      setDesconto(porcentagemDesconto().toFixed(2)); // Desconto zerado quando o valor total excede o limite
     } else if (valor < total - totalMaximoDesconto) {
       // Se o valor for menor que o total com o máximo de desconto aplicado
-      setValorTotal((total - totalMaximoDesconto).toFixed(2));
-      setDesconto(((totalMaximoDesconto / total) * 100).toFixed(2)); // Ajusta o desconto para o máximo permitido
+      setValorTotal((totalSemDesconto - totalMaximoDesconto).toFixed(2));
+      setDesconto(usuario?.DescontoMaximoVenda.toFixed(2)); // Ajusta o desconto para o máximo permitido
     } else {
       // Se o valor está entre o total e o limite máximo de desconto
       setValorTotal(valor.toFixed(2));
 
       // Recalcula o desconto com base no novo valorTotal
-      const novoDesconto = (((total - valor) / total) * 100).toFixed(2);
+      const novoDesconto = (
+        ((totalSemDesconto - valor) / totalSemDesconto) *
+        100
+      ).toFixed(2);
       setDesconto(novoDesconto); // Atualiza o desconto com o valor correspondente
     }
   };
@@ -143,9 +146,40 @@ export default function ModalFinalizarRequisicao({
     ).toFixed(2);
   };
 
+  const porcentagemDesconto = () => {
+    const totalBruto = calcularTotalSemDesconto();
+
+    // Verifica se algum produto já tem um desconto aplicado
+    const descontoInicial = ProdutosSelecionados.reduce((acc, item) => {
+      return (
+        acc + (item.ValorVenda - item.ValorVendaDesconto) * item.Quantidade
+      );
+    }, 0);
+
+    // Converte o desconto inicial para porcentagem com base no valor total
+    return (descontoInicial / totalBruto) * 100;
+  };
+
   useEffect(() => {
-    handleValorVenda();
-    handleDesconto();
+    if (isActive) {
+      // Calcula o total bruto dos produtos selecionados
+
+      // Ajusta o estado inicial com o desconto aplicado
+      setDesconto(porcentagemDesconto().toFixed(2));
+
+      // Calcula o valor total com o desconto já aplicado
+      const totalBruto = calcularTotalSemDesconto();
+
+      // Verifica se algum produto já tem um desconto aplicado
+      const descontoInicial = ProdutosSelecionados.reduce((acc, item) => {
+        return (
+          acc + (item.ValorVenda - item.ValorVendaDesconto) * item.Quantidade
+        );
+      }, 0);
+
+      const valorTotalComDesconto = totalBruto - descontoInicial;
+      setValorTotal(valorTotalComDesconto.toFixed(2));
+    }
   }, [isActive]);
 
   return (
@@ -165,7 +199,9 @@ export default function ModalFinalizarRequisicao({
             <View style={styles.modalHeader}>
               <View style={styles.centeredContent}>
                 <Text style={styles.labelText}>Valor Bruto:</Text>
-                <Text style={styles.valueText}>R$ {calcularTotal()}</Text>
+                <Text style={styles.valueText}>
+                  R$ {calcularTotalSemDesconto()}
+                </Text>
               </View>
               <View style={styles.divider} />
             </View>

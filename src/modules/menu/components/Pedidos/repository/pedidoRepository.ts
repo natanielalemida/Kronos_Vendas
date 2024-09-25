@@ -169,6 +169,7 @@ export default class PedidoRepository {
           'pessoa.Codigo as PessoaCodigo',
           'pessoa.CodigoPessoa as CodigoPessoa',
           'pessoa.NomeFantasia',
+          'pessoa.CNPJCPF as CNPJCPF',
         )
         .innerJoin('pessoa', function () {
           this.on(function () {

@@ -9,7 +9,6 @@ type Item = {
 export default class mapPedido {
   mapearDados(dados) {
     const itensUnicos = dados.reduce((acc, item) => {
-      console.log({item});
       const existente = acc.find(i => i.CodigoProduto === item.CodigoProduto);
       if (!existente) {
         acc.push({
@@ -69,6 +68,7 @@ export default class mapPedido {
       ModuloDeVenda: 2,
       MeiosPagamentos: meiosPagamentosUnicos,
       Pessoa: {
+        CNPJCPF: dados[0].CNPJCPF,
         Codigo: dados[0].PessoaCodigo,
         CodigoPessoa: dados[0].CodigoPessoa,
         NomeFantasia: dados[0].NomeFantasia,

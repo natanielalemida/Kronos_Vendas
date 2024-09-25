@@ -20,7 +20,6 @@ export default class PedidoMapper {
         CodigoPessoa: pedido.Pessoa.Codigo,
       },
       ProdutosRelacao: pedido.Itens.map(produto => {
-        console.log({valorDesconto: produto.ValorDesconto});
         return {
           CodigoPedido: pedido.Codigo,
           CodigoProduto: produto.CodigoProduto,
