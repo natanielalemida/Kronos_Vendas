@@ -76,7 +76,6 @@ export default class ClienteRepository {
         })
         .where('id', Endereco.id);
       await transaction.commit();
-      console.log('passou no update');
     } catch (err) {
       console.log(err);
       await transaction.rollback();

@@ -39,59 +39,27 @@ export default function ModalFinalizarRequisicao({
       setValorTotal(parseFloat(calcularTotal()).toFixed(2));
       return;
     }
-    const number = desconto.replace(/[^0-9.]/g, ''); // Remove caracteres não numéricos
-    let valor = parseFloat(number); // Converte para número
 
-    // Se o valor digitado for maior que o máximo permitido, ajusta para o valor máximo
-    if (valor > usuario?.DescontoMaximoVenda) {
-      valor = usuario.DescontoMaximoVenda;
-      setDesconto(valor.toFixed(2)); // Atualiza o campo de desconto
-    } else {
-      setDesconto(valor.toFixed(2));
-    }
-
-    // Calcula a porcentagem do desconto
-    const porcentagemDesconto = valor / 100;
-    const taxa = porcentagemDesconto * Number(calcularTotal()); // Aplica o desconto sobre o total
-
-    // Atualiza o valor total com o desconto aplicado
-    setValorTotal((Number(calcularTotal()) - taxa).toFixed(2));
-  };
-
-  const handleDesconto = () => {
-    // Se não houver valor máximo de desconto ou o campo de desconto estiver vazio
-    if (!usuario?.DescontoMaximoVenda || !desconto) {
-      setDesconto('0.00');
-      setValorTotal(calcularTotal()); // Reseta o valor total sem desconto
-      return;
-    }
-
-    // Remove qualquer caractere que não seja número ou ponto (ex: vírgulas, letras)
     const number = desconto.replace(/[^0-9.]/g, '');
-    const valor = parseFloat(number);
+    let valor = parseFloat(number);
 
-    // Se o valor digitado for maior que o DescontoMaximoVenda
-    if (valor > usuario?.DescontoMaximoVenda) {
-      // Ajusta o desconto para o máximo permitido
-      setDesconto(usuario.DescontoMaximoVenda.toFixed(2));
+    const total = parseFloat(calcularTotal());
+    // Cálculo do desconto mínimo
+    const totalBruto = parseFloat(calcularTotalSemDesconto());
+    const descontoMinimo = ((totalBruto - total) / totalBruto) * 100;
 
-      // Calcula o desconto em porcentagem sobre o valor total
-      const porcentagemDesconto = usuario.DescontoMaximoVenda / 100;
-      const taxa = porcentagemDesconto * Number(calcularTotal());
-
-      // Atualiza o valor total com o desconto máximo aplicado
-      setValorTotal((Number(calcularTotal()) - taxa).toFixed(2));
-    } else {
-      // Caso o valor seja válido (menor ou igual ao desconto máximo)
-      setDesconto(valor.toFixed(2));
-
-      // Calcula o desconto em porcentagem
-      const porcentagemDesconto = valor / 100;
-      const taxa = porcentagemDesconto * Number(calcularTotal());
-
-      // Atualiza o valor total com o desconto inserido
-      setValorTotal((Number(calcularTotal()) - taxa).toFixed(2));
+    if (valor < descontoMinimo) {
+      valor = descontoMinimo;
+    } else if (valor > usuario.DescontoMaximoVenda) {
+      valor = usuario.DescontoMaximoVenda;
     }
+
+    setDesconto(valor.toFixed(2));
+
+    const porcentagemDesconto = valor / 100;
+    const taxa = porcentagemDesconto * totalBruto;
+
+    setValorTotal((totalBruto - taxa).toFixed(2));
   };
 
   const handleValorVenda = () => {
@@ -100,35 +68,28 @@ export default function ModalFinalizarRequisicao({
       setValorTotal(parseFloat(calcularTotal()).toFixed(2));
       return;
     }
-    // Remove qualquer caractere que não seja número ou ponto do valorTotal
     const number = valorTotal.replace(/[^0-9.]/g, '');
     const valor = parseFloat(number);
 
-    // Obtém o total calculado
     const total = parseFloat(calcularTotal());
     const totalSemDesconto = parseFloat(calcularTotalSemDesconto());
-    // Verifica se existe um valor de desconto válido
     const valorPorcentagem = parseFloat(usuario?.DescontoMaximoVenda) / 100;
     const totalMaximoDesconto = valorPorcentagem * totalSemDesconto;
 
     if (valor > total) {
-      // Se o valorTotal for maior que o total calculado, restaura para o total
       setValorTotal(total.toFixed(2));
-      setDesconto(porcentagemDesconto().toFixed(2)); // Desconto zerado quando o valor total excede o limite
+      setDesconto(porcentagemDesconto().toFixed(2));
     } else if (valor < total - totalMaximoDesconto) {
-      // Se o valor for menor que o total com o máximo de desconto aplicado
       setValorTotal((totalSemDesconto - totalMaximoDesconto).toFixed(2));
-      setDesconto(usuario?.DescontoMaximoVenda.toFixed(2)); // Ajusta o desconto para o máximo permitido
+      setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
     } else {
-      // Se o valor está entre o total e o limite máximo de desconto
       setValorTotal(valor.toFixed(2));
 
-      // Recalcula o desconto com base no novo valorTotal
       const novoDesconto = (
         ((totalSemDesconto - valor) / totalSemDesconto) *
         100
       ).toFixed(2);
-      setDesconto(novoDesconto); // Atualiza o desconto com o valor correspondente
+      setDesconto(novoDesconto);
     }
   };
 
@@ -140,44 +101,36 @@ export default function ModalFinalizarRequisicao({
   };
 
   const calcularTotalSemDesconto = () => {
-    return ProdutosSelecionados.reduce(
-      (acc, item) => acc + item.Quantidade * item.ValorVenda,
-      0,
-    ).toFixed(2);
+    return ProdutosSelecionados.reduce((acc, item) => {
+      return acc + item.Quantidade * item.ValorVenda;
+    }, 0).toFixed(2);
   };
 
   const porcentagemDesconto = () => {
     const totalBruto = calcularTotalSemDesconto();
 
-    // Verifica se algum produto já tem um desconto aplicado
     const descontoInicial = ProdutosSelecionados.reduce((acc, item) => {
       return (
         acc + (item.ValorVenda - item.ValorVendaDesconto) * item.Quantidade
       );
     }, 0);
 
-    // Converte o desconto inicial para porcentagem com base no valor total
-    return (descontoInicial / totalBruto) * 100;
+    return (descontoInicial / Number(totalBruto)) * 100;
   };
 
   useEffect(() => {
     if (isActive) {
-      // Calcula o total bruto dos produtos selecionados
-
-      // Ajusta o estado inicial com o desconto aplicado
       setDesconto(porcentagemDesconto().toFixed(2));
 
-      // Calcula o valor total com o desconto já aplicado
       const totalBruto = calcularTotalSemDesconto();
 
-      // Verifica se algum produto já tem um desconto aplicado
       const descontoInicial = ProdutosSelecionados.reduce((acc, item) => {
         return (
           acc + (item.ValorVenda - item.ValorVendaDesconto) * item.Quantidade
         );
       }, 0);
 
-      const valorTotalComDesconto = totalBruto - descontoInicial;
+      const valorTotalComDesconto = Number(totalBruto) - descontoInicial;
       setValorTotal(valorTotalComDesconto.toFixed(2));
     }
   }, [isActive]);
@@ -223,7 +176,7 @@ export default function ModalFinalizarRequisicao({
                 <Text style={styles.labelTextInput}>Valor Total:</Text>
                 <TextInput
                   keyboardType="numeric"
-                  style={styles.inputText}
+                  style={styles.valueText}
                   onEndEditing={handleValorVenda}
                   onChangeText={setValorTotal}
                   value={valorTotal}
@@ -233,10 +186,15 @@ export default function ModalFinalizarRequisicao({
             </View>
 
             <View style={styles.modalHeader}>
-              <View>
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 20,
+                  width: '100%',
+                }}>
                 <Text style={styles.labelTextInput}>Observacao:</Text>
                 <TextInput
-                  style={styles.inputText}
+                  style={styles.valueText}
                   onChangeText={setObservacao}
                 />
               </View>
@@ -327,31 +285,41 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: 'black',
     fontWeight: '600',
-    width: '100%',
-    textAlign: 'center',
   },
   divider: {
-    borderBottomColor: colors.black,
     borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    width: '90%',
+    alignSelf: 'center',
+    paddingTop: 10,
   },
   centeredContent: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
     alignItems: 'center',
+    width: '100%',
+    flexDirection: 'row',
   },
   labelText: {
-    paddingBottom: 10,
-    fontWeight: '500',
     fontSize: 16,
-  },
-  labelTextInput: {
-    fontWeight: '500',
-    fontSize: 16,
+    color: 'black',
   },
   valueText: {
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: 16,
+    color: 'black',
+    fontWeight: '500',
+  },
+  labelTextInput: {
+    fontSize: 16,
+    paddingBottom: 10,
   },
   inputText: {
-    fontSize: 14,
-    fontWeight: '900',
+    borderColor: 'black',
+    borderBottomWidth: 1,
+    paddingHorizontal: 10,
+    alignSelf: 'center',
+    fontSize: 16,
+    color: 'black',
+    textAlign: 'center',
   },
 });

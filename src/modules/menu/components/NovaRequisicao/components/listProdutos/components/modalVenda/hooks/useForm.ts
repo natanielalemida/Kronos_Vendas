@@ -3,6 +3,7 @@ import {UseFormPros} from '../type';
 
 export default function UseForm({
   produto,
+  isAtacadoActive,
   isAtacado,
   setIsActive,
 }: UseFormPros) {
@@ -12,11 +13,17 @@ export default function UseForm({
   const [valorVenda, setValorVenda] = useState('0.00');
 
   useEffect(() => {
-    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
-    if (produto?.ValorVenda) {
-      setValorVenda(total?.toFixed(2));
-    }
+    const total = isAtacadoActive
+      ? produto?.ValorVendaAtacado
+      : produto?.ValorVenda;
+    setValorVenda(total?.toFixed(2));
   }, [produto]);
+
+  useEffect(() => {
+    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+
+    setValorVenda(total?.toFixed(2));
+  }, [isAtacado]);
 
   const handleTextChange = (value: string) => {
     let numericValue: string;

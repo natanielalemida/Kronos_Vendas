@@ -72,6 +72,11 @@ export default function SavePedido() {
         CodigoProduto: currentProduto.Codigo,
         Quantidade: currentProduto.Quantidade,
         ValorVendaDesconto: currentProduto.ValorVendaDesconto,
+        Descricao: currentProduto.Descricao,
+        ValorCusto: 0,
+        ValorVenda: currentProduto.ValorVenda,
+        ValorOriginalProduto: currentProduto.ValorVendaDesconto,
+        UnidadeMedida: currentProduto.UnidadeMedida,
       };
     });
 
@@ -102,6 +107,11 @@ export default function SavePedido() {
         CodigoProduto: currentProduto.Codigo,
         Quantidade: currentProduto.Quantidade,
         ValorVendaDesconto: currentProduto.ValorVendaDesconto,
+        Descricao: currentProduto.Descricao,
+        ValorCusto: 0,
+        ValorVenda: currentProduto.ValorVenda,
+        ValorOriginalProduto: currentProduto.ValorVendaDesconto,
+        UnidadeMedida: currentProduto.UnidadeMedida,
       };
     });
 

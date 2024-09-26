@@ -10,6 +10,10 @@ export default class mapPedido {
   mapearDados(dados) {
     const itensUnicos = dados.reduce((acc, item) => {
       const existente = acc.find(i => i.CodigoProduto === item.CodigoProduto);
+      const valor = item.ValorVendaDesconto
+        ? item.ValorVendaDesconto
+        : item.ValorVenda;
+
       if (!existente) {
         acc.push({
           CodigoProduto: item.CodigoProduto,
@@ -19,15 +23,15 @@ export default class mapPedido {
           ValorVenda: item.ValorVenda,
           ValorTotal: item.ValorVenda * item.Quantidade,
           UnidadeMedida: item.UnidadeMedida,
+          ValorOriginalProduto: valor,
           ValorVendaDesconto: item.ValorVendaDesconto
             ? item.ValorVendaDesconto
             : item.ValorVenda,
-          ValorDesconto: Number(
-            (
-              (item.ValorVenda - item.ValorVendaDesconto) *
-              item.Quantidade
-            ).toFixed(2),
-          ),
+          ValorDesconto: item.ValorVendaDesconto
+            ? Number(
+                (item.ValorVenda - item.ValorVendaDesconto) * item.Quantidade,
+              ).toFixed(2)
+            : '0.00',
         });
       }
       return acc;
@@ -62,6 +66,7 @@ export default class mapPedido {
       }
       return acc;
     }, []);
+
     return {
       Codigo: dados[0].CodigoPedidoTable ? dados[0].CodigoPedidoTable : 0,
       DataEmissao: new Date(dados[0].DataEmissao),
@@ -72,6 +77,7 @@ export default class mapPedido {
         Codigo: dados[0].PessoaCodigo,
         CodigoPessoa: dados[0].CodigoPessoa,
         NomeFantasia: dados[0].NomeFantasia,
+        TipoPreco: dados[0].TipoPreco,
       },
       Terminal: {
         Codigo: 1,

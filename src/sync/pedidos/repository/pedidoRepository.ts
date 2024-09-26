@@ -59,9 +59,6 @@ export default class PedidoRepository {
   }
 
   async updateVinculoProduto(produtos: any, id: number) {
-    console.log({produtos});
-    console.log({id});
-
     const trx = await knexConfig.transaction();
 
     try {

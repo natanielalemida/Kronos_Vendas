@@ -22,8 +22,6 @@ export default class SaveOrUpdateClienteService {
         return;
       }
 
-      console.log({formated});
-
       await this.repository.update({
         Cliente: {...formated.Cliente},
         Endereco: {...formated.Endereco, id: result.EnderecoId},

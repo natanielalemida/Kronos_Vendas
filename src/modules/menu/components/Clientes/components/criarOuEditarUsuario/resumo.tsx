@@ -33,8 +33,6 @@ export default function Resumo() {
     navigation.pop(1);
   };
 
-  console.log({params});
-
   const handle = async (value: boolean, value2: boolean) => {
     try {
       await service.iniciarSincronizacaoSingle(value, value2);
@@ -53,8 +51,6 @@ export default function Resumo() {
       console.log(error);
     }
   };
-
-  console.log({status: progress?.message || '0'});
 
   const syncAndSave = false;
 

@@ -6,6 +6,7 @@ import {
   View,
   TextInput,
   KeyboardAvoidingView,
+  Switch,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../../../../../../../styles';
@@ -14,13 +15,19 @@ import UseForm from './hooks/useForm';
 import UseSetSelecteds from '../../hooks/useSetSelecteds';
 import {ProdutoDto} from '../../../../../../../../sync/products/type';
 import {useCliente} from '../../../../../Clientes/context/clientContext';
+import {useEffect, useState} from 'react';
+import {ShowIf} from '../../../../../../../components/showIf';
 
 export default function ModalVenda({
   isActive,
   produto,
-  isAtacado,
+  isAtacadoActive,
+  canSetAtacado,
+  setAtacadoActive,
   setIsActive,
 }: ModalType) {
+  const [isAtacado, setAtacado] = useState(false);
+
   const {usuario} = useCliente();
   const {
     handleTextChange,
@@ -33,19 +40,34 @@ export default function ModalVenda({
     desconto,
     observacao,
     quantidade,
-  } = UseForm({produto, isAtacado, setIsActive});
+  } = UseForm({produto, isAtacadoActive, isAtacado, setIsActive});
+
+  const handleClose = () => {
+    setAtacado(false);
+    if (setAtacadoActive) {
+      setAtacadoActive(false);
+    }
+    cleanForm();
+  };
 
   const {addQuantidadeAndObsToProduct, selectedProduto} = UseSetSelecteds({
     setIsActive,
     setObservacao,
     setQuantidade,
-    cleanForm,
+    cleanForm: handleClose,
     produto,
     isActive,
   });
 
   const handleValorVenda = () => {
     const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+
+    if (!valorVenda) {
+      setDesconto('0.00');
+      setValorVenda(total?.toFixed(2));
+      return;
+    }
+
     const maxDesconto = usuario?.DescontoMaximoVenda / 100 || 0;
     const descontoMaximo = total * maxDesconto;
     const valorNumerico = parseFloat(valorVenda.replace(/[^0-9.]/g, ''));
@@ -64,6 +86,13 @@ export default function ModalVenda({
 
   const handleDesconto = () => {
     const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+
+    if (!desconto) {
+      setDesconto('0.00');
+      setValorVenda(total?.toFixed(2));
+      return;
+    }
+
     const maxDesconto = usuario?.DescontoMaximoVenda || 0;
     const descontoNumerico = parseFloat(desconto.replace(/[^0-9.]/g, ''));
 
@@ -77,6 +106,10 @@ export default function ModalVenda({
     }
   };
 
+  useEffect(() => {
+    setAtacado(isAtacadoActive);
+  }, [isAtacadoActive]);
+
   return (
     <Modal
       animationType="slide"
@@ -88,6 +121,22 @@ export default function ModalVenda({
         <KeyboardAvoidingView behavior="padding" style={styles.modalContent}>
           <Text style={styles.modalTitle}>{selectedProduto?.Descricao}</Text>
           <View style={styles.modalHeader}>
+            <ShowIf condition={canSetAtacado}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingLeft: 10,
+                }}>
+                <Switch
+                  disabled={!canSetAtacado}
+                  value={isAtacado}
+                  onChange={() => setAtacado(!isAtacado)}
+                />
+                <Text style={styles.centeredTextInput}>Valor atacado</Text>
+              </View>
+            </ShowIf>
+
             <View style={styles.inputContainer}>
               <View style={styles.row}>
                 <View style={styles.column}>
@@ -112,6 +161,7 @@ export default function ModalVenda({
                 <View style={styles.halfWidth}>
                   <Text style={styles.paddedCenteredText}>Valor da Venda</Text>
                   <TextInput
+                    keyboardType="numeric"
                     style={styles.borderedCenteredTextInput}
                     value={valorVenda}
                     onEndEditing={handleValorVenda}
@@ -121,6 +171,7 @@ export default function ModalVenda({
                 <View style={styles.halfWidth}>
                   <Text style={styles.paddedCenteredText}>Desconto</Text>
                   <TextInput
+                    keyboardType="numeric"
                     style={styles.borderedCenteredTextInput}
                     value={desconto}
                     onEndEditing={handleDesconto}
@@ -178,21 +229,25 @@ export default function ModalVenda({
             <View style={styles.inputContainerWithPaddingBottom}>
               <View style={styles.rowSpaceAroundWithPaddingTop}>
                 <TouchableOpacity
-                  onPress={cleanForm}
+                  onPress={handleClose}
                   style={styles.cancelButton}>
                   <Icon name="close-circle-sharp" size={25} color={'white'} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.confirmButton}
-                  onPress={() =>
+                  onPress={() => {
+                    const valorProduto = isAtacado
+                      ? selectedProduto?.ValorVendaAtacado.toFixed(2)
+                      : selectedProduto?.ValorVenda.toFixed(2);
+
                     addQuantidadeAndObsToProduct(
                       selectedProduto as ProdutoDto,
                       quantidade,
                       observacao,
                       valorVenda,
-                      isAtacado,
-                    )
-                  }>
+                      valorProduto,
+                    );
+                  }}>
                   <Icon
                     name="checkmark-circle-sharp"
                     size={25}

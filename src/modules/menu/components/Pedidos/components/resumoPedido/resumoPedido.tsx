@@ -15,12 +15,10 @@ import {HeaderProducts} from '../../../../../components/headers/HeaderProducts';
 import {useCliente} from '../../../Clientes/context/clientContext';
 import {colors} from '../../../../../styles';
 import {ShowIf} from '../../../../../components/showIf';
-import UseRepository from '../../hooks/useRepository';
-import Toast from 'react-native-toast-message';
-import Loading from '../../../../../components/loading/Loading';
 import ViewShot from 'react-native-view-shot';
 import Share from 'react-native-share';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import UseRepository from '../../hooks/useRepository';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
@@ -28,15 +26,16 @@ export default function ResumoPedido({navigation}) {
     useCliente();
   const {params} = route;
   const {id, Codigo, goBack} = params || {};
-  const {teste, isLoading} = UseRepository();
+
+  const {teste} = UseRepository();
 
   const viewRef = useRef(null);
-
   const [data, setData] = useState<PedidoSearchDto>();
   const repository = new PedidoRepository();
 
   const handleGetPedido = async () => {
     const result = await repository.getPedidoById(id);
+
     setData({
       ...result,
       Itens: result.Itens.map(item => ({
@@ -49,24 +48,12 @@ export default function ResumoPedido({navigation}) {
   const enviarPedido = async (id: number) => {
     try {
       await teste(id);
-      Toast.show({
-        type: 'success',
-        text1: 'Sucesso',
-        text2: 'Pedido enviado com sucesso',
-        visibilityTime: 1000,
-        ...toastStyles.success,
-      });
+      Alert.alert('Sucesso', 'Pedido enviado com sucesso');
       setTimeout(() => {
         navigation.navigate('Menu');
       }, 500);
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Falha',
-        text2: 'Falha ao enviar pedido',
-        visibilityTime: 1000,
-        ...toastStyles.error,
-      });
+      Alert.alert('Falha', 'Falha ao enviar pedido');
     }
   };
 
@@ -215,11 +202,7 @@ export default function ResumoPedido({navigation}) {
         ref={viewRef}
         options={{format: 'jpg', quality: 0.9}}
         style={{flex: 1}}>
-        <ScrollView
-          style={{
-            padding: 20,
-          }}>
-          <Loading isModalLoadingActive={isLoading} />
+        <ScrollView style={{padding: 20}}>
           <Text style={styles.title}>Pedido nº {data?.Codigo}</Text>
           <View style={styles.row}>
             <Text>Cliente</Text>
@@ -277,15 +260,14 @@ export default function ResumoPedido({navigation}) {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleSharePDF}>
-          <Text style={styles.buttonText}>Compartilhar</Text>
+          <Text style={styles.buttonText}>Compartilhar PDF</Text>
         </TouchableOpacity>
-        <ShowIf condition={!Codigo}>
-          <TouchableOpacity
-            onPress={() => enviarPedido(id)}
-            style={[styles.button, styles.confirmButton]}>
-            <Text style={styles.buttonText}>Sincronizar</Text>
-          </TouchableOpacity>
-        </ShowIf>
+
+        <TouchableOpacity
+          style={styles.confirmButton}
+          onPress={() => enviarPedido(id)}>
+          <Text style={styles.buttonText}>Enviar Pedido</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -295,16 +277,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  section: {
-    marginVertical: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
   },
@@ -313,26 +287,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
+  rightAlignedText: {
+    textAlign: 'right',
+  },
+  section: {
+    marginVertical: 10,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   productRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
   productDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  productName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: colors.confirmButton,
-    width: '70%',
+    flex: 1,
   },
   productInfo: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 5,
   },
   productInfoBlock: {
-    marginRight: 10,
+    marginLeft: 15,
   },
   paymentRow: {
     flexDirection: 'row',
@@ -340,50 +318,32 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   paymentDetails: {
-    flexDirection: 'row',
+    marginLeft: 15,
   },
   totalRow: {
-    marginTop: 20,
+    marginVertical: 20,
   },
   totalInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
   },
   buttonContainer: {
+    padding: 20,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingVertical: 10,
-    backgroundColor: colors.arcGreen,
+    justifyContent: 'space-between',
   },
   button: {
-    paddingVertical: 10,
-    marginHorizontal: 10,
-    paddingHorizontal: 20,
     backgroundColor: colors.graySearch,
+    padding: 10,
     borderRadius: 5,
   },
   confirmButton: {
     backgroundColor: colors.confirmButton,
+    padding: 10,
+    borderRadius: 5,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  rightAlignedText: {
-    textAlign: 'right',
     fontWeight: 'bold',
   },
 });
-
-const toastStyles = {
-  success: {
-    position: 'top',
-    bottomOffset: 50,
-  },
-  error: {
-    position: 'top',
-    bottomOffset: 50,
-  },
-};

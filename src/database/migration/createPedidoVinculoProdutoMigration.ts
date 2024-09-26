@@ -8,6 +8,11 @@ export const createPedidoVinculoProdutoTable = async () => {
         table.integer('CodigoPedido').notNullable().index();
         table.integer('CodigoProduto').notNullable().index();
         table.decimal('Quantidade').notNullable();
+        table.string('Descricao');
+        table.decimal('ValorCusto');
+        table.decimal('ValorVenda');
+        table.decimal('ValorOriginalProduto');
+        table.string('UnidadeMedida');
         table.decimal('ValorVendaDesconto');
       });
       console.log('Table PEDIDO-VINCULO-PRODUTO created successfully.');

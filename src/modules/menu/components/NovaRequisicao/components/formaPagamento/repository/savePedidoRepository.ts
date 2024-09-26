@@ -38,20 +38,84 @@ export default class SavePedidoRepository {
     }
   }
 
-  async UpdateFormaPagamento(formaPagamento, id) {
+  async UpdateFormaPagamento(formaPagamentos, id) {
+    const trx = await knexConfig.transaction();
+
     try {
-      await knexConfig('PedidoVinculoMeioPagamento')
-        .update(formaPagamento)
-        .where('id', id);
+      const formaPagamentosParaAtualizar = formaPagamentos.filter(
+        p => p.CodigoFormaPagamento,
+      );
+      const novasFormaPagamentos = [];
+
+      for (const formaPagamento of formaPagamentosParaAtualizar) {
+        // Verifica se o item existe
+        const existingItem = await trx('PedidoVinculoMeioPagamento')
+          .where('CodigoPedido', id)
+          .first();
+
+        if (existingItem) {
+          // Se o item existir, atualiza
+          await trx('PedidoVinculoMeioPagamento')
+            .update(formaPagamento)
+            .where('CodigoPedido', id);
+        } else {
+          // Se o item não existir, adiciona um novo
+          novasFormaPagamentos.push({...formaPagamento, CodigoPedido: id});
+        }
+      }
+
+      // Executa a inserção em massa para novas formas de pagamento
+      if (novasFormaPagamentos.length > 0) {
+        await trx('PedidoVinculoMeioPagamento').insert(novasFormaPagamentos);
+      }
+
+      // Commit na transação
+      await trx.commit();
     } catch (error) {
+      // Rollback na transação em caso de erro
+      await trx.rollback();
       console.log(error);
     }
   }
 
-  async UpdateProdutos(Produtos, id) {
+  async UpdateProdutos(produtos, id) {
+    const trx = await knexConfig.transaction();
+
     try {
-      await knexConfig('PedidoVinculoProduto').update(Produtos).where('id', id);
+      const produtosParaAtualizar = produtos.filter(
+        produto => produto.CodigoProduto,
+      );
+      const novosProdutos = [];
+
+      for (const produto of produtosParaAtualizar) {
+        // Verifica se o item existe
+        const existingItem = await trx('PedidoVinculoProduto')
+          .where('CodigoPedido', id)
+          .andWhere('CodigoProduto', produto.CodigoProduto)
+          .first();
+
+        if (existingItem) {
+          // Se o item existir, atualiza
+          await trx('PedidoVinculoProduto')
+            .update(produto)
+            .where('CodigoPedido', id)
+            .andWhere('CodigoProduto', produto.CodigoProduto);
+        } else {
+          // Se o item não existir, adiciona um novo
+          novosProdutos.push({...produto, CodigoPedido: id});
+        }
+      }
+
+      // Executa a inserção em massa
+      if (novosProdutos.length > 0) {
+        await trx('PedidoVinculoProduto').insert(novosProdutos);
+      }
+
+      // Commit na transação
+      await trx.commit();
     } catch (error) {
+      // Rollback na transação em caso de erro
+      await trx.rollback();
       console.log(error);
     }
   }

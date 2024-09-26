@@ -52,8 +52,6 @@ export default class EnviarClientes {
 
     const clientes = await this.repository.getClientes(this.usuario);
 
-    console.log({count: clientes.length});
-
     this.setProgress({
       message: `Enviando clientes`,
       progress: this.updateProgress(0.8, clientes.length),

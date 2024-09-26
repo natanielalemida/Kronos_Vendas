@@ -11,6 +11,7 @@ export default function UseGetProdutos() {
   const handleGetProdutos = async (textFilter?: string) => {
     setLoading(true);
     const data = await produtoRepository.getProdutos(textFilter);
+
     setProdutos([...data.data]);
     setLoading(false);
   };

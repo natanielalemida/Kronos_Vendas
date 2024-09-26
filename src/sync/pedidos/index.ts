@@ -16,9 +16,8 @@ export default class SincronizarPedidos {
   }
 
   private async verify(data: PedidoResponse) {
-    console.log({data});
     const successfully = Array.isArray(data.Mensagens);
-    console.log({successfully});
+
     if (!successfully) {
       return;
     }

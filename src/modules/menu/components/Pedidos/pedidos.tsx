@@ -180,7 +180,7 @@ export default function Pedidos() {
           </TouchableOpacity>
         </View>
         <Loading isModalLoadingActive={isLoading} />
-        <ScrollView contentContainerStyle={styles.listContainer}>
+        <ScrollView style={{width: '100%', padding: 10}}>
           {filteredPedidos.map(item => renderItem(item))}
         </ScrollView>
         <ModalFilter
@@ -211,11 +211,11 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     width: '100%',
-    padding: 8,
+    padding: 5,
   },
   itemTopRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
   },
   itemCode: {
     fontSize: 14,
@@ -238,14 +238,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   neonContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   neonText: {
     fontWeight: 'bold',
   },
   checkBoxContainer: {
     backgroundColor: undefined,
+    padding: 0,
+    marginRight: -1,
   },
-  listContainer: {},
 });

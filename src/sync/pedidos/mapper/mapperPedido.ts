@@ -20,16 +20,24 @@ export default class PedidoMapper {
         CodigoPessoa: pedido.Pessoa.Codigo,
       },
       ProdutosRelacao: pedido.Itens.map(produto => {
+        // Cálculo do valor com desconto (se aplicável)
+        const taxaDesconto =
+          parseFloat(produto.ValorDesconto) / parseFloat(produto.Quantidade);
+        const valor = parseFloat(produto.ValorDesconto)
+          ? parseFloat(produto.ValorProduto) - taxaDesconto
+          : null;
+
         return {
           CodigoPedido: pedido.Codigo,
           CodigoProduto: produto.CodigoProduto,
           Quantidade: produto.Quantidade,
-          ValorVendaDesconto: parseFloat(produto.ValorDesconto)
-            ? (parseFloat(produto.ValorDesconto) -
-                parseFloat(produto.ValorProduto)) /
-                parseFloat(produto.Quantidade) +
-              parseFloat(produto.ValorProduto)
-            : null,
+          ValorCusto: produto.ValorCusto,
+          Descricao: produto.Descricao,
+          ValorVenda: produto.ValorProduto,
+          UnidadeMedida: produto.UnidadeMedida,
+          ValorOriginalProduto: produto.ValorOriginalProduto,
+          ValorVendaDesconto:
+            valor !== null ? parseFloat(valor.toFixed(2)) : null, // Formatação correta do valor
         };
       }),
       MeioPagamentoRelacao: pedido.MeiosPagamentos.map(pagamento => {

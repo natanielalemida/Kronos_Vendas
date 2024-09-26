@@ -15,7 +15,16 @@ import {useCliente} from '../../../Clientes/context/clientContext';
 export default function Produto() {
   const {handleGetProdutos, produtos, isLoading} = UseGetProdutos();
   const {findIndex} = UseSetSelecteds({});
-  const {isActive, produtoModal, setIsActive, handleOpenModal} = UseModal();
+  const {
+    isActive,
+    produtoModal,
+    isAtacado,
+    canSetAtacado,
+    setCanSetAtacado,
+    setAtacado,
+    setIsActive,
+    handleOpenModal,
+  } = UseModal();
   const {clienteOnContext} = useCliente();
 
   const [textFilter, setTextFilter] = useState<string>('');
@@ -23,6 +32,8 @@ export default function Produto() {
 
   // Inicializa a função para buscar os produtos
   Init({handleGetProdutos, setTextFilter});
+
+  console.log({clienteOnContext});
 
   // Aplica debounce na busca por produtos
   useEffect(() => {
@@ -48,7 +59,7 @@ export default function Produto() {
           <TouchableOpacity
             style={[styles.itemContainer, {backgroundColor: color}]}
             key={item.Codigo}
-            onPress={() => handleOpenModal(item)}>
+            onPress={() => handleOpenModal(item, false, true)}>
             <View style={styles.itemTopRow}>
               <Text
                 style={
@@ -69,11 +80,11 @@ export default function Produto() {
                 <Text
                   style={{
                     color: 'black',
-                    fontSize: 12,
+                    fontSize: 16,
                   }}>
                   Valor Varejo: R$ {item.ValorVenda.toFixed(2)}
                 </Text>
-                <Text style={{color: 'black', fontSize: 12}}>
+                <Text style={{color: 'black', fontSize: 16}}>
                   Valor Atac: R$ {item.ValorVendaAtacado.toFixed(2)}
                 </Text>
               </View>
@@ -85,7 +96,7 @@ export default function Produto() {
           <TouchableOpacity
             style={[styles.itemContainer, {backgroundColor: color}]}
             key={item.Codigo}
-            onPress={() => handleOpenModal(item)}>
+            onPress={() => handleOpenModal(item, false, false)}>
             <View style={styles.itemTopRow}>
               <Text
                 style={
@@ -101,8 +112,8 @@ export default function Produto() {
               <Text>EAN: {item.CodigoDeBarras}</Text>
             </View>
             <View>
-              <Text style={{color: 'black', fontSize: 14}}>
-                Valor Varejo: R$ {item.ValorVenda.toFixed(2)}
+              <Text style={{color: 'black', fontSize: 16}}>
+                Valor: R$ {item.ValorVenda.toFixed(2)}
               </Text>
             </View>
           </TouchableOpacity>
@@ -116,7 +127,7 @@ export default function Produto() {
           <TouchableOpacity
             style={[styles.itemContainer, {backgroundColor: color}]}
             key={item.Codigo}
-            onPress={() => handleOpenModal(item)}>
+            onPress={() => handleOpenModal(item, true, false)}>
             <View style={styles.itemTopRow}>
               <Text
                 style={
@@ -132,8 +143,8 @@ export default function Produto() {
               <Text>EAN: {item.CodigoDeBarras}</Text>
             </View>
             <View>
-              <Text style={{color: 'black', fontSize: 14}}>
-                Valor Atacado: R$ {item.ValorVendaAtacado.toFixed(2)}
+              <Text style={{color: 'black', fontSize: 16}}>
+                Valor: R$ {item.ValorVendaAtacado.toFixed(2)}
               </Text>
             </View>
           </TouchableOpacity>
@@ -152,7 +163,9 @@ export default function Produto() {
       <ModalVenda
         isActive={isActive}
         setIsActive={setIsActive}
-        isAtacado={true}
+        canSetAtacado={canSetAtacado}
+        isAtacadoActive={isAtacado}
+        setAtacadoActive={setAtacado}
         produto={produtoModal}
       />
       <View style={styles.top}>

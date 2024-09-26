@@ -56,7 +56,7 @@ export default function Login({navigation}) {
 
   const handleSetLastUser = async () => {
     const nome = await getNomeUsuario();
-    console.log(nome);
+
     if (!nome) return;
     setCpf(nome);
   };
