@@ -10,17 +10,49 @@ import UseModal from './hooks/useModal';
 import ModalCondicaoPagamento from './components/modalCondicaoPagamento';
 import SavePedido from './hooks/savePedido';
 import {useRoute} from '@react-navigation/native';
+import {Modal, Button} from 'react-native';
 
 export default function FormaPagamento() {
   const router = useRoute();
   const {params} = router;
   const {id} = params || {};
-  const {ProdutosSelecionados, valorPago, formaPagamento, finalizarVenda} =
-    useCliente();
+  const {
+    ProdutosSelecionados,
+    valorPago,
+    formaPagamento,
+    finalizarVenda,
+    setFormaPagameto,
+    setValorPago
+  } = useCliente();
+
   const [isModalPagamentoAtivo, setModalPagamento] = useState<boolean>(false);
+  const [isModalConfirmVisible, setModalConfirmVisible] = useState<boolean>(false);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+
   const {handleCloseModal, setIsModalActive, isActive} = UseModal();
   const {handleSave} = SavePedido();
 
+  const handleDelete = () => {
+    if (selectedPayment) {
+      // Subtrair o valor do pagamento excluído do valorPago atual
+      const valorPagoAtualizado = valorPago - selectedPayment.CondicaoPagamento.reduce(
+        (acc, condicao) => acc + condicao.ValorPago,
+        0,
+      );
+      
+      // Atualiza o estado do valorPago
+      setValorPago(valorPagoAtualizado);
+  
+      // Atualiza a lista de forma de pagamento excluindo o item selecionado
+      const updatedFormaPagamento = formaPagamento.filter(
+        (pagamento) => pagamento.Codigo !== selectedPayment.Codigo,
+      );
+      setFormaPagameto(updatedFormaPagamento);
+  
+      setModalConfirmVisible(false);
+    }
+  };
+  
   const renderIcon = (iconName: string, label: string, onPress: () => void) => (
     <TouchableOpacity style={styles.iconContainer} onPress={onPress}>
       <Icon name={iconName} size={25} color={colors.white} />
@@ -39,26 +71,66 @@ export default function FormaPagamento() {
         setActive={setModalPagamento}
         isActive={isModalPagamentoAtivo}
       />
+      {/* Modal de confirmação para excluir ou editar */}
+      <Modal
+        visible={isModalConfirmVisible}
+        transparent={true}
+        animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Deseja excluir ou editar esse item?
+            </Text>
+            <View style={styles.modalButtons}>
+              <Button
+                title="Excluir"
+                onPress={handleDelete}
+                color={colors.red}
+              />
+              <Button
+                title="Editar"
+                onPress={() => {
+                  // Lógica para edição aqui (caso seja necessário)
+                  setModalConfirmVisible(false);
+                }}
+                color={colors.blue}
+              />
+              <Button
+                title="Cancelar"
+                onPress={() => setModalConfirmVisible(false)}
+                color={colors.gray}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <View style={{flex: 1}}>
         {formaPagamento &&
           formaPagamento.length > 0 &&
-          formaPagamento.map(pagamento => {
+          formaPagamento.map((pagamento) => {
             return (
-              <View style={styles.itemContainer} key={`${pagamento.Codigo}`}>
+              <TouchableOpacity
+                style={styles.itemContainer}
+                key={`${pagamento.Codigo}`}
+                onPress={() => {
+                  setSelectedPayment(pagamento);
+                  setModalConfirmVisible(true);
+                }}>
                 <View style={styles.itemTopRow}>
                   <Text style={styles.itemCode}>{pagamento.Codigo}</Text>
                   <Text style={styles.itemDescription}>
                     {pagamento.Descricao}
                   </Text>
                 </View>
-                {pagamento.CondicaoPagamento.map(codicao => {
+                {pagamento.CondicaoPagamento.map((condicao) => {
                   return (
-                    <View>
-                      <Text>{`${codicao.Codigo} | ${codicao.IntervaloDias}/DIAS - R$ ${codicao.ValorPago}`}</Text>
+                    <View key={condicao.Codigo}>
+                      <Text>{`${condicao.Codigo} | ${condicao.IntervaloDias}/DIAS - R$ ${condicao.ValorPago}`}</Text>
                     </View>
                   );
                 })}
-              </View>
+              </TouchableOpacity>
             );
           })}
       </View>
@@ -90,7 +162,9 @@ export default function FormaPagamento() {
               ProdutosSelecionados.length > 0 &&
               valorPago.toFixed(2) === finalizarVenda?.ValorTotal.toFixed(2)
             }>
-            {renderIcon('checkmark-outline', 'Finalizar', () => handleSave(id))}
+            {renderIcon('checkmark-outline', 'Finalizar', () =>
+              handleSave(id),
+            )}
           </ShowIf>
         </View>
       </View>
@@ -173,5 +247,28 @@ const styles = StyleSheet.create({
   totalText: {
     fontSize: 18,
     color: colors.white,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
   },
 });
