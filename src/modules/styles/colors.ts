@@ -7,4 +7,5 @@ export const colors = {
   arcGreen400: 'rgb(234,246, 246)',
   cancelButton: '#42100d',
   confirmButton: '#0c2f42',
+  grayList: 'rgb(245, 245, 245)',
 };

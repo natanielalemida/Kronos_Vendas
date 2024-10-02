@@ -92,7 +92,7 @@ export default function UseSetSelecteds({
     const index = ProdutosSelecionados.findIndex(
       produtoSelecioado => produtoSelecioado.Codigo === produto.Codigo,
     );
-    const color = index !== -1 ? colors.arcGreen400 : colors.white;
+    const color = index !== -1 ? colors.arcGreen400 : undefined;
     return color;
   };
 

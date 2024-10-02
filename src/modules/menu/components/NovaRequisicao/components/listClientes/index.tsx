@@ -1,25 +1,21 @@
 import {StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native';
 import {useState, useEffect, useRef} from 'react';
-import UseGetFetch from './hooks/useGetFetch';
-import Init from './hooks/init';
-import useFilter from './hooks/useFilter';
-import {useNavigation} from '@react-navigation/native';
-import {ClienteDto} from '../../../../../../sync/clientes/type';
+import useGetFetch from './hooks/useGetFetch';
 import Search from '../../../../../components/search';
 import Loading from '../../../../../components/loading/Loading';
 import {colors} from '../../../../../styles';
 import {useCliente} from '../../../Clientes/context/clientContext';
+import {ClienteDto} from '../../../../../../sync/clientes/type';
+import {useNavigation} from '@react-navigation/native';
+import {ShowIf} from '../../../../../components/showIf';
 
 export default function SelectClientes() {
   const navigation = useNavigation();
   const [textFilter, setTextFilter] = useState<string>('');
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const {handleGetUsers, clientes, isLoading, totalPages} = UseGetFetch();
+  const {handleGetUsers, clientes, isLoading} = useGetFetch();
   const {setClienteOnContext} = useCliente();
-
-  // Inicializa a função para buscar os clientes
-  Init({handleGetUsers, setTextFilter});
 
   useEffect(() => {
     if (debounceRef.current) {
@@ -27,7 +23,7 @@ export default function SelectClientes() {
     }
     debounceRef.current = setTimeout(() => {
       handleGetUsers(textFilter);
-    }, 500); // Aguarda 500ms após o último caractere digitado
+    }, 500);
 
     return () => {
       if (debounceRef.current) {
@@ -36,11 +32,55 @@ export default function SelectClientes() {
     };
   }, [textFilter]);
 
-  // Define o cliente selecionado e navega de volta
-  const setCliente = (cliente: ClienteDto) => {
+  const handleSelectCliente = (cliente: ClienteDto) => {
     setClienteOnContext(cliente);
     navigation.goBack();
   };
+
+  const renderEndereco = (endereco: {
+    Logradouro: string;
+    C: string;
+    Numero: string;
+    Bairro: string;
+  }) => (
+    <ShowIf condition={!!endereco.Logradouro}>
+      <View key={`${endereco.Logradouro}-${endereco.Numero}`}>
+        <Text style={styles.enderecoText}>
+          Logradouro: {endereco.Logradouro} - Número: {endereco.Numero}
+        </Text>
+        <Text style={styles.enderecoText}>Bairro: {endereco.Bairro}</Text>
+      </View>
+    </ShowIf>
+  );
+
+  const renderClienteItem = ({
+    item,
+    index,
+  }: {
+    item: ClienteDto;
+    index: number;
+  }) => (
+    <TouchableOpacity
+      style={[
+        styles.itemContainer,
+        {backgroundColor: index % 2 === 0 ? colors.grayList : colors.white},
+      ]}
+      onPress={() => handleSelectCliente(item)}
+      key={`${item.Codigo}-${index}`}>
+      {/* Chave única */}
+      <View style={styles.itemTopRow}>
+        <Text style={styles.itemCode}>{item.Codigo}</Text>
+        <Text style={styles.itemDescription}>{item.NomeFantasia}</Text>
+      </View>
+      <ShowIf condition={!!item.CNPJCPF}>
+        <View style={styles.itemTopRow}>
+          <Text style={styles.itemCode}>CNPJ/CPF: {item.CNPJCPF}</Text>
+          <Text style={styles.itemDescription}>{item.IERG}</Text>
+        </View>
+      </ShowIf>
+      {item.Enderecos?.map(renderEndereco)}
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -51,22 +91,18 @@ export default function SelectClientes() {
       />
       <View style={styles.top}>
         <Loading isModalLoadingActive={isLoading} />
-        <FlatList
-          data={clientes}
-          renderItem={({item}: {item: ClienteDto}) => (
-            <TouchableOpacity
-              style={styles.itemContainer}
-              onPress={() => setCliente(item)}
-              key={item.Codigo}>
-              <View style={styles.itemTopRow}>
-                <Text style={styles.itemCode}>{item.Codigo}</Text>
-                <Text style={styles.itemDescription}>{item.NomeFantasia}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          keyExtractor={item => item.Codigo.toString()}
-          scrollEventThrottle={16} // Atualiza o scroll a cada 16ms
-        />
+        {clientes.length === 0 && !isLoading ? ( // Exibir mensagem se não houver clientes
+          <Text style={styles.noResultsText}>Nenhum cliente encontrado.</Text>
+        ) : (
+          <FlatList
+            data={clientes}
+            renderItem={renderClienteItem}
+            keyExtractor={item => `${item.Codigo}-${item.NomeFantasia}`} // Usar chave única
+            initialNumToRender={10} // Adicione as propriedades de otimização
+            maxToRenderPerBatch={10}
+            scrollEventThrottle={16}
+          />
+        )}
       </View>
     </View>
   );
@@ -90,15 +126,22 @@ const styles = StyleSheet.create({
   },
   itemCode: {
     marginRight: 5,
-    fontSize: 16,
-    color: colors.black,
+    fontSize: 16, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
   },
   itemDescription: {
     width: '85%',
     marginHorizontal: 10,
-    fontSize: 16,
+    fontSize: 16, // Aumentado para 16 para melhor legibilidade
     color: colors.black,
     fontWeight: 'bold',
+  },
+  enderecoText: {
+    fontSize: 14, // Aumentado para 14 para melhor legibilidade
+  },
+  noResultsText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });

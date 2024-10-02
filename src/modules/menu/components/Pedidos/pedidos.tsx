@@ -118,16 +118,21 @@ export default function Pedidos() {
     });
   };
 
-  const renderItem = (item: PedidoSearchDto) => {
+  const isEven = (index: number) => index % 2 === 0;
+
+  const renderItem = (item: PedidoSearchDto, index: number) => {
     const isSelected = pedidosSelecionados.some(
       pedido => pedido.id === item.id,
     );
-
-    const backgroundColor = isSelected ? colors.arcGreen : undefined;
+    const backgroundColor = isSelected
+      ? colors.arcGreen
+      : isEven(index)
+      ? colors.grayList
+      : colors.white;
 
     return (
       <TouchableOpacity
-        key={`${(item.Codigo, item.id)}`}
+        key={`${item.Codigo}-${item.id}`}
         onPress={() => navigateResumo(item)}
         style={[styles.itemContainer, {backgroundColor}]}>
         <View style={styles.itemTopRow}>
@@ -180,8 +185,8 @@ export default function Pedidos() {
           </TouchableOpacity>
         </View>
         <Loading isModalLoadingActive={isLoading} />
-        <ScrollView style={{width: '100%', padding: 10}}>
-          {filteredPedidos.map(item => renderItem(item))}
+        <ScrollView style={styles.scrollContainer}>
+          {filteredPedidos.map((item, index) => renderItem(item, index))}
         </ScrollView>
         <ModalFilter
           options={options}
@@ -209,9 +214,12 @@ const styles = StyleSheet.create({
   filterIcon: {
     paddingHorizontal: 10,
   },
+  scrollContainer: {
+    width: '100%',
+  },
   itemContainer: {
     width: '100%',
-    padding: 5,
+    padding: 15,
   },
   itemTopRow: {
     flexDirection: 'row',

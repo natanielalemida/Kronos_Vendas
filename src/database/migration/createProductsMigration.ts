@@ -20,6 +20,7 @@ export const createProductsMigration = async () => {
         table.integer('CodigoGrupo').notNullable().index();
         table.integer('CodigoSubGrupo').nullable().index();
         table.integer('CodigoMarca').nullable().index();
+        table.integer('Estoque');
       });
       console.log('Table PRODUTOS created successfully.');
     } else {

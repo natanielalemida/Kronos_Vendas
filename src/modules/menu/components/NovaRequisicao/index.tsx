@@ -28,6 +28,7 @@ export default function NovaRequisicao() {
   const [isModalActive, setModalActive] = useState<boolean>(false);
 
   const handleSet = (produto: ProdutoBodyCreateQtAndObsDto) => {
+    console.log({produto});
     setProduto(produto);
     setModalActive(true);
   };
@@ -46,6 +47,8 @@ export default function NovaRequisicao() {
     ).toFixed(2);
   };
 
+  const isEven = (index: number) => index % 2 === 0;
+
   return (
     <View style={style.container}>
       <View style={style.top}>
@@ -58,10 +61,14 @@ export default function NovaRequisicao() {
         <ModalVenda
           isActive={isEditing}
           setIsActive={setIsEditing}
+          canSetAtacado={false}
+          isAtacadoActive={false}
+          isEditing={true}
+          setAtacadoActive={() => {}}
           produto={produto}
         />
         <ScrollView>
-          {ProdutosSelecionados.map(item => (
+          {ProdutosSelecionados.map((item, index) => (
             <TouchableOpacity
               style={[
                 style.itemContainer,
@@ -69,6 +76,8 @@ export default function NovaRequisicao() {
                   backgroundColor:
                     item.Codigo === produto?.Codigo
                       ? colors.arcGreen400
+                      : isEven(index)
+                      ? colors.grayList
                       : colors.white,
                 },
               ]}

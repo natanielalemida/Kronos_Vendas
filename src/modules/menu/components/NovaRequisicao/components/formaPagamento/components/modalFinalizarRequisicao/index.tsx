@@ -43,11 +43,6 @@ export default function ModalFinalizarRequisicao({
       // Aplica o desconto ao valor original
       const novoValorVendaDesconto = produto.ValorVendaDesconto - valorDesconto;
 
-      // Log para depuração
-      console.log({
-        teste: novoValorVendaDesconto / 10, // Continua dividindo por 10 se necessário
-      });
-
       return {
         ...produto,
         ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado

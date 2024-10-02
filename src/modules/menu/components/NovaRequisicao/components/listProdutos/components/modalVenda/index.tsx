@@ -23,6 +23,7 @@ export default function ModalVenda({
   produto,
   isAtacadoActive,
   canSetAtacado,
+  isEditing,
   setAtacadoActive,
   setIsActive,
 }: ModalType) {
@@ -60,7 +61,10 @@ export default function ModalVenda({
   });
 
   const handleValorVenda = () => {
-    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+    const valorVendaEdit = isEditing
+      ? produto?.ValorVendaDesconto
+      : produto?.ValorVenda;
+    const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
 
     if (!valorVenda) {
       setDesconto('0.00');
@@ -85,7 +89,10 @@ export default function ModalVenda({
   };
 
   const handleDesconto = () => {
-    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+    const valorVendaEdit = isEditing
+      ? produto?.ValorVendaDesconto
+      : produto?.ValorVenda;
+    const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
 
     if (!desconto) {
       setDesconto('0.00');
@@ -149,6 +156,8 @@ export default function ModalVenda({
                     R$
                     {isAtacado
                       ? selectedProduto?.ValorVendaAtacado.toFixed(2)
+                      : isEditing
+                      ? selectedProduto?.ValorVendaDesconto.toFixed(2)
                       : selectedProduto?.ValorVenda.toFixed(2)}
                   </Text>
                 </View>
@@ -238,6 +247,8 @@ export default function ModalVenda({
                   onPress={() => {
                     const valorProduto = isAtacado
                       ? selectedProduto?.ValorVendaAtacado.toFixed(2)
+                      : isEditing
+                      ? selectedProduto?.ValorVendaDesconto.toFixed(2)
                       : selectedProduto?.ValorVenda.toFixed(2);
 
                     addQuantidadeAndObsToProduct(

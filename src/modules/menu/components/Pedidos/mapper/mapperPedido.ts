@@ -12,26 +12,18 @@ function adicionarDias(data: Date, dias: number): Date {
   return novaData;
 }
 
-// Função para formatar a data em 'DD/MM/YYYY'
-function formatarData(data: Date): string {
-  const dia = data.getDate().toString().padStart(2, '0');
-  const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-  const ano = data.getFullYear();
-  return `${dia}/${mes}/${ano}`;
-}
+function dividirValor(total: number, partes: number): number[] {
+  const totalCentavos = Math.round(total * 100); // Converte o total para centavos
+  const valorBase = Math.floor(totalCentavos / partes); // Valor base em centavos
+  const valores: number[] = Array(partes).fill(valorBase); // Preenche todas as partes com o valor base
 
-function dividirPrecisamente(
-  valor: number,
-  quantidade: number,
-  casasDecimais: number = 10,
-): number {
-  // Realiza a divisão e arredonda o resultado para o número de casas decimais especificado
-  const resultadoDivisao = parseFloat(
-    (valor / quantidade).toFixed(casasDecimais),
-  );
+  let diferenca = totalCentavos - valorBase * partes; // Diferença em centavos
 
-  // Retorna o valor dividido com precisão
-  return resultadoDivisao;
+  // Adiciona a diferença na última parte
+  valores[partes - 1] += diferenca;
+
+  // Converte os valores de volta para reais (dividindo por 100)
+  return valores.map(valor => valor / 100);
 }
 
 export default class mapPedido {
@@ -65,13 +57,11 @@ export default class mapPedido {
       return acc;
     }, []);
 
-    // Mapeamento das formas de pagamento únicas, incluindo Titulos
     const meiosPagamentosUnicos = dados.reduce((acc, item) => {
       const existente = acc.find(
         mp => mp.FormaPagamento.Codigo === item.CodigoFormaPagamento,
       );
 
-      // Se não existe, adiciona um novo meio de pagamento
       if (!existente) {
         const Titulos = !!item.IsPrazo
           ? item.QtdeParcelas > 0
@@ -83,15 +73,18 @@ export default class mapPedido {
                   const dataFormatada = dataParcela;
                   const emissao = new Date();
 
+                  // Dividir o valor recebido precisamente entre as parcelas
+                  const valoresParcelas = dividirValor(
+                    item.ValorRecebido,
+                    item.QtdeParcelas,
+                  );
+
                   return {
                     NumeroParcela: parcela,
                     Emissao: emissao,
                     Vencimento: dataFormatada,
                     ContaReceberTituloSituacaoSituacao: 1,
-                    ValorBruto: dividirPrecisamente(
-                      item.ValorRecebido,
-                      item.QtdeParcelas,
-                    ),
+                    ValorBruto: valoresParcelas[index], // Define o valor da parcela
                     FormaPagamento: {
                       Codigo: item.CodigoFormaPagamento,
                     },
@@ -100,9 +93,6 @@ export default class mapPedido {
               )
             : null
           : null;
-
-        console.log({TitulosTesteAAAAAAA: Titulos});
-
         acc.push({
           CodigoVenda: null,
           CodigoContaReceberHistorico: null,
@@ -146,7 +136,7 @@ export default class mapPedido {
         Codigo: 1,
       },
       Itens: itensUnicos,
-      Titulos: meiosPagamentosUnicos.flatMap(mp => mp.Titulos), // Combina todos os títulos
+      Titulos: meiosPagamentosUnicos.flatMap(mp => mp.Titulos),
     };
   }
 
@@ -155,17 +145,14 @@ export default class mapPedido {
 
     items.forEach(item => {
       if (item.id !== null) {
-        // Se o código já existe no objeto acumulador, soma o ValorRecebido
         if (mappedItems[item.id]) {
           mappedItems[item.id].ValorRecebido += item.ValorRecebido;
         } else {
-          // Caso contrário, adiciona o item ao acumulador
           mappedItems[item.id] = {...item};
         }
       }
     });
 
-    // Retorna os itens acumulados em forma de array
     return Object.values(mappedItems);
   }
 }

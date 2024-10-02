@@ -76,18 +76,18 @@ export default function FormaPagamento() {
     return `${dia}/${mes}/${ano}`;
   }
 
-  function dividirPrecisamente(
-    valor: number,
-    quantidade: number,
-    casasDecimais: number = 10,
-  ): number {
-    // Realiza a divisão e arredonda o resultado para o número de casas decimais especificado
-    const resultadoDivisao = parseFloat(
-      (valor / quantidade).toFixed(casasDecimais),
-    );
+  function dividirValor(total: number, partes: number): number[] {
+    const totalCentavos = Math.round(total * 100); // Converte o total para centavos
+    const valorBase = Math.floor(totalCentavos / partes); // Valor base em centavos
+    const valores: number[] = Array(partes).fill(valorBase); // Preenche todas as partes com o valor base
 
-    // Retorna o valor dividido com precisão
-    return resultadoDivisao;
+    let diferenca = totalCentavos - valorBase * partes; // Diferença em centavos
+
+    // Adiciona a diferença na última parte
+    valores[partes - 1] += diferenca;
+
+    // Converte os valores de volta para reais (dividindo por 100)
+    return valores.map(valor => valor / 100);
   }
 
   const renderIcon = (iconName: string, label: string, onPress: () => void) => (
@@ -169,6 +169,10 @@ export default function FormaPagamento() {
                       (_, i) => i + 1,
                     );
 
+                    const valoresParcelas = dividirValor(
+                      condicao.ValorPago,
+                      condicao.QtdeParcelas,
+                    );
                     return (
                       <View
                         key={condicao.Codigo}
@@ -189,14 +193,10 @@ export default function FormaPagamento() {
                             <View
                               key={`${condicao.Codigo}-${parcela}`}
                               style={styles.parcelaContainer}>
-                              <Text style={styles.textoParcela}>{`${
-                                condicao.Codigo
-                              } | Parcela ${parcela} de ${
-                                condicao.QtdeParcelas
-                              } - Valor: R$ ${dividirPrecisamente(
-                                condicao.ValorPago,
-                                condicao.QtdeParcelas,
-                              ).toFixed(2)}`}</Text>
+                              <Text
+                                style={
+                                  styles.textoParcela
+                                }>{`${condicao.Codigo} | Parcela ${parcela} de ${condicao.QtdeParcelas} - Valor: R$ ${valoresParcelas[index]}`}</Text>
                               <Text
                                 style={
                                   styles.textoEmissao

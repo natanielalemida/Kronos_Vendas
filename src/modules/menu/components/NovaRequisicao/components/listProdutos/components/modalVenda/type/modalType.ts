@@ -5,6 +5,7 @@ export type ModalType = {
   produto: ProdutoDto | undefined;
   isAtacadoActive: boolean;
   canSetAtacado: boolean;
+  isEditing?: boolean;
   setAtacadoActive: (value: boolean) => void;
   setIsActive: (value: boolean) => void;
 };

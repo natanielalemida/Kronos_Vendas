@@ -14,7 +14,7 @@ export default function useEditUser({setActive, setForm}: ModalUseModalType) {
       clienteUpdate.isSincronizado === 1
         ? await repositoy.pessoaComEndereco(clienteUpdate.id)
         : await repositoy.pessoaComEnderecoById(clienteUpdate.id);
-    console.log({data});
+
     setForm({
       id: data.id,
       CNPJCPF: data.CNPJCPF,
@@ -34,7 +34,6 @@ export default function useEditUser({setActive, setForm}: ModalUseModalType) {
       Email: [...data.Contatos.Email],
       isSincronizado: data.isSincronizado,
     });
-    setActive(false);
     navigation.navigate('RouterCliente');
   };
 

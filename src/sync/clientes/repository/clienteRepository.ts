@@ -183,9 +183,21 @@ export default class ClienteRepository {
         'pessoa.CNPJCPF',
         'pessoa.isSincronizado',
         'pessoa.TipoPreco',
+        'endereco.Bairro',
+        'endereco.Logradouro',
+        'endereco.Numero',
+        'endereco.Complemento',
       )
       .limit(50)
-      .orderBy('pessoa.NomeFantasia');
+      .leftJoin('endereco', function () {
+        this.on(function () {
+          this.on('pessoa.CodigoPessoa', '=', 'endereco.CodigoPessoa').orOn(
+            knexConfig.raw(
+              'pessoa.Codigo IS NULL AND pessoa.id = endereco.CodigoPessoa',
+            ),
+          );
+        });
+      });
 
     // Adiciona o filtro se estiver presente
     if (textFilter && textFilter.length > 0) {
@@ -200,8 +212,8 @@ export default class ClienteRepository {
     // Obtém o total de registros sem filtro
     const totalResult = await knexConfig('pessoa').count('* as count').first();
     const total = totalResult || 0;
-
-    return {data, total};
+    const clientes = this.mapCliente(data);
+    return {data: clientes, total};
   }
 
   private async getByTsxCode(
@@ -217,5 +229,40 @@ export default class ClienteRepository {
     if (!result) return undefined;
 
     return result;
+  }
+
+  private mapCliente(data) {
+    const groupedByBairro = data.reduce((acc, curr) => {
+      // Verifica se já existe um item no acumulador com o mesmo Código
+      const existente = acc.find(mp => mp.Codigo === curr.Codigo);
+
+      if (!existente) {
+        const newEntry = {
+          Codigo: curr.Codigo,
+          CodigoPessoa: curr.CodigoPessoa,
+          NomeFantasia: curr.NomeFantasia,
+          id: curr.id,
+          CNPJCPF: curr.CNPJCPF,
+          TipoPreco: curr.TipoPreco,
+          Enderecos: [],
+        };
+        acc.push(newEntry);
+      }
+
+      const endereco = {
+        Logradouro: curr.Logradouro,
+        Numero: curr.Numero,
+        Complemento: curr.Complemento,
+        Bairro: curr.Bairro,
+      };
+
+      existente
+        ? existente.Enderecos.push(endereco)
+        : acc[acc.length - 1].Enderecos.push(endereco);
+
+      return acc;
+    }, []);
+
+    return groupedByBairro;
   }
 }

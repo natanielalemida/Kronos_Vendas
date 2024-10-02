@@ -2,7 +2,6 @@ import {StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native';
 import Search from '../../../components/search';
 import {useEffect, useState, useRef, useCallback} from 'react';
 import UseGetProdutos from './hooks/useGetProdutos';
-import Init from './hooks/init';
 import {ProdutoDto} from '../../../../sync/products/type';
 import {colors} from '../../../styles';
 import Loading from '../../../components/loading/Loading';
@@ -12,9 +11,6 @@ export default function Produto() {
   const {handleGetProdutos, produtos, isLoading} = UseGetProdutos();
   const [textFilter, setTextFilter] = useState<string>('');
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Inicializa a busca de produtos
-  Init({handleGetProdutos});
 
   useFocusEffect(
     useCallback(() => {
@@ -38,8 +34,17 @@ export default function Produto() {
     };
   }, [textFilter]);
 
-  const renderItem = ({item}: {item: ProdutoDto}) => (
-    <TouchableOpacity style={styles.itemContainer} key={item.Codigo}>
+  const isEven = (index: number) => index % 2 === 0;
+
+  const renderItem = ({item, index}: {item: ProdutoDto; index: number}) => (
+    <TouchableOpacity
+      style={[
+        styles.itemContainer,
+        {
+          backgroundColor: isEven(index) ? colors.grayList : colors.white,
+        },
+      ]}
+      key={item.Codigo}>
       <View style={styles.itemTopRow}>
         <View style={styles.itemLeft}>
           <Text style={styles.itemCode}>{item.Codigo}</Text>

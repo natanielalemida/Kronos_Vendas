@@ -30,11 +30,6 @@ export default function Produto() {
   const [textFilter, setTextFilter] = useState<string>('');
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Inicializa a função para buscar os produtos
-  Init({handleGetProdutos, setTextFilter});
-
-  console.log({clienteOnContext});
-
   // Aplica debounce na busca por produtos
   useEffect(() => {
     if (debounceRef.current) {
@@ -51,13 +46,19 @@ export default function Produto() {
     };
   }, [textFilter]);
 
-  const renderItem = ({item}: {item: ProdutoDto}) => {
+  const isEven = (index: number) => index % 2 === 0;
+
+  const renderItem = ({item, index}: {item: ProdutoDto; index}) => {
+    const color2 = isEven(index) ? colors.grayList : colors.white;
     const color = findIndex(item);
     return (
       <View>
         <ShowIf condition={clienteOnContext?.TipoPreco === null}>
           <TouchableOpacity
-            style={[styles.itemContainer, {backgroundColor: color}]}
+            style={[
+              styles.itemContainer,
+              {backgroundColor: color ? color : color2},
+            ]}
             key={item.Codigo}
             onPress={() => handleOpenModal(item, false, true)}>
             <View style={styles.itemTopRow}>

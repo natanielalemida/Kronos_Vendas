@@ -9,6 +9,9 @@ import {ClienteDto} from '../../../../sync/clientes/type';
 import ModalEditCliente from './components/modalEditCliente.ts';
 import UseModal from './components/modalEditCliente.ts/hooks/useModal.ts';
 import {useNavigation} from '@react-navigation/native';
+import useEditUser from './components/modalEditCliente.ts/hooks/useEditUser.ts';
+import {useCliente} from './context/clientContext.tsx';
+import {ShowIf} from '../../../components/showIf/showIf.tsx';
 
 export default function Clientes() {
   const navigation = useNavigation();
@@ -17,6 +20,8 @@ export default function Clientes() {
 
   const {cliente, isActive, setActive, handleVerifyCliente} = UseModal();
   const {handleGetUsers, clientes, isLoading} = UseGetFetch();
+  const {setForm} = useCliente();
+  const {handleEditUser} = useEditUser({setActive, setForm});
 
   useEffect(() => {
     if (debounceRef.current) {
@@ -38,7 +43,23 @@ export default function Clientes() {
     await handleGetUsers();
   };
 
-  Init({handleGetUsers, setTextFilter});
+  const renderEndereco = (endereco: {
+    Logradouro: string;
+    C: string;
+    Numero: string;
+    Bairro: string;
+  }) => (
+    <ShowIf condition={!!endereco.Logradouro}>
+      <View key={`${endereco.Logradouro}-${endereco.Numero}`}>
+        <Text style={styles.enderecoText}>
+          Logradouro: {endereco.Logradouro} - Número: {endereco.Numero}
+        </Text>
+        <Text style={styles.enderecoText}>Bairro: {endereco.Bairro}</Text>
+      </View>
+    </ShowIf>
+  );
+
+  const isEven = (index: number) => index % 2 === 0;
 
   return (
     <View style={styles.container}>
@@ -47,28 +68,53 @@ export default function Clientes() {
         value={textFilter}
         onChangeText={setTextFilter}
       />
+      <ModalEditCliente
+        cliente={cliente}
+        isActive={isActive}
+        setActive={handleSetActive}
+      />
       <View style={styles.top}>
         <Loading isModalLoadingActive={isLoading} />
-        <ModalEditCliente
-          cliente={cliente}
-          isActive={isActive}
-          setActive={handleSetActive}
-        />
-        <FlatList
-          data={clientes}
-          renderItem={({item}: {item: ClienteDto}) => (
-            <TouchableOpacity
-              style={styles.itemContainer}
-              onPress={() => handleVerifyCliente(item)}
-              key={item.Codigo}>
-              <View style={styles.itemTopRow}>
-                <Text style={styles.itemCode}>{item.Codigo}</Text>
-                <Text style={styles.itemDescription}>{item.NomeFantasia}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          keyExtractor={item => `${(item.Codigo, item.NomeFantasia, item.id)}`}
-        />
+        {clientes.length === 0 && !isLoading ? ( // Exibir mensagem se não houver clientes
+          <Text style={styles.noResultsText}>Nenhum cliente encontrado.</Text>
+        ) : (
+          <FlatList
+            data={clientes}
+            renderItem={({item, index}: {item: ClienteDto; index: number}) => (
+              <TouchableOpacity
+                style={[
+                  styles.itemContainer,
+                  {
+                    backgroundColor: isEven(index)
+                      ? colors.grayList
+                      : colors.white,
+                  },
+                ]}
+                onPress={() => {
+                  console.log('Item index:', index);
+                  handleEditUser(item);
+                }}
+                key={item.Codigo}>
+                <View style={styles.itemTopRow}>
+                  <Text style={styles.itemCode}>{item.Codigo}</Text>
+                  <Text style={styles.itemDescription}>
+                    {item.NomeFantasia}
+                  </Text>
+                </View>
+                <ShowIf condition={!!item.CNPJCPF}>
+                  <View style={styles.itemTopRow}>
+                    <Text style={styles.itemCode}>
+                      CNPJ/CPF: {item.CNPJCPF}
+                    </Text>
+                    <Text style={styles.itemDescription}>{item.IERG}</Text>
+                  </View>
+                </ShowIf>
+                {item.Enderecos?.map(renderEndereco)}
+              </TouchableOpacity>
+            )}
+            keyExtractor={item => `${item.Codigo}`}
+          />
+        )}
       </View>
     </View>
   );
@@ -92,15 +138,22 @@ const styles = StyleSheet.create({
   },
   itemCode: {
     marginRight: 5,
-    fontSize: 16,
-    color: colors.black,
+    fontSize: 16, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
   },
   itemDescription: {
     width: '85%',
     marginHorizontal: 10,
-    fontSize: 16,
+    fontSize: 16, // Aumentado para 16 para melhor legibilidade
     color: colors.black,
     fontWeight: 'bold',
+  },
+  enderecoText: {
+    fontSize: 14, // Aumentado para 14 para melhor legibilidade
+  },
+  noResultsText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
