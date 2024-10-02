@@ -41,7 +41,14 @@ export default function ModalVenda({
     desconto,
     observacao,
     quantidade,
-  } = UseForm({produto, isAtacadoActive, isAtacado, setIsActive});
+  } = UseForm({
+    produto,
+    isAtacadoActive,
+    isAtacado,
+    setIsActive,
+    isEditing,
+    isActive,
+  });
 
   const handleClose = () => {
     setAtacado(false);
@@ -156,8 +163,6 @@ export default function ModalVenda({
                     R$
                     {isAtacado
                       ? selectedProduto?.ValorVendaAtacado.toFixed(2)
-                      : isEditing
-                      ? selectedProduto?.ValorVendaDesconto.toFixed(2)
                       : selectedProduto?.ValorVenda.toFixed(2)}
                   </Text>
                 </View>

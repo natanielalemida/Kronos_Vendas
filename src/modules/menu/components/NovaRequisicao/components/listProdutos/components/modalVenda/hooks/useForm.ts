@@ -5,6 +5,8 @@ export default function UseForm({
   produto,
   isAtacadoActive,
   isAtacado,
+  isEditing,
+  isActive,
   setIsActive,
 }: UseFormPros) {
   const [quantidade, setQuantidade] = useState<number>(1);
@@ -13,14 +15,19 @@ export default function UseForm({
   const [valorVenda, setValorVenda] = useState('0.00');
 
   useEffect(() => {
-    const total = isAtacadoActive
-      ? produto?.ValorVendaAtacado
+    const valorVendaEdit = isEditing
+      ? produto?.ValorVendaDesconto
       : produto?.ValorVenda;
+    const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
+
     setValorVenda(total?.toFixed(2));
-  }, [produto]);
+  }, [produto, isActive]);
 
   useEffect(() => {
-    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+    const valorVendaEdit = isEditing
+      ? produto?.ValorVendaDesconto
+      : produto?.ValorVenda;
+    const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
 
     setValorVenda(total?.toFixed(2));
   }, [isAtacado]);
