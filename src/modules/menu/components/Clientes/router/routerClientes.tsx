@@ -58,8 +58,6 @@ export default function RouterCliente() {
   const {handleClearForm} = UseSaveOrEdit();
   const {form} = useCliente();
 
-  console.log({form});
-
   return (
     <Tab.Navigator
       initialRouteName={form.id ? 'Resumo' : 'CriarOuEditarUsuario'}

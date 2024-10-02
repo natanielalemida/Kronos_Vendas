@@ -22,6 +22,7 @@ export default function UseRepository() {
     }
     await service.updateOne(id, data.Resultado);
     await getPedidos({syncds: true, notSyncd: true});
+    return true;
   };
 
   const repositoy = new PedidoRepository();
@@ -52,9 +53,10 @@ export default function UseRepository() {
           Auth: usuario?.Hash,
         },
       });
-      await verify(id, result);
+      const resultado = await verify(id, result);
 
       setLoading(false);
+      return resultado;
     } catch (error) {
       const err = error as Error;
       console.log(err.message);

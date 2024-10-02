@@ -47,11 +47,14 @@ export default function ResumoPedido({navigation}) {
 
   const enviarPedido = async (id: number) => {
     try {
-      await teste(id);
-      Alert.alert('Sucesso', 'Pedido enviado com sucesso');
-      setTimeout(() => {
-        navigation.navigate('Menu');
-      }, 500);
+      const result = await teste(id);
+      if (result) {
+        Alert.alert('Sucesso', 'Pedido enviado com sucesso');
+        setTimeout(() => {
+          navigation.navigate('Menu');
+        }, 500);
+        return;
+      }
     } catch (error) {
       Alert.alert('Falha', 'Falha ao enviar pedido');
     }

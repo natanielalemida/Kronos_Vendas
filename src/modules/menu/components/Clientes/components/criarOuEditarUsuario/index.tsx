@@ -15,6 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useState} from 'react';
 import {TextInputMask} from 'react-native-masked-text';
 import {ShowIf} from '../../../../../components/showIf';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function CriarOuEditarUsuario() {
   const navigation = useNavigation();
@@ -36,6 +37,33 @@ export default function CriarOuEditarUsuario() {
       return;
     }
     navigation.navigate('Endereco');
+  };
+
+  const sureDelete = (contato: string, placeholder: string) => {
+    setForm(oldValue => ({
+      ...oldValue,
+      [placeholder]: oldValue[placeholder].filter(
+        item => item.Contato !== contato,
+      ),
+    }));
+  };
+
+  const deleteCelular = (contato: string, placeholder: string) => {
+    Alert.alert(
+      'Você tem certeza?',
+      `Deseja deletar o contato ${contato}?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => sureDelete(contato, placeholder),
+        },
+      ],
+      {cancelable: false},
+    );
   };
 
   const handleSetValueToForm = (placeholder: string) => {
@@ -165,6 +193,12 @@ export default function CriarOuEditarUsuario() {
                 value={celularContato.Contato}
                 flex={1}
               />
+              <Icon
+                name="trash"
+                color={colors.cancelButton}
+                size={25}
+                onPress={() => deleteCelular(celularContato.Contato, 'Celular')}
+              />
             </View>
           </View>
         ))}
@@ -182,10 +216,16 @@ export default function CriarOuEditarUsuario() {
           <View key={index} style={styles.row}>
             <View style={styles.inputContainer}>
               <CustomTextInput
-                placeholder="Celular"
+                placeholder="Email"
                 style={styles.input}
                 value={EmailContato.Contato}
                 flex={1}
+              />
+              <Icon
+                name="trash"
+                color={colors.cancelButton}
+                size={25}
+                onPress={() => deleteCelular(EmailContato.Contato, 'Email')}
               />
             </View>
           </View>
