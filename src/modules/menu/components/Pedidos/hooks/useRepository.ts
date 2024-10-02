@@ -18,7 +18,7 @@ export default function UseRepository() {
     if (!successfully) {
       //@ts-ignore
       Alert.alert('Falha ao enviar produto', `${data.mensagens[0].conteudo}`);
-      throw new Error('Falha ao enviar');
+      throw new Error(`${data.mensagens[0].conteudo}`);
     }
     await service.updateOne(id, data.Resultado);
     await getPedidos({syncds: true, notSyncd: true});
@@ -57,6 +57,7 @@ export default function UseRepository() {
       setLoading(false);
     } catch (error) {
       const err = error as Error;
+      console.log(err.message);
       Alert.alert('Erro', err.message);
       setLoading(false);
     } finally {

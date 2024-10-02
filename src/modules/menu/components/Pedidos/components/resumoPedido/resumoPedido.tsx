@@ -116,7 +116,7 @@ export default function ResumoPedido({navigation}) {
       {data?.Itens.map((produto, index) => (
         <View key={index} style={styles.productRow}>
           <View style={styles.productDetails}>
-            <Text style={styles.productName}>{produto.Descricao}</Text>
+            <Text style={{width: '75%'}}>{produto.Descricao}</Text>
             <Text style={{fontWeight: 'bold', color: colors.confirmButton}}>
               R$ {produto.ValorUnitario.toFixed(2)}
             </Text>
@@ -263,11 +263,13 @@ export default function ResumoPedido({navigation}) {
           <Text style={styles.buttonText}>Compartilhar PDF</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.confirmButton}
-          onPress={() => enviarPedido(id)}>
-          <Text style={styles.buttonText}>Enviar Pedido</Text>
-        </TouchableOpacity>
+        <ShowIf condition={!data?.Codigo}>
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={() => enviarPedido(id)}>
+            <Text style={styles.buttonText}>Enviar Pedido</Text>
+          </TouchableOpacity>
+        </ShowIf>
       </View>
     </View>
   );
@@ -299,12 +301,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   productRow: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
   },
   productDetails: {
     flex: 1,
+    flexDirection: 'row',
   },
   productInfo: {
     flexDirection: 'row',

@@ -6,6 +6,34 @@ type Item = {
   id: number;
 };
 
+function adicionarDias(data: Date, dias: number): Date {
+  const novaData = new Date(data);
+  novaData.setDate(novaData.getDate() + dias);
+  return novaData;
+}
+
+// Função para formatar a data em 'DD/MM/YYYY'
+function formatarData(data: Date): string {
+  const dia = data.getDate().toString().padStart(2, '0');
+  const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+  const ano = data.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+function dividirPrecisamente(
+  valor: number,
+  quantidade: number,
+  casasDecimais: number = 10,
+): number {
+  // Realiza a divisão e arredonda o resultado para o número de casas decimais especificado
+  const resultadoDivisao = parseFloat(
+    (valor / quantidade).toFixed(casasDecimais),
+  );
+
+  // Retorna o valor dividido com precisão
+  return resultadoDivisao;
+}
+
 export default class mapPedido {
   mapearDados(dados) {
     const itensUnicos = dados.reduce((acc, item) => {
@@ -37,12 +65,44 @@ export default class mapPedido {
       return acc;
     }, []);
 
-    // Mapeamento das formas de pagamento únicas
+    // Mapeamento das formas de pagamento únicas, incluindo Titulos
     const meiosPagamentosUnicos = dados.reduce((acc, item) => {
       const existente = acc.find(
         mp => mp.FormaPagamento.Codigo === item.CodigoFormaPagamento,
       );
+
+      // Se não existe, adiciona um novo meio de pagamento
       if (!existente) {
+        const Titulos = !!item.IsPrazo
+          ? item.QtdeParcelas > 0
+            ? Array.from({length: item.QtdeParcelas}, (_, i) => i + 1).map(
+                (parcela, index) => {
+                  const diasAdicionais =
+                    item.QtdeDiasParcelaInicial + index * item.IntervaloDias;
+                  const dataParcela = adicionarDias(new Date(), diasAdicionais);
+                  const dataFormatada = dataParcela;
+                  const emissao = new Date();
+
+                  return {
+                    NumeroParcela: parcela,
+                    Emissao: emissao,
+                    Vencimento: dataFormatada,
+                    ContaReceberTituloSituacaoSituacao: 1,
+                    ValorBruto: dividirPrecisamente(
+                      item.ValorRecebido,
+                      item.QtdeParcelas,
+                    ),
+                    FormaPagamento: {
+                      Codigo: item.CodigoFormaPagamento,
+                    },
+                  };
+                },
+              )
+            : null
+          : null;
+
+        console.log({TitulosTesteAAAAAAA: Titulos});
+
         acc.push({
           CodigoVenda: null,
           CodigoContaReceberHistorico: null,
@@ -50,6 +110,7 @@ export default class mapPedido {
           Valor: item.ValorRecebido,
           ValorRecebido: item.ValorRecebido,
           FormaPagamento: {
+            IsPrazo: item.IsPrazo,
             Codigo: item.CodigoFormaPagamento,
             FormaPagamentoPadrao: item.FormaPagamentoPadrao,
             Descricao: item.Descricao,
@@ -62,8 +123,10 @@ export default class mapPedido {
           CondicaoPagamento: {
             Codigo: item.CodigoCondicao,
           },
+          Titulos,
         });
       }
+
       return acc;
     }, []);
 
@@ -83,6 +146,7 @@ export default class mapPedido {
         Codigo: 1,
       },
       Itens: itensUnicos,
+      Titulos: meiosPagamentosUnicos.flatMap(mp => mp.Titulos), // Combina todos os títulos
     };
   }
 

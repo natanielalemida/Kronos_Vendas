@@ -1,5 +1,13 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {CondicaoPagamento} from '../../../../../../../../../sync/pagamentos/type';
+
 type ModalSelectProp = {
   data: CondicaoPagamento[] | undefined;
   label: string;
@@ -20,6 +28,19 @@ export default function ModalSelectCondicao({
     closeModal(!isActive);
   };
 
+  const renderOption = (value: CondicaoPagamento) => (
+    <TouchableOpacity
+      key={value.Codigo}
+      style={styles.optionButton}
+      onPress={() => handleOnChangeText(value)}>
+      <Text style={[styles.modalText, styles.textStyle]}>
+        {value.QtdeParcelas >= 1
+          ? `${value.Codigo} - Quantidade Parcelas: ${value.QtdeParcelas} - dias primeiro pagamento ${value.QtdeDiasParcelaInicial}/DIAS - segunda parcela em ${value.IntervaloDias}/DIAS`
+          : `${value.Codigo} | ${value.IntervaloDias}/DIAS`}
+      </Text>
+    </TouchableOpacity>
+  );
+
   return (
     <Modal
       animationType="slide"
@@ -29,20 +50,13 @@ export default function ModalSelectCondicao({
         closeModal(!isActive);
       }}>
       <View style={styles.modalBackground}>
-        <View style={styles.modalContent}>
+        <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>{label}</Text>
-          {data &&
-            data.length > 0 &&
-            data.map(value => (
-              <TouchableOpacity
-                key={value.Codigo}
-                style={styles.optionButton}
-                onPress={() => handleOnChangeText(value)}>
-                <Text style={[styles.modalText, styles.textStyle]}>
-                  {`${value.Codigo} | ${value.IntervaloDias}/DIAS`}
-                </Text>
-              </TouchableOpacity>
-            ))}
+          <ScrollView
+            contentContainerStyle={styles.scrollContentContainer}
+            style={styles.scrollView}>
+            {data && data.length > 0 && data.map(value => renderOption(value))}
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -56,18 +70,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalContent: {
+  modalContainer: {
     backgroundColor: 'white',
     borderRadius: 8,
-    padding: 35,
-    alignItems: 'flex-start',
+    padding: 20,
     width: '80%',
     maxWidth: 400,
-    maxHeight: '80%',
+    maxHeight: '70%', // Limite a altura para permitir rolagem
   },
-  textStyle: {
-    color: 'black',
-    textAlign: 'left',
+  scrollView: {
+    width: '100%',
+    maxHeight: '100%', // Isso ajudará a garantir que o ScrollView tenha espaço para rolar
+  },
+  scrollContentContainer: {
+    flexGrow: 1, // Garante que o conteúdo dentro do ScrollView ocupe o espaço necessário
   },
   modalTitle: {
     fontSize: 16,
@@ -75,13 +91,16 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
   },
-  modalText: {
-    marginBottom: 16,
-    textAlign: 'left',
-  },
   optionButton: {
     alignItems: 'flex-start',
     width: '100%',
     flexDirection: 'row',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  modalText: {
+    marginBottom: 16,
+    textAlign: 'left',
   },
 });

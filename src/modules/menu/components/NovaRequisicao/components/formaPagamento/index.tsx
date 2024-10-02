@@ -1,4 +1,10 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {colors} from '../../../../../styles';
 import {useCliente} from '../../../Clientes/context/clientContext';
 
@@ -22,11 +28,12 @@ export default function FormaPagamento() {
     formaPagamento,
     finalizarVenda,
     setFormaPagameto,
-    setValorPago
+    setValorPago,
   } = useCliente();
 
   const [isModalPagamentoAtivo, setModalPagamento] = useState<boolean>(false);
-  const [isModalConfirmVisible, setModalConfirmVisible] = useState<boolean>(false);
+  const [isModalConfirmVisible, setModalConfirmVisible] =
+    useState<boolean>(false);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
 
   const {handleCloseModal, setIsModalActive, isActive} = UseModal();
@@ -35,24 +42,54 @@ export default function FormaPagamento() {
   const handleDelete = () => {
     if (selectedPayment) {
       // Subtrair o valor do pagamento excluído do valorPago atual
-      const valorPagoAtualizado = valorPago - selectedPayment.CondicaoPagamento.reduce(
-        (acc, condicao) => acc + condicao.ValorPago,
-        0,
-      );
-      
+      const valorPagoAtualizado =
+        valorPago -
+        selectedPayment.CondicaoPagamento.reduce(
+          (acc, condicao) => acc + condicao.ValorPago,
+          0,
+        );
+
       // Atualiza o estado do valorPago
       setValorPago(valorPagoAtualizado);
-  
+
       // Atualiza a lista de forma de pagamento excluindo o item selecionado
       const updatedFormaPagamento = formaPagamento.filter(
-        (pagamento) => pagamento.Codigo !== selectedPayment.Codigo,
+        pagamento => pagamento.Codigo !== selectedPayment.Codigo,
       );
       setFormaPagameto(updatedFormaPagamento);
-  
+
       setModalConfirmVisible(false);
     }
   };
-  
+
+  function adicionarDias(data: Date, dias: number): Date {
+    const novaData = new Date(data);
+    novaData.setDate(novaData.getDate() + dias);
+    return novaData;
+  }
+
+  // Função para formatar a data em 'DD/MM/YYYY'
+  function formatarData(data: Date): string {
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  function dividirPrecisamente(
+    valor: number,
+    quantidade: number,
+    casasDecimais: number = 10,
+  ): number {
+    // Realiza a divisão e arredonda o resultado para o número de casas decimais especificado
+    const resultadoDivisao = parseFloat(
+      (valor / quantidade).toFixed(casasDecimais),
+    );
+
+    // Retorna o valor dividido com precisão
+    return resultadoDivisao;
+  }
+
   const renderIcon = (iconName: string, label: string, onPress: () => void) => (
     <TouchableOpacity style={styles.iconContainer} onPress={onPress}>
       <Icon name={iconName} size={25} color={colors.white} />
@@ -85,30 +122,22 @@ export default function FormaPagamento() {
               <Button
                 title="Excluir"
                 onPress={handleDelete}
-                color={colors.red}
-              />
-              <Button
-                title="Editar"
-                onPress={() => {
-                  // Lógica para edição aqui (caso seja necessário)
-                  setModalConfirmVisible(false);
-                }}
-                color={colors.blue}
+                color={colors.cancelButton}
               />
               <Button
                 title="Cancelar"
                 onPress={() => setModalConfirmVisible(false)}
-                color={colors.gray}
+                color={colors.graySearch}
               />
             </View>
           </View>
         </View>
       </Modal>
 
-      <View style={{flex: 1}}>
+      <ScrollView style={{flex: 1}}>
         {formaPagamento &&
           formaPagamento.length > 0 &&
-          formaPagamento.map((pagamento) => {
+          formaPagamento.map(pagamento => {
             return (
               <TouchableOpacity
                 style={styles.itemContainer}
@@ -123,17 +152,69 @@ export default function FormaPagamento() {
                     {pagamento.Descricao}
                   </Text>
                 </View>
-                {pagamento.CondicaoPagamento.map((condicao) => {
-                  return (
-                    <View key={condicao.Codigo}>
-                      <Text>{`${condicao.Codigo} | ${condicao.IntervaloDias}/DIAS - R$ ${condicao.ValorPago}`}</Text>
-                    </View>
-                  );
-                })}
+                {!pagamento.IsPrazo &&
+                  pagamento.CondicaoPagamento.map(condicao => {
+                    return (
+                      <View key={condicao.Codigo}>
+                        <Text>{`${
+                          condicao.Codigo
+                        } | R$ ${condicao.ValorPago.toFixed(2)}`}</Text>
+                      </View>
+                    );
+                  })}
+                {!!pagamento.IsPrazo &&
+                  pagamento.CondicaoPagamento.map(condicao => {
+                    const parcelas = Array.from(
+                      {length: condicao.QtdeParcelas},
+                      (_, i) => i + 1,
+                    );
+
+                    return (
+                      <View
+                        key={condicao.Codigo}
+                        style={styles.condicaoContainer}>
+                        {parcelas.map((parcela, index) => {
+                          // Calcular a data de emissão da parcela
+                          const diasAdicionais =
+                            condicao.QtdeDiasParcelaInicial +
+                            index * condicao.IntervaloDias;
+                          const dataParcela = adicionarDias(
+                            new Date(),
+                            diasAdicionais,
+                          );
+                          const dataFormatada = formatarData(dataParcela);
+                          const emissao = formatarData(new Date());
+
+                          return (
+                            <View
+                              key={`${condicao.Codigo}-${parcela}`}
+                              style={styles.parcelaContainer}>
+                              <Text style={styles.textoParcela}>{`${
+                                condicao.Codigo
+                              } | Parcela ${parcela} de ${
+                                condicao.QtdeParcelas
+                              } - Valor: R$ ${dividirPrecisamente(
+                                condicao.ValorPago,
+                                condicao.QtdeParcelas,
+                              ).toFixed(2)}`}</Text>
+                              <Text
+                                style={
+                                  styles.textoEmissao
+                                }>{`Emissão: ${emissao}`}</Text>
+                              <Text
+                                style={
+                                  styles.textoEmissao
+                                }>{`Vencimento: ${dataFormatada}`}</Text>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    );
+                  })}
               </TouchableOpacity>
             );
           })}
-      </View>
+      </ScrollView>
       <View style={styles.bottom}>
         <View style={styles.leftIcon}>
           <View style={styles.totalContainer}>
@@ -162,9 +243,7 @@ export default function FormaPagamento() {
               ProdutosSelecionados.length > 0 &&
               valorPago.toFixed(2) === finalizarVenda?.ValorTotal.toFixed(2)
             }>
-            {renderIcon('checkmark-outline', 'Finalizar', () =>
-              handleSave(id),
-            )}
+            {renderIcon('checkmark-outline', 'Finalizar', () => handleSave(id))}
           </ShowIf>
         </View>
       </View>
@@ -175,6 +254,29 @@ export default function FormaPagamento() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  condicaoContainer: {
+    marginVertical: 10,
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  parcelaContainer: {
+    marginBottom: 10,
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  textoParcela: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  textoEmissao: {
+    fontSize: 14,
+    color: '#666',
   },
   top: {
     flex: 1,

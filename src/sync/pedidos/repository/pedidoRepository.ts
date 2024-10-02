@@ -85,7 +85,9 @@ export default class PedidoRepository {
       for (const meioPagamento of meioPagamentos) {
         await trx('PedidoVinculoMeioPagamento')
           .update(meioPagamento)
-          .where({CodigoPedido: id});
+          .where({CodigoPedido: id})
+          .andWhere({CodigoFormaPagamento: meioPagamento.CodigoFormaPagamento})
+          .andWhere({CodigoCondicao: meioPagamento.CodigoCondicao});
       }
 
       // Confirma (commit) as alterações após todas as operações

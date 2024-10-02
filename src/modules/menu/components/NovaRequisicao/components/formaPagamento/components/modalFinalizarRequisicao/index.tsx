@@ -21,7 +21,12 @@ export default function ModalFinalizarRequisicao({
   const [Observacao, setObservacao] = useState('');
   const [valorTotal, setValorTotal] = useState('0.00');
   const [desconto, setDesconto] = useState('0.00');
-  const {setFinalizarVenda, ProdutosSelecionados, usuario} = useCliente();
+  const {
+    setFinalizarVenda,
+    setProdutosSelecionados,
+    ProdutosSelecionados,
+    usuario,
+  } = useCliente();
 
   const handleMountBoyd = () => {
     setFinalizarVenda({
@@ -30,6 +35,27 @@ export default function ModalFinalizarRequisicao({
       ValorTotal: parseFloat(valorTotal),
       Observacao,
     });
+    const newArray = ProdutosSelecionados.map(produto => {
+      // Calcula o valor do desconto
+      const valorDesconto =
+        produto.ValorVendaDesconto * (parseFloat(desconto) / 100);
+
+      // Aplica o desconto ao valor original
+      const novoValorVendaDesconto = produto.ValorVendaDesconto - valorDesconto;
+
+      // Log para depuração
+      console.log({
+        teste: novoValorVendaDesconto / 10, // Continua dividindo por 10 se necessário
+      });
+
+      return {
+        ...produto,
+        ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+      };
+    });
+
+    setProdutosSelecionados(newArray);
+
     setIsModalActive(false);
   };
 
