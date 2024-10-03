@@ -131,7 +131,6 @@ export default class mapPedido {
         CodigoPessoa: dados[0].CodigoPessoa,
         NomeFantasia: dados[0].NomeFantasia,
         TipoPreco: dados[0].TipoPreco,
-        idPessoa: dados[0].idPessoa ? dados[0].idPessoa : null,
       },
       Terminal: {
         Codigo: 1,

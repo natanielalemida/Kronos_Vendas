@@ -5,9 +5,9 @@ import ApiInstace from '../../../../../api/ApiInstace';
 import {useCliente} from '../../Clientes/context/clientContext';
 import PedidoService from '../../../../../sync/pedidos/service/pedidoSyncService';
 import {Alert} from 'react-native';
+import {ClienteDto} from '../../../../../sync/clientes/type';
 import ServiceEnviarSingleCliente from '../../../../enviarDados/cliente/service/serviceEnviarSingleCliente';
 import {UsuarioDto} from '../../../../login/hooks/type';
-import ClienteRepository from '../../../../../sync/clientes/repository/clienteRepository';
 
 export default function UseRepository() {
   const [pedidos, setPedidos] = useState<PedidoSearchDto[]>([]);
@@ -15,7 +15,6 @@ export default function UseRepository() {
 
   const [isLoading, setLoading] = useState(false);
   const service = new PedidoService();
-  const repository = new ClienteRepository();
 
   const verify = async (id: number, data: any) => {
     const successfully = Array.isArray(data.Mensagens);
@@ -44,19 +43,21 @@ export default function UseRepository() {
     return result;
   };
 
-  const teste = async (id: number, idPessoa: number, usuario: UsuarioDto) => {
+  const teste = async (
+    id: number,
+    clienteOnContext: ClienteDto,
+    usuario: UsuarioDto,
+  ) => {
     setLoading(true);
-
-    const cliente = await repository.getById(idPessoa);
 
     const serviceCliente = new ServiceEnviarSingleCliente(
       [],
       usuario,
-      cliente,
+      clienteOnContext,
       () => {},
     );
 
-    if (idPessoa) {
+    if (!clienteOnContext?.Codigo) {
       const userSynced = await serviceCliente.iniciarSincronizacaoSingle(true);
 
       if (!userSynced) {

@@ -22,7 +22,12 @@ import UseRepository from '../../hooks/useRepository';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
-  const {setClienteOnContext, setProdutosSelecionados, usuario} = useCliente();
+  const {
+    setClienteOnContext,
+    setProdutosSelecionados,
+    clienteOnContext,
+    usuario,
+  } = useCliente();
   const {params} = route;
   const {id, Codigo, goBack} = params || {};
 
@@ -43,7 +48,6 @@ export default function ResumoPedido({navigation}) {
           Codigo: item.CodigoProduto,
         })),
       });
-
       return;
     } else {
       const result = await repository.getPedidoByIdNotSynced(id);
@@ -60,7 +64,8 @@ export default function ResumoPedido({navigation}) {
 
   const enviarPedido = async (id: number) => {
     try {
-      const result = await teste(id, data.idPessoa, usuario);
+      console.log({clienteOnContext});
+      const result = await teste(id, clienteOnContext, usuario);
       if (result) {
         Alert.alert('Sucesso', 'Pedido enviado com sucesso');
         setTimeout(() => {

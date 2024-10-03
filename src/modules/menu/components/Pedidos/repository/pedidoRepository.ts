@@ -272,7 +272,6 @@ export default class PedidoRepository {
           'pessoa.NomeFantasia',
           'pessoa.CNPJCPF as CNPJCPF',
           'pessoa.TipoPreco',
-          'pessoa.id as idPessoa',
         )
         .innerJoin('pessoa', 'pessoa.id', 'pedido.CodigoPessoa')
         .innerJoin('PedidoVinculoProduto', function () {
