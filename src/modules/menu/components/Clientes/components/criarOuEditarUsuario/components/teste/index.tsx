@@ -24,7 +24,6 @@ export const RemoteDataSetExample3 = memo(() => {
       clearOnFocus={false}
       closeOnBlur={true}
       closeOnSubmit={false}
-      debounce={600}
       onSelectItem={item => {
         item &&
           // @ts-ignore

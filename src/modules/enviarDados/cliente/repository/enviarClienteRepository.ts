@@ -103,9 +103,100 @@ export default class EnviarClienteRepository {
   }
 
   async saveOneSync(cliente: ResultadoSingleClienteDto, id: number) {
-    // Atualiza a tabela 'pessoa'
-    await knexConfig('pessoa')
-      .update({
+    // Inicia a transação
+    const trx = await knexConfig.transaction();
+
+    try {
+      // Atualiza a tabela 'pessoa'
+      await trx('pessoa')
+        .update({
+          Codigo: cliente.Codigo,
+          CategoriaCodigo: cliente.Categoria ? cliente.Categoria.Codigo : null,
+          RegiaoCodigo: cliente.Regiao ? cliente.Regiao.Codigo : null,
+          isSincronizado: 1,
+          DiaPagamento: cliente.DiaPagamento,
+          LimiteCompra: cliente.LimiteCompra,
+          DescontoMaximo: cliente.DescontoMaximo,
+          TipoPreco: cliente.TipoPreco,
+          AcrescimoPercentual: cliente.AcrescimoPercentual,
+          PermiteComprarPazo: cliente.PermiteComprarPazo,
+          CodigoPessoa: cliente.CodigoPessoa,
+          PessoaFJ: cliente.PessoaFJ,
+          RazaoSocial: cliente.RazaoSocial,
+          NomeFantasia: cliente.NomeFantasia,
+          CNPJCPF: cliente.CNPJCPF,
+          IERG: cliente.IERG,
+          TipoContribuinte: cliente.TipoContribuinte,
+          Observacao: cliente.Observacao,
+          Ativo: cliente.Ativo,
+        })
+        .where('id', id);
+
+      // Atualiza a tabela 'endereco' se houver endereços
+      if (cliente.Enderecos.length > 0) {
+        await Promise.all(
+          cliente.Enderecos.map(async currentEndereco => {
+            await trx('endereco')
+              .update({
+                Codigo: currentEndereco.Codigo,
+                CodigoPessoa: currentEndereco.CodigoPessoa,
+                Tipo: currentEndereco.Tipo,
+                TipoDescricao: currentEndereco.TipoDescricao,
+                CEP: currentEndereco.CEP,
+                Logradouro: currentEndereco.Logradouro,
+                Numero: currentEndereco.Numero,
+                Bairro: currentEndereco.Bairro,
+                Complemento: currentEndereco.Complemento,
+                CodigoMunicipio: currentEndereco.Municipio.Codigo,
+              })
+              .where('Codigo', currentEndereco.Codigo); // Ajuste o 'where' conforme necessário
+          }),
+        );
+      }
+
+      // Atualiza a tabela 'contato' se houver contatos
+      if (cliente.Contatos.length > 0) {
+        await Promise.all(
+          cliente.Contatos.map(async contato => {
+            await trx('contato')
+              .update({
+                Codigo: contato.Codigo,
+                CodigoPessoa: contato.CodigoPessoa,
+                Tipo: contato.Tipo,
+                Contato: contato.Contato,
+              })
+              .where('Codigo', contato.Codigo);
+          }),
+        );
+      }
+
+      // Confirma a transação
+      await trx.commit();
+      return id;
+    } catch (error) {
+      // Reverte a transação se ocorrer um erro
+      await trx.rollback();
+      throw error;
+    }
+  }
+
+  async getByCode(code: number) {
+    if (!code) return true;
+    const result = await knexConfig('pessoa')
+      .select('pessoa.id')
+      .first()
+      .where('pessoa.Codigo', code);
+    if (!result) return true;
+    return undefined;
+  }
+
+  async saveSyncOne(cliente: ResultadoSingleClienteDto) {
+    // Inicia a transação
+    const trx = await knexConfig.transaction();
+
+    try {
+      // Atualiza a tabela 'pessoa'
+      const [client] = await trx('pessoa').insert({
         Codigo: cliente.Codigo,
         CategoriaCodigo: cliente.Categoria ? cliente.Categoria.Codigo : null,
         RegiaoCodigo: cliente.Regiao ? cliente.Regiao.Codigo : null,
@@ -125,16 +216,12 @@ export default class EnviarClienteRepository {
         TipoContribuinte: cliente.TipoContribuinte,
         Observacao: cliente.Observacao,
         Ativo: cliente.Ativo,
-      })
-      .where('id', id);
+      });
 
-    // Atualiza a tabela 'endereco' se houver endereços
-    if (cliente.Enderecos.length > 0) {
-      // Utiliza `Promise.all` para aguardar todas as atualizações dos endereços
-      await Promise.all(
-        cliente.Enderecos.map(async currentEndereco => {
-          await knexConfig('endereco')
-            .update({
+      if (cliente.Enderecos.length > 0) {
+        await Promise.all(
+          cliente.Enderecos.map(async currentEndereco => {
+            await trx('endereco').insert({
               Codigo: currentEndereco.Codigo,
               CodigoPessoa: currentEndereco.CodigoPessoa,
               Tipo: currentEndereco.Tipo,
@@ -145,93 +232,32 @@ export default class EnviarClienteRepository {
               Bairro: currentEndereco.Bairro,
               Complemento: currentEndereco.Complemento,
               CodigoMunicipio: currentEndereco.Municipio.Codigo,
-            })
-            .where('Codigo', currentEndereco.Codigo); // Ajuste o 'where' conforme necessário
-        }),
-      );
-    }
+            });
+          }),
+        );
+      }
 
-    if (cliente.Contatos.length > 0) {
-      await Promise.all(
-        cliente.Contatos.map(async contato => {
-          await knexConfig('contato')
-            .update({
+      // Atualiza a tabela 'contato' se houver contatos
+      if (cliente.Contatos.length > 0) {
+        await Promise.all(
+          cliente.Contatos.map(async contato => {
+            await trx('contato').insert({
               Codigo: contato.Codigo,
               CodigoPessoa: contato.CodigoPessoa,
               Tipo: contato.Tipo,
               Contato: contato.Contato,
-            })
-            .where('Codigo', contato.Codigo);
-        }),
-      );
-    }
-  }
-  async getByCode(code: number) {
-    if (!code) return true;
-    const result = await knexConfig('pessoa')
-      .select('pessoa.id')
-      .first()
-      .where('pessoa.Codigo', code);
-    if (!result) return true;
-    return undefined;
-  }
+            });
+          }),
+        );
+      }
 
-  async saveSyncOne(cliente: ResultadoSingleClienteDto) {
-    // Atualiza a tabela 'pessoa'
-    await knexConfig('pessoa').insert({
-      Codigo: cliente.Codigo,
-      CategoriaCodigo: cliente.Categoria ? cliente.Categoria.Codigo : null,
-      RegiaoCodigo: cliente.Regiao ? cliente.Regiao.Codigo : null,
-      isSincronizado: 1,
-      DiaPagamento: cliente.DiaPagamento,
-      LimiteCompra: cliente.LimiteCompra,
-      DescontoMaximo: cliente.DescontoMaximo,
-      TipoPreco: cliente.TipoPreco,
-      AcrescimoPercentual: cliente.AcrescimoPercentual,
-      PermiteComprarPazo: cliente.PermiteComprarPazo,
-      CodigoPessoa: cliente.CodigoPessoa,
-      PessoaFJ: cliente.PessoaFJ,
-      RazaoSocial: cliente.RazaoSocial,
-      NomeFantasia: cliente.NomeFantasia,
-      CNPJCPF: cliente.CNPJCPF,
-      IERG: cliente.IERG,
-      TipoContribuinte: cliente.TipoContribuinte,
-      Observacao: cliente.Observacao,
-      Ativo: cliente.Ativo,
-    });
-
-    // Atualiza a tabela 'endereco' se houver endereços
-    if (cliente.Enderecos.length > 0) {
-      // Utiliza `Promise.all` para aguardar todas as atualizações dos endereços
-      await Promise.all(
-        cliente.Enderecos.map(async currentEndereco => {
-          await knexConfig('endereco').insert({
-            Codigo: currentEndereco.Codigo,
-            CodigoPessoa: currentEndereco.CodigoPessoa,
-            Tipo: currentEndereco.Tipo,
-            TipoDescricao: currentEndereco.TipoDescricao,
-            CEP: currentEndereco.CEP,
-            Logradouro: currentEndereco.Logradouro,
-            Numero: currentEndereco.Numero,
-            Bairro: currentEndereco.Bairro,
-            Complemento: currentEndereco.Complemento,
-            CodigoMunicipio: currentEndereco.Municipio.Codigo,
-          });
-        }),
-      );
-    }
-
-    if (cliente.Contatos.length > 0) {
-      await Promise.all(
-        cliente.Contatos.map(async contato => {
-          await knexConfig('contato').insert({
-            Codigo: contato.Codigo,
-            CodigoPessoa: contato.CodigoPessoa,
-            Tipo: contato.Tipo,
-            Contato: contato.Contato,
-          });
-        }),
-      );
+      // Confirma a transação se tudo der certo
+      await trx.commit();
+      return client;
+    } catch (error) {
+      // Se houver erro, desfaz todas as operações
+      await trx.rollback();
+      throw error;
     }
   }
 }

@@ -25,6 +25,7 @@ import ModalFilterMenu from '../components/Pedidos/components/modalFilterMenu';
 import UseRepository from '../components/Pedidos/hooks/useRepository';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
+import Exit from './exit';
 
 const Drawer = createDrawerNavigator();
 
@@ -50,7 +51,6 @@ function CustomDrawerContent(props) {
 }
 
 export default function Menu() {
-  const navigator = useNavigation();
   const [isModalActive, setIsModalActive] = React.useState(false);
 
   const {clienteOnContext, isSyncing} = useCliente();
@@ -85,7 +85,9 @@ export default function Menu() {
           options={{
             headerTitle: userName,
             headerRight: () => (
-              <TouchableOpacity onPress={() => setIsModalActive(true)}>
+              <TouchableOpacity
+                disabled={!clienteOnContext}
+                onPress={() => setIsModalActive(true)}>
                 <Icon
                   name="ellipsis-vertical-sharp"
                   size={24}
@@ -151,6 +153,16 @@ export default function Menu() {
               <Icon name="sync-outline" color={color} size={size} />
             ),
           }}
+        />
+        <Drawer.Screen
+          name="Sair"
+          component={Exit}
+          options={({navigation}) => ({
+            drawerIcon: ({color, size}) => (
+              <Icon name="exit-outline" color={color} size={size} />
+            ),
+            drawerLabel: 'Sair',
+          })}
         />
       </Drawer.Navigator>
     </>

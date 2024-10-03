@@ -22,8 +22,7 @@ import UseRepository from '../../hooks/useRepository';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
-  const {setClienteOnContext, setProdutosSelecionados, finalizarVenda} =
-    useCliente();
+  const {setClienteOnContext, setProdutosSelecionados, usuario} = useCliente();
   const {params} = route;
   const {id, Codigo, goBack} = params || {};
 
@@ -34,20 +33,34 @@ export default function ResumoPedido({navigation}) {
   const repository = new PedidoRepository();
 
   const handleGetPedido = async () => {
-    const result = await repository.getPedidoById(id);
+    if (clienteOnContext?.Codigo) {
+      const result = await repository.getPedidoById(id);
 
-    setData({
-      ...result,
-      Itens: result.Itens.map(item => ({
-        ...item,
-        Codigo: item.CodigoProduto,
-      })),
-    });
+      setData({
+        ...result,
+        Itens: result.Itens.map(item => ({
+          ...item,
+          Codigo: item.CodigoProduto,
+        })),
+      });
+
+      return;
+    } else {
+      const result = await repository.getPedidoByIdNotSynced(id);
+
+      setData({
+        ...result,
+        Itens: result.Itens.map(item => ({
+          ...item,
+          Codigo: item.CodigoProduto,
+        })),
+      });
+    }
   };
 
   const enviarPedido = async (id: number) => {
     try {
-      const result = await teste(id);
+      const result = await teste(id, data.idPessoa, usuario);
       if (result) {
         Alert.alert('Sucesso', 'Pedido enviado com sucesso');
         setTimeout(() => {
@@ -56,6 +69,7 @@ export default function ResumoPedido({navigation}) {
         return;
       }
     } catch (error) {
+      console.log({error});
       Alert.alert('Falha', 'Falha ao enviar pedido');
     }
   };

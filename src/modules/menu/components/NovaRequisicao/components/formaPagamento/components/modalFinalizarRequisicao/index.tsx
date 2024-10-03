@@ -37,11 +37,10 @@ export default function ModalFinalizarRequisicao({
     });
     const newArray = ProdutosSelecionados.map(produto => {
       // Calcula o valor do desconto
-      const valorDesconto =
-        produto.ValorVendaDesconto * (parseFloat(desconto) / 100);
+      const valorDesconto = produto.ValorVenda * (parseFloat(desconto) / 100);
 
       // Aplica o desconto ao valor original
-      const novoValorVendaDesconto = produto.ValorVendaDesconto - valorDesconto;
+      const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
 
       return {
         ...produto,
@@ -69,9 +68,7 @@ export default function ModalFinalizarRequisicao({
     const totalBruto = parseFloat(calcularTotalSemDesconto());
     const descontoMinimo = ((totalBruto - total) / totalBruto) * 100;
 
-    if (valor < descontoMinimo) {
-      valor = descontoMinimo;
-    } else if (valor > usuario.DescontoMaximoVenda) {
+    if (valor > usuario.DescontoMaximoVenda) {
       valor = usuario.DescontoMaximoVenda;
     }
 
@@ -97,10 +94,7 @@ export default function ModalFinalizarRequisicao({
     const valorPorcentagem = parseFloat(usuario?.DescontoMaximoVenda) / 100;
     const totalMaximoDesconto = valorPorcentagem * totalSemDesconto;
 
-    if (valor > total) {
-      setValorTotal(total.toFixed(2));
-      setDesconto(porcentagemDesconto().toFixed(2));
-    } else if (valor < total - totalMaximoDesconto) {
+    if (valor < total - totalMaximoDesconto) {
       setValorTotal((totalSemDesconto - totalMaximoDesconto).toFixed(2));
       setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
     } else {

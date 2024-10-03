@@ -37,6 +37,24 @@ export default function SelectClientes() {
     navigation.goBack();
   };
 
+  function mascararCPF(cpf: string) {
+    if (!cpf) return;
+    cpf = cpf.replace(/\D/g, '');
+
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  function mascararCNPJ(cnpj: string) {
+    if (!cnpj) return;
+    cnpj = cnpj.replace(/\D/g, '');
+
+    // Aplica a máscara no formato XX.XXX.XXX/XXXX-XX
+    return cnpj.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      '$1.$2.$3/$4-$5',
+    );
+  }
+
   const renderEndereco = (endereco: {
     Logradouro: string;
     C: string;
@@ -74,8 +92,16 @@ export default function SelectClientes() {
       </View>
       <ShowIf condition={!!item.CNPJCPF}>
         <View style={styles.itemTopRow}>
-          <Text style={styles.itemCode}>CNPJ/CPF: {item.CNPJCPF}</Text>
-          <Text style={styles.itemDescription}>{item.IERG}</Text>
+          <ShowIf condition={!!item.CNPJCPF && item?.CNPJCPF.length > 11}>
+            <Text style={styles.itemCodeCNPJCPF}>
+              CNPJ: {mascararCNPJ(item.CNPJCPF)}
+            </Text>
+          </ShowIf>
+          <ShowIf condition={!!item.CNPJCPF && item?.CNPJCPF.length <= 11}>
+            <Text style={styles.itemCodeCNPJCPF}>
+              CPF: {mascararCPF(item.CNPJCPF)}
+            </Text>
+          </ShowIf>
         </View>
       </ShowIf>
       {item.Enderecos?.map(renderEndereco)}
@@ -127,6 +153,11 @@ const styles = StyleSheet.create({
   itemCode: {
     marginRight: 5,
     fontSize: 16, // Aumentado para 16 para melhor legibilidade
+    fontWeight: 'bold',
+  },
+  itemCodeCNPJCPF: {
+    marginRight: 5,
+    fontSize: 14, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
   },
   itemDescription: {

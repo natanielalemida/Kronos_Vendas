@@ -57,10 +57,6 @@ export default function ModalFilterMenu({isActive, setIsActive}) {
               <Text style={{color: 'white'}}>Cancelar Pedido Atual</Text>
             </TouchableOpacity>
           </ShowIf>
-
-          <TouchableOpacity onPress={loggout} style={{paddingVertical: 10}}>
-            <Text style={{color: 'white'}}>Sair</Text>
-          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     </Modal>

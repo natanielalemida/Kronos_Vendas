@@ -19,25 +19,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function CriarOuEditarUsuario() {
   const navigation = useNavigation();
-  const {form, setForm, handleClearForm, verify} = UseSaveOrEdit();
+  const {form, setForm, handleClearForm} = UseSaveOrEdit();
   const [celular, setCelular] = useState();
   const [email, setEmail] = useState();
-
-  const next = () => {
-    const result = verify([
-      'CNPJCPF',
-      'IE',
-      'NomeFantasia',
-      'RazaoSocial',
-      'Email',
-      'Celular',
-    ]);
-    if (!result) {
-      Alert.alert('Campos obrigatórios', 'Por favor, preecha todos os campos');
-      return;
-    }
-    navigation.navigate('Endereco');
-  };
 
   const sureDelete = (contato: string, placeholder: string) => {
     setForm(oldValue => ({

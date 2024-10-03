@@ -28,6 +28,18 @@ export default function ModalSelectCondicao({
     closeModal(!isActive);
   };
 
+  // Função para calcular os dias das parcelas
+  const calcularDiasParcelas = (
+    qtdeParcelas: number,
+    diaInicial: number,
+    intervalo: number,
+  ) => {
+    return Array.from(
+      {length: qtdeParcelas},
+      (_, i) => diaInicial + i * intervalo,
+    ).join('/');
+  };
+
   const renderOption = (value: CondicaoPagamento) => (
     <TouchableOpacity
       key={value.Codigo}
@@ -35,7 +47,11 @@ export default function ModalSelectCondicao({
       onPress={() => handleOnChangeText(value)}>
       <Text style={[styles.modalText, styles.textStyle]}>
         {value.QtdeParcelas >= 1
-          ? `${value.Codigo} - Quantidade Parcelas: ${value.QtdeParcelas} - dias primeiro pagamento ${value.QtdeDiasParcelaInicial}/DIAS - segunda parcela em ${value.IntervaloDias}/DIAS`
+          ? `Parcelas: ${value.QtdeParcelas} - ${calcularDiasParcelas(
+              value.QtdeParcelas,
+              value.QtdeDiasParcelaInicial,
+              value.IntervaloDias,
+            )}`
           : `${value.Codigo} | ${value.IntervaloDias}/DIAS`}
       </Text>
     </TouchableOpacity>
@@ -49,7 +65,9 @@ export default function ModalSelectCondicao({
       onRequestClose={() => {
         closeModal(!isActive);
       }}>
-      <View style={styles.modalBackground}>
+      <TouchableOpacity
+        style={styles.modalBackground}
+        onPress={() => closeModal(!isActive)}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>{label}</Text>
           <ScrollView
@@ -58,7 +76,7 @@ export default function ModalSelectCondicao({
             {data && data.length > 0 && data.map(value => renderOption(value))}
           </ScrollView>
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 }

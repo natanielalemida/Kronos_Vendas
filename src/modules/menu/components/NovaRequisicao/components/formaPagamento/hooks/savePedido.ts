@@ -26,7 +26,7 @@ export default function SavePedido() {
       Observacao: finalizarVenda?.Observacao,
       CodigoOperacaoVinculada: 0,
       IsOperacaoProcessada: 0,
-      CodigoPessoa: clienteOnContext?.Codigo,
+      CodigoPessoa: clienteOnContext?.Codigo || clienteOnContext?.id,
     };
 
     if (idUpdate) {

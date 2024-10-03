@@ -29,7 +29,9 @@ export default function ModalSelect({
       onRequestClose={() => {
         closeModal(!isActive);
       }}>
-      <View style={styles.modalBackground}>
+      <TouchableOpacity
+        style={styles.modalBackground}
+        onPress={() => closeModal(!isActive)}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>{label}</Text>
           {data &&
@@ -45,7 +47,7 @@ export default function ModalSelect({
               </TouchableOpacity>
             ))}
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 }

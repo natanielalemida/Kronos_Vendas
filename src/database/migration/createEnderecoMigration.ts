@@ -5,16 +5,16 @@ export const createEnderecoTable = async () => {
     if (!(await knexConfig.schema.hasTable('endereco'))) {
       await knexConfig.schema.createTable('endereco', table => {
         table.increments('id').primary();
-        table.integer('Codigo').notNullable().defaultTo(0).index();
-        table.integer('CodigoPessoa').notNullable().index();
-        table.integer('Tipo').notNullable().defaultTo(0).index();
+        table.integer('Codigo').nullable().defaultTo(0).index();
+        table.integer('CodigoPessoa').nullable().index();
+        table.integer('Tipo').nullable().defaultTo(0).index();
         table.string('TipoDescricao').nullable().index();
         table.string('CEP').nullable().index();
         table.string('Logradouro').nullable().index();
-        table.string('Numero').notNullable();
-        table.string('Bairro').notNullable();
+        table.string('Numero').nullable();
+        table.string('Bairro').nullable();
         table.string('Complemento').nullable();
-        table.integer('CodigoMunicipio').notNullable().index();
+        table.integer('CodigoMunicipio').nullable().index();
       });
       console.log('Table ENDERECO created successfully.');
     } else {

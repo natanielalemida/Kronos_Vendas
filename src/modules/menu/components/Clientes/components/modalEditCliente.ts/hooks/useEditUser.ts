@@ -10,10 +10,9 @@ export default function useEditUser({setActive, setForm}: ModalUseModalType) {
   const repositoy = new SaveOrEditClienteRepository();
 
   const handleEditUser = async (clienteUpdate: ClienteDto) => {
-    const data =
-      clienteUpdate.isSincronizado === 1
-        ? await repositoy.pessoaComEndereco(clienteUpdate.id)
-        : await repositoy.pessoaComEnderecoById(clienteUpdate.id);
+    const data = clienteUpdate.Codigo
+      ? await repositoy.pessoaComEndereco(clienteUpdate.id)
+      : await repositoy.pessoaComEnderecoById(clienteUpdate.id);
 
     setForm({
       id: data.id,

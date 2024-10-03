@@ -11,6 +11,10 @@ export default function UseSaveOrEdit() {
   const {form, setForm, handleClearForm} = useCliente();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const verify = (value: string[]) => {
+    return value.every(key => form[key] !== null && form[key] !== undefined);
+  };
+
   const handleSaveOrEdit = async (id?: number) => {
     try {
       setIsLoading(true);
@@ -47,6 +51,7 @@ export default function UseSaveOrEdit() {
     form,
     isLoading,
     setForm,
+    verify,
     handleSaveOrEdit,
     handleClearForm: handleClearFormContext,
   };

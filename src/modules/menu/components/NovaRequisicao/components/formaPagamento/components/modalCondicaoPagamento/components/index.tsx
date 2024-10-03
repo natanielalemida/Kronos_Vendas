@@ -42,7 +42,7 @@ export default function SelectPayment({
       <Text>{label}</Text>
       <ModalSelect
         isActive={modalVisible}
-        label="Selecione a Condição de Pagamento"
+        label="Selecione a Forma de Pagamento"
         closeModal={setModalVisible}
         onTextChange={onTextChange}
         data={data}

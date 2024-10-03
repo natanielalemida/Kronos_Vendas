@@ -1,4 +1,5 @@
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,7 +20,7 @@ import Toast from 'react-native-toast-message';
 export default function Resumo() {
   const navigation = useNavigation();
   const [progress, setProgress] = useState(undefined);
-  const {form} = UseSaveOrEdit();
+  const {form, verify} = UseSaveOrEdit();
   const {params, usuario, handleClearForm} = useCliente();
   const service = new ServiceEnviarSingleCliente(
     params,
@@ -33,20 +34,34 @@ export default function Resumo() {
     navigation.pop(1);
   };
 
+  const validate = () => {
+    const result = verify(['NomeFantasia', 'Municipio', 'CEP', 'CNPJCPF']);
+    if (result) return true;
+    Alert.alert(
+      'Campos obrigatorios',
+      'por favor, preecha todos os campos obrigatios',
+    );
+    return false;
+  };
+
   const handle = async (value: boolean, value2: boolean) => {
+    const result = validate();
+    if (!result) return;
     try {
-      await service.iniciarSincronizacaoSingle(value, value2);
-      Toast.show({
-        type: 'success',
-        text1: 'Sucesso',
-        text1Style: {fontSize: 18, fontWeight: 'bold'},
-        text2: 'Usuário criado com sucesso',
-        text2Style: {fontSize: 14},
-        visibilityTime: 2000,
-      });
-      setTimeout(() => {
-        handleGoBack();
-      }, 500);
+      const sucess = await service.iniciarSincronizacaoSingle(value, value2);
+      if (sucess) {
+        Toast.show({
+          type: 'success',
+          text1: 'Sucesso',
+          text1Style: {fontSize: 18, fontWeight: 'bold'},
+          text2: 'Usuário criado com sucesso',
+          text2Style: {fontSize: 14},
+          visibilityTime: 2000,
+        });
+        setTimeout(() => {
+          handleGoBack();
+        }, 500);
+      }
     } catch (error) {
       console.log(error);
     }

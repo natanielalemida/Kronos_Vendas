@@ -25,6 +25,17 @@ export default function ListAndSelectClientes() {
             backgroundColor: colors.arcGreen,
           },
           headerTintColor: '#fff',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('RouterCliente', {
+                  goBack: true,
+                })
+              }
+              style={styles.headerButton}>
+              <Icon name="add-outline" size={24} color={colors.white} />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen

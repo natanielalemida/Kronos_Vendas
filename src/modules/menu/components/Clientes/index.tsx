@@ -4,7 +4,6 @@ import {useState, useEffect, useRef} from 'react';
 import {colors} from '../../../styles';
 import Loading from '../../../components/loading/Loading';
 import UseGetFetch from './hooks/useGetFetch';
-import Init from './hooks/init';
 import {ClienteDto} from '../../../../sync/clientes/type';
 import ModalEditCliente from './components/modalEditCliente.ts';
 import UseModal from './components/modalEditCliente.ts/hooks/useModal.ts';
@@ -18,7 +17,7 @@ export default function Clientes() {
   const [textFilter, setTextFilter] = useState<string>('');
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const {cliente, isActive, setActive, handleVerifyCliente} = UseModal();
+  const {cliente, isActive, setActive} = UseModal();
   const {handleGetUsers, clientes, isLoading} = UseGetFetch();
   const {setForm} = useCliente();
   const {handleEditUser} = useEditUser({setActive, setForm});
@@ -60,6 +59,24 @@ export default function Clientes() {
   );
 
   const isEven = (index: number) => index % 2 === 0;
+
+  function mascararCPF(cpf: string) {
+    if (!cpf) return;
+    cpf = cpf.replace(/\D/g, '');
+
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  function mascararCNPJ(cnpj: string) {
+    if (!cnpj) return;
+    cnpj = cnpj.replace(/\D/g, '');
+
+    // Aplica a máscara no formato XX.XXX.XXX/XXXX-XX
+    return cnpj.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      '$1.$2.$3/$4-$5',
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -103,9 +120,18 @@ export default function Clientes() {
                 </View>
                 <ShowIf condition={!!item.CNPJCPF}>
                   <View style={styles.itemTopRow}>
-                    <Text style={styles.itemCode}>
-                      CNPJ/CPF: {item.CNPJCPF}
-                    </Text>
+                    <ShowIf
+                      condition={!!item.CNPJCPF && item?.CNPJCPF.length > 11}>
+                      <Text style={styles.itemCodeCNPJCPF}>
+                        CNPJ: {mascararCNPJ(item.CNPJCPF)}
+                      </Text>
+                    </ShowIf>
+                    <ShowIf
+                      condition={!!item.CNPJCPF && item?.CNPJCPF.length <= 11}>
+                      <Text style={styles.itemCodeCNPJCPF}>
+                        CPF: {mascararCPF(item.CNPJCPF)}
+                      </Text>
+                    </ShowIf>
                     <Text style={styles.itemDescription}>{item.IERG}</Text>
                   </View>
                 </ShowIf>
@@ -139,6 +165,11 @@ const styles = StyleSheet.create({
   itemCode: {
     marginRight: 5,
     fontSize: 16, // Aumentado para 16 para melhor legibilidade
+    fontWeight: 'bold',
+  },
+  itemCodeCNPJCPF: {
+    marginRight: 5,
+    fontSize: 14, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
   },
   itemDescription: {

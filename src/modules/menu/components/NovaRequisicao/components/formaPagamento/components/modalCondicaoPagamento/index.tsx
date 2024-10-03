@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -57,6 +58,14 @@ export default function ModalCondicaoPagamento({
   };
 
   const handleConfirmPayment = () => {
+    if (!formaPagamento || !valorPagamento || !condicaoPagamento) {
+      Alert.alert(
+        'Campos obrigatorios',
+        'Por favor, selecione uma forma de pagamento',
+      );
+      return;
+    }
+
     const valorTotal = parseFloat(calcularTotal());
     const valorTotalMenosValorPago = valorTotal - valorPago;
     const valorTotalPago = valorPagamento.replace(/[^0-9.]+/g, '');
@@ -109,6 +118,7 @@ export default function ModalCondicaoPagamento({
     }
 
     setValorPago(valorPago + valorNumber);
+
     handleCloseModal();
   };
 

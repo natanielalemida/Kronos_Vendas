@@ -68,10 +68,7 @@ export default function ModalVenda({
   });
 
   const handleValorVenda = () => {
-    const valorVendaEdit = isEditing
-      ? produto?.ValorVendaDesconto
-      : produto?.ValorVenda;
-    const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
+    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
 
     if (!valorVenda) {
       setDesconto('0.00');
@@ -96,10 +93,7 @@ export default function ModalVenda({
   };
 
   const handleDesconto = () => {
-    const valorVendaEdit = isEditing
-      ? produto?.ValorVendaDesconto
-      : produto?.ValorVenda;
-    const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
+    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
 
     if (!desconto) {
       setDesconto('0.00');
@@ -252,8 +246,6 @@ export default function ModalVenda({
                   onPress={() => {
                     const valorProduto = isAtacado
                       ? selectedProduto?.ValorVendaAtacado.toFixed(2)
-                      : isEditing
-                      ? selectedProduto?.ValorVendaDesconto.toFixed(2)
                       : selectedProduto?.ValorVenda.toFixed(2);
 
                     addQuantidadeAndObsToProduct(
@@ -262,6 +254,7 @@ export default function ModalVenda({
                       observacao,
                       valorVenda,
                       valorProduto,
+                      desconto,
                     );
                   }}>
                   <Icon

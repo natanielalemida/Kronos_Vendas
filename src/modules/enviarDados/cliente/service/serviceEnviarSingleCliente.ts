@@ -50,7 +50,7 @@ export default class ServiceEnviarSingleCliente {
 
       return data;
     } catch (err) {
-      console.log(err);
+      throw err;
     }
   }
 
@@ -60,7 +60,7 @@ export default class ServiceEnviarSingleCliente {
     return true;
   }
 
-  async iniciarSincronizacaoSingle(initSync: boolean, value2: boolean) {
+  async iniciarSincronizacaoSingle(initSync: boolean) {
     this.setProgress({message: 'Iniciando sincronização...', progress: 0});
 
     const syncAndSave = this.params.find(
@@ -81,7 +81,7 @@ export default class ServiceEnviarSingleCliente {
 
       if (!sucess) {
         this.setProgress(undefined);
-        Alert.alert('Falha', `${result.mensagens.conteudo}`);
+        Alert.alert('Falha', `${result.mensagens[0].conteudo}`);
         return;
       }
 
@@ -90,22 +90,27 @@ export default class ServiceEnviarSingleCliente {
       );
 
       if (exisitUser) {
-        await this.repository.saveOneSync(result.Resultado, this.cliente.id);
+        const salvou = await this.repository.saveOneSync(
+          result.Resultado,
+          this.cliente.id,
+        );
         this.setProgress(undefined);
-        return;
+        return salvou;
       }
 
       this.setProgress({message: 'Salvando cliente', progress: 0.8});
 
-      await this.repository.saveSyncOne(result.Resultado);
+      const salvou = await this.repository.saveSyncOne(result.Resultado);
       this.setProgress(undefined);
-      return;
+      return salvou;
     }
 
     this.setProgress({message: 'salvando', progress: 0.4});
 
     if (!initSync) {
-      await this.service.saveOrUpdate(this.cliente);
+      const salvou = await this.service.saveOrUpdate(this.cliente);
+      this.setProgress(undefined);
+      return salvou;
     }
 
     if (initSync) {
@@ -115,19 +120,22 @@ export default class ServiceEnviarSingleCliente {
 
       if (!sucess) {
         this.setProgress(undefined);
-        Alert.alert('Falha', `${result.mensagens.conteudo}`);
+        Alert.alert('Falha', `${result.mensagens[0].conteudo}`);
         return;
       }
 
       if (this.cliente.id) {
-        await this.repository.saveOneSync(result.Resultado, this.cliente.id);
+        const salvou = await this.repository.saveOneSync(
+          result.Resultado,
+          this.cliente.id,
+        );
         this.setProgress(undefined);
-        return;
+        return salvou;
       }
 
-      await this.repository.saveSyncOne(result.Resultado);
-
+      const salvou = await this.repository.saveSyncOne(result.Resultado);
       this.setProgress(undefined);
+      return salvou;
     }
 
     this.setProgress(undefined);

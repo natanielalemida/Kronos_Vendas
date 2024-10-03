@@ -41,10 +41,12 @@ export default class ClienteRepository {
 
       // Confirmando as operações, finalizando a transação
       await trx.commit();
+      return id;
     } catch (error) {
       // Desfazendo as operações caso ocorra algum erro
       await trx.rollback();
-      console.log(error);
+      console.error(error);
+      throw error;
     }
   }
 
@@ -76,9 +78,11 @@ export default class ClienteRepository {
         })
         .where('id', Endereco.id);
       await transaction.commit();
+      return Cliente.id;
     } catch (err) {
       console.log(err);
       await transaction.rollback();
+      throw err;
     }
   }
 

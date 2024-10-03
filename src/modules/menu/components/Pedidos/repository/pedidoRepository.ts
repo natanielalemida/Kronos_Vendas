@@ -237,6 +237,95 @@ export default class PedidoRepository {
     }
   }
 
+  async getPedidoByIdNotSynced(
+    id: number,
+  ): Promise<PedidoSearchDto | undefined> {
+    try {
+      const data = await knexConfig('pedido')
+        .select(
+          'pedido.Codigo as CodigoPedidoTable',
+          'pedido.DataEmissao',
+          'pedido.ModuloDeVenda',
+          'pedido.OperacaoTipo',
+          'pedido.Situacao',
+          'pedido.TipoMovimentacaoCodigo',
+          'pedido.TipoMovimentacaoDescricao',
+          'pedido.DataOperacao',
+          'pedido.Observacao',
+          'pedido.CodigoOperacaoVinculada',
+          'pedido.IsOperacaoProcessada',
+          'pedido.CodigoPessoa',
+          'formaPagamento.*',
+          'PedidoVinculoProduto.Descricao as DescricaoPedido',
+          'PedidoVinculoProduto.Quantidade',
+          'PedidoVinculoProduto.ValorCusto',
+          'PedidoVinculoProduto.ValorVenda',
+          'PedidoVinculoProduto.ValorOriginalProduto',
+          'PedidoVinculoProduto.UnidadeMedida',
+          'PedidoVinculoProduto.ValorVendaDesconto',
+          'PedidoVinculoMeioPagamento.*',
+          'condicaoPagamento.*',
+          'produtos.ValorVendaAtacado',
+          'produtos.Codigo as CodigoProduto',
+          'pessoa.Codigo as PessoaCodigo',
+          'pessoa.CodigoPessoa as CodigoPessoa',
+          'pessoa.NomeFantasia',
+          'pessoa.CNPJCPF as CNPJCPF',
+          'pessoa.TipoPreco',
+          'pessoa.id as idPessoa',
+        )
+        .innerJoin('pessoa', 'pessoa.id', 'pedido.CodigoPessoa')
+        .innerJoin('PedidoVinculoProduto', function () {
+          this.on(function () {
+            this.on(
+              'PedidoVinculoProduto.CodigoPedido',
+              '=',
+              'pedido.Codigo',
+            ).orOn(
+              knexConfig.raw(
+                'pedido.Codigo IS NULL AND PedidoVinculoProduto.CodigoPedido = pedido.id',
+              ),
+            );
+          });
+        })
+        .innerJoin(
+          'produtos',
+          'produtos.Codigo',
+          'PedidoVinculoProduto.CodigoProduto',
+        )
+        .innerJoin('PedidoVinculoMeioPagamento', function () {
+          this.on(function () {
+            this.on(
+              'PedidoVinculoMeioPagamento.CodigoPedido',
+              '=',
+              'pedido.Codigo',
+            ).orOn(
+              knexConfig.raw(
+                'pedido.Codigo IS NULL AND PedidoVinculoMeioPagamento.CodigoPedido = pedido.id',
+              ),
+            );
+          });
+        })
+        .innerJoin(
+          'formaPagamento',
+          'formaPagamento.Codigo',
+          'PedidoVinculoMeioPagamento.CodigoFormaPagamento',
+        )
+        .innerJoin(
+          'condicaoPagamento',
+          'condicaoPagamento.Codigo',
+          'PedidoVinculoMeioPagamento.CodigoCondicao',
+        )
+        .where('pedido.id', id);
+
+      if (!data.length) return undefined;
+
+      return this.mapper.mapearDados(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async deletePedidoById(id: number) {
     const trx = await knexConfig.transaction(); // Inicia uma transação
 

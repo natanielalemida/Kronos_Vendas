@@ -10,7 +10,7 @@ export const createPessoaTable = async () => {
         table.integer('CategoriaCodigo').nullable().index();
 
         table.integer('RegiaoCodigo').nullable().index();
-        table.integer('isSincronizado').notNullable().defaultTo(0);
+        table.integer('isSincronizado').nullable().defaultTo(0);
         table.integer('DiaPagamento').nullable().defaultTo(0);
         table.decimal('LimiteCompra', 10, 2).nullable().defaultTo(0.0);
         table.decimal('DescontoMaximo', 10, 2).nullable().defaultTo(0.0);
@@ -18,14 +18,14 @@ export const createPessoaTable = async () => {
         table.decimal('AcrescimoPercentual', 10, 2).nullable().defaultTo(0.0);
         table.boolean('PermiteComprarPazo').nullable().defaultTo(false);
         table.integer('CodigoPessoa').nullable().index();
-        table.integer('PessoaFJ').notNullable().defaultTo(0);
-        table.string('RazaoSocial').notNullable();
-        table.string('NomeFantasia').notNullable();
+        table.integer('PessoaFJ').nullable().defaultTo(0);
+        table.string('RazaoSocial').nullable();
+        table.string('NomeFantasia').nullable();
         table.string('CNPJCPF').nullable().unique();
         table.string('IERG').nullable();
         table.integer('TipoContribuinte').nullable().defaultTo(0);
         table.text('Observacao').nullable();
-        table.boolean('Ativo').notNullable().defaultTo(true);
+        table.boolean('Ativo').nullable().defaultTo(true);
         table
           .timestamp('DataCadastro')
           .notNullable()

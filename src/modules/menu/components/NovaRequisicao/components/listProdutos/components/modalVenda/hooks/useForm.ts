@@ -20,6 +20,21 @@ export default function UseForm({
       : produto?.ValorVenda;
     const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
 
+    const totalTaxa = isAtacado
+      ? produto?.ValorVendaAtacado
+      : produto?.ValorVenda;
+
+    if (produto?.TaxaDesconto) {
+      setDesconto(produto?.TaxaDesconto);
+    } else if (isEditing) {
+      const valorTotalDesconto = (
+        Number(totalTaxa?.toFixed(2)) -
+        Number(produto?.ValorVendaDesconto.toFixed(2))
+      ).toFixed(2);
+
+      setDesconto(((Number(valorTotalDesconto) / totalTaxa) * 100).toFixed(2));
+    }
+
     setValorVenda(total?.toFixed(2));
   }, [produto, isActive]);
 
@@ -28,6 +43,20 @@ export default function UseForm({
       ? produto?.ValorVendaDesconto
       : produto?.ValorVenda;
     const total = isAtacado ? produto?.ValorVendaAtacado : valorVendaEdit;
+    const totalTaxa = isAtacado
+      ? produto?.ValorVendaAtacado
+      : produto?.ValorVenda;
+
+    if (produto?.TaxaDesconto) {
+      setDesconto(produto?.TaxaDesconto);
+    } else if (isEditing) {
+      const valorTotalDesconto = (
+        Number(totalTaxa?.toFixed(2)) -
+        Number(produto?.ValorVendaDesconto.toFixed(2))
+      ).toFixed(2);
+
+      setDesconto(((Number(valorTotalDesconto) / totalTaxa) * 100).toFixed(2));
+    }
 
     setValorVenda(total?.toFixed(2));
   }, [isAtacado]);
