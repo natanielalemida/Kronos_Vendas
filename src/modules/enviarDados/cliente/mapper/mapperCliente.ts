@@ -87,6 +87,25 @@ export default class NovoCliente {
   }
 
   mappNovoClienteForm(pessoa: any, usuario: UsuarioDto) {
+    const emails =
+      pessoa.Email && pessoa.Email.length
+        ? pessoa.Email.map(email => ({
+            Codigo: 0,
+            CodigoPessoa: 0,
+            Tipo: 2,
+            Contato: email.Contato,
+          }))
+        : [];
+    const celulars =
+      pessoa.Celular && pessoa.Celular.length
+        ? pessoa.Celular.map(celular => ({
+            Codigo: 0,
+            CodigoPessoa: 0,
+            Tipo: 1,
+            Contato: celular.Contato,
+          }))
+        : [];
+
     return {
       Codigo: pessoa.Codigo || 0,
       Categoria: pessoa.CategoriaCodigo || null,
@@ -134,20 +153,7 @@ export default class NovoCliente {
           },
         },
       ],
-      Contatos: [
-        ...pessoa.Email.map(email => ({
-          Codigo: 0,
-          CodigoPessoa: 0,
-          Tipo: 2,
-          Contato: email.Contato,
-        })),
-        ...pessoa.Celular.map(celular => ({
-          Codigo: 0,
-          CodigoPessoa: 0,
-          Tipo: 1,
-          Contato: celular.Contato,
-        })),
-      ],
+      Contatos: [...emails, ,],
     };
   }
 }

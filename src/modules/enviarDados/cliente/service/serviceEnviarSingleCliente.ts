@@ -66,12 +66,12 @@ export default class ServiceEnviarSingleCliente {
     const syncAndSave = this.params.find(
       parametro => parametro.Descricao === 'UsarApenasOnline',
     );
-
+    console.log('comeco');
     const clienteSend = this.mapper.mappNovoClienteForm(
       this.cliente,
       this.usuario,
     );
-
+    console.log('aaaaaaaaaaaaaaaaa');
     if (syncAndSave) {
       this.setProgress({message: 'Enviando para o servidor', progress: 0.4});
 
@@ -113,9 +113,12 @@ export default class ServiceEnviarSingleCliente {
       return salvou;
     }
 
-    if (initSync) {
-      const result = await this.enviar(clienteSend);
+    console.log('antes if');
 
+    if (initSync) {
+      console.log('dentro if');
+      const result = await this.enviar(clienteSend);
+      console.log('comeco');
       const sucess = await this.verify(result);
 
       if (!sucess) {

@@ -83,7 +83,6 @@ export const ClienteProvider: React.FC<{children: ReactNode}> = ({
   };
 
   const cleanPedido = () => {
-    setClienteOnContext(undefined);
     setFinalizarVenda(undefined);
     setFormaPagameto([]);
     setProdutosSelecionados([]);

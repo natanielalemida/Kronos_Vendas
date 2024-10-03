@@ -64,8 +64,11 @@ export default function ResumoPedido({navigation}) {
 
   const enviarPedido = async (id: number) => {
     try {
-      console.log({clienteOnContext});
-      const result = await teste(id, clienteOnContext, usuario);
+      const result = await teste(
+        id,
+        {...clienteOnContext, CEP: 4454546},
+        usuario,
+      );
       if (result) {
         Alert.alert('Sucesso', 'Pedido enviado com sucesso');
         setTimeout(() => {
@@ -74,7 +77,7 @@ export default function ResumoPedido({navigation}) {
         return;
       }
     } catch (error) {
-      console.log({error});
+      console.error({error});
       Alert.alert('Falha', 'Falha ao enviar pedido');
     }
   };

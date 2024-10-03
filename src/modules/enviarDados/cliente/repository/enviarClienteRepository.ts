@@ -175,6 +175,7 @@ export default class EnviarClienteRepository {
       return id;
     } catch (error) {
       // Reverte a transação se ocorrer um erro
+      console.error(error);
       await trx.rollback();
       throw error;
     }
