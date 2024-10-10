@@ -11,17 +11,20 @@ import UseSaveOrEdit from './hooks/useSaveOrEdit';
 import ServiceEnviarSingleCliente from '../../../../../enviarDados/cliente/service/serviceEnviarSingleCliente';
 import {useCliente} from '../../context/clientContext';
 import {useState} from 'react';
-import {HeaderProducts} from '../../../../../components/headers/HeaderProducts';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Loading from '../../../../../components/loading/Loading';
 import {ShowIf} from '../../../../../components/showIf';
 import Toast from 'react-native-toast-message';
+import {HeaderProducts} from '../../../../../components/headers/HeaderProducts';
 
 export default function Resumo() {
   const navigation = useNavigation();
   const [progress, setProgress] = useState(undefined);
   const {form, verify} = UseSaveOrEdit();
-  const {params, usuario, handleClearForm} = useCliente();
+  const {params, usuario, handleClearForm, setClienteOnContext} = useCliente();
+  const route = useRoute();
+  const {params: itemDosCara} = route;
+  const {setClienteOnContextActive} = itemDosCara || {};
   const service = new ServiceEnviarSingleCliente(
     params,
     usuario,
@@ -29,9 +32,32 @@ export default function Resumo() {
     setProgress,
   );
 
+  function mascararCPF(cpf: string) {
+    if (!cpf) return;
+    cpf = cpf.replace(/\D/g, '');
+
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  function mascararCNPJ(cnpj: string) {
+    if (!cnpj) return;
+    cnpj = cnpj.replace(/\D/g, '');
+
+    // Aplica a máscara no formato XX.XXX.XXX/XXXX-XX
+    return cnpj.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      '$1.$2.$3/$4-$5',
+    );
+  }
+
   const handleGoBack = () => {
     handleClearForm();
     navigation.pop(1);
+  };
+
+  const handleGoBack2 = () => {
+    handleClearForm();
+    navigation.pop(2);
   };
 
   const validate = () => {
@@ -50,6 +76,21 @@ export default function Resumo() {
     try {
       const sucess = await service.iniciarSincronizacaoSingle(value, value2);
       if (sucess) {
+        if (setClienteOnContextActive) {
+          setClienteOnContext(sucess);
+          Toast.show({
+            type: 'success',
+            text1: 'Sucesso',
+            text1Style: {fontSize: 18, fontWeight: 'bold'},
+            text2: 'Usuário criado com sucesso',
+            text2Style: {fontSize: 14},
+            visibilityTime: 2000,
+          });
+          setTimeout(() => {
+            handleGoBack2();
+          }, 500);
+          return;
+        }
         Toast.show({
           type: 'success',
           text1: 'Sucesso',
@@ -63,6 +104,9 @@ export default function Resumo() {
         }, 500);
       }
     } catch (error) {
+      const err = error as Error;
+      Alert.alert('Falha', err.message);
+      setProgress(undefined);
       console.log(error);
     }
   };
@@ -111,17 +155,39 @@ export default function Resumo() {
                   <View style={{alignItems: 'flex-end', width: '40%'}}>
                     <Text style={styles.label}>Status</Text>
                     <ShowIf condition={!form.isSincronizado}>
-                      <Text>Não sincronizado</Text>
+                      <Text
+                        style={{color: colors.cancelButton, fontWeight: '500'}}>
+                        Não sincronizado
+                      </Text>
                     </ShowIf>
                     <ShowIf condition={form.isSincronizado}>
-                      <Text>Sincronizado</Text>
+                      <Text style={{color: colors.arcGreen, fontWeight: '500'}}>
+                        Sincronizado
+                      </Text>
                     </ShowIf>
                   </View>
                 </View>
-                <Text style={styles.label}>CPF / CNPJ</Text>
-                <Text style={styles.infoText}>{form.CNPJCPF}</Text>
-                <Text style={styles.label}>RG / IE</Text>
-                <Text style={styles.infoText}>{form.IE}</Text>
+
+                {form.CNPJCPF && form.CNPJCPF.length > 11 && (
+                  <View>
+                    <Text style={styles.label}>CNPJ</Text>
+                    <Text style={styles.infoText}>
+                      {mascararCNPJ(form.CNPJCPF)}
+                    </Text>
+                  </View>
+                )}
+                {form.CNPJCPF && form.CNPJCPF.length <= 11 && (
+                  <View>
+                    <Text style={styles.label}>CPF</Text>
+                    <Text style={styles.infoText}>
+                      {mascararCPF(form.CNPJCPF)}
+                    </Text>
+                  </View>
+                )}
+                <ShowIf condition={!!form.IE}>
+                  <Text style={styles.label}>RG / IE</Text>
+                  <Text style={styles.infoText}>{form.IE}</Text>
+                </ShowIf>
               </View>
             </View>
           </View>
@@ -166,7 +232,9 @@ export default function Resumo() {
                   </View>
                   <View style={styles.rightAligned}>
                     <Text style={styles.label}>Estado</Text>
-                    <Text style={styles.infoText}>PA</Text>
+                    <Text style={styles.infoText}>
+                      {form?.Municipio?.Estado}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -223,6 +291,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   labelTextH1: {
+    color: colors.black,
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -230,11 +299,11 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   label: {
+    color: colors.black,
     fontWeight: 'bold',
   },
   infoText: {
     paddingVertical: 5,
-    fontWeight: '900',
     color: colors.black,
   },
   rowWithTwoColumns: {

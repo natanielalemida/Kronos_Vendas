@@ -19,6 +19,8 @@ import ViewShot from 'react-native-view-shot';
 import Share from 'react-native-share';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import UseRepository from '../../hooks/useRepository';
+import {getClienteToSave} from './hooks/getClienteToSave';
+import Loading from '../../../../../components/loading/Loading';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
@@ -29,12 +31,14 @@ export default function ResumoPedido({navigation}) {
     usuario,
   } = useCliente();
   const {params} = route;
-  const {id, Codigo, goBack} = params || {};
+  const {id, Codigo, goBack, idCliente} = params || {};
 
   const {teste} = UseRepository();
+  const {getByIdToSave, getByCodeToSave} = getClienteToSave();
 
   const viewRef = useRef(null);
   const [data, setData] = useState<PedidoSearchDto>();
+  const [isLoading, setIsLoading] = useState(false);
   const repository = new PedidoRepository();
 
   const handleGetPedido = async () => {
@@ -50,7 +54,7 @@ export default function ResumoPedido({navigation}) {
       });
       return;
     } else {
-      const result = await repository.getPedidoByIdNotSynced(id);
+      const result = await repository.getPedidoById(id);
 
       setData({
         ...result,
@@ -64,11 +68,12 @@ export default function ResumoPedido({navigation}) {
 
   const enviarPedido = async (id: number) => {
     try {
-      const result = await teste(
-        id,
-        {...clienteOnContext, CEP: 4454546},
-        usuario,
-      );
+      setIsLoading(true);
+      let cliente = null;
+      if (idCliente) {
+        cliente = await getByIdToSave(idCliente);
+      }
+      const result = await teste(id, cliente, usuario);
       if (result) {
         Alert.alert('Sucesso', 'Pedido enviado com sucesso');
         setTimeout(() => {
@@ -79,6 +84,8 @@ export default function ResumoPedido({navigation}) {
     } catch (error) {
       console.error({error});
       Alert.alert('Falha', 'Falha ao enviar pedido');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -141,15 +148,17 @@ export default function ResumoPedido({navigation}) {
       {data?.Itens.map((produto, index) => (
         <View key={index} style={styles.productRow}>
           <View style={styles.productDetails}>
-            <Text style={{width: '75%'}}>{produto.Descricao}</Text>
+            <Text style={{width: '75%', color: colors.black}}>
+              {produto.Descricao}
+            </Text>
             <Text style={{fontWeight: 'bold', color: colors.confirmButton}}>
               R$ {produto.ValorUnitario.toFixed(2)}
             </Text>
           </View>
           <View style={styles.productInfo}>
             <View style={styles.productInfoBlock}>
-              <Text>DESC</Text>
-              <Text>
+              <Text style={styles.colorBlack}>DESC</Text>
+              <Text style={styles.colorBlack}>
                 {produto.ValorVendaDesconto !== produto.ValorUnitario
                   ? (
                       (produto.ValorUnitario - produto.ValorVendaDesconto) *
@@ -165,12 +174,14 @@ export default function ResumoPedido({navigation}) {
               </Text>
             </View>
             <View style={styles.productInfoBlock}>
-              <Text>QTD</Text>
-              <Text>{produto.Quantidade}</Text>
+              <Text style={styles.colorBlack}>QTD</Text>
+              <Text style={styles.colorBlack}>{produto.Quantidade}</Text>
             </View>
             <View style={styles.productInfoBlock}>
-              <Text>VLR UN</Text>
-              <Text>R$ {produto.ValorUnitario.toFixed(2)}</Text>
+              <Text style={styles.colorBlack}>VLR UN</Text>
+              <Text style={styles.colorBlack}>
+                R$ {produto.ValorUnitario.toFixed(2)}
+              </Text>
             </View>
           </View>
         </View>
@@ -183,9 +194,9 @@ export default function ResumoPedido({navigation}) {
       <Text style={styles.sectionTitle}>Forma de Pagamento</Text>
       {data?.MeiosPagamentos.map((meio, index) => (
         <View key={index} style={styles.paymentRow}>
-          <Text>{meio.FormaPagamento.Descricao}</Text>
+          <Text style={styles.colorBlack}>{meio.FormaPagamento.Descricao}</Text>
           <View style={styles.paymentDetails}>
-            <Text style={{fontWeight: 'bold'}}>
+            <Text style={{fontWeight: 'bold', color: colors.black}}>
               R$ {meio.ValorRecebido.toFixed(2)}
             </Text>
           </View>
@@ -223,6 +234,7 @@ export default function ResumoPedido({navigation}) {
         onPressRightIcon={handleDelete}
         leftSize={25}
       />
+      <Loading isModalLoadingActive={isLoading} />
       <ViewShot
         ref={viewRef}
         options={{format: 'jpg', quality: 0.9}}
@@ -230,18 +242,18 @@ export default function ResumoPedido({navigation}) {
         <ScrollView style={{padding: 20}}>
           <Text style={styles.title}>Pedido nº {data?.Codigo}</Text>
           <View style={styles.row}>
-            <Text>Cliente</Text>
+            <Text style={styles.colorBlack}>Cliente</Text>
             <Text style={styles.rightAlignedText}>
               {data?.Pessoa?.NomeFantasia}
             </Text>
           </View>
           <View style={styles.row}>
-            <Text>CNPJ/CPF</Text>
+            <Text style={styles.colorBlack}>CNPJ/CPF</Text>
             <Text style={styles.rightAlignedText}>{data?.Pessoa?.CNPJCPF}</Text>
           </View>
           <View style={styles.row}>
-            <Text>Emissão</Text>
-            <Text style={{fontWeight: 'bold'}}>
+            <Text style={styles.colorBlack}>Emissão</Text>
+            <Text style={{fontWeight: 'bold', color: colors.black}}>
               {formatDate(data?.DataEmissao)}
             </Text>
           </View>
@@ -250,13 +262,15 @@ export default function ResumoPedido({navigation}) {
           <View style={styles.totalRow}>
             <Text style={styles.sectionTitle}>Total</Text>
             <View style={styles.totalInfo}>
-              <Text>Total Bruto</Text>
-              <Text style={{fontWeight: 'bold'}}>R$ {calculateTotalBruto}</Text>
+              <Text style={styles.colorBlack}>Total Bruto</Text>
+              <Text style={{fontWeight: 'bold', color: colors.black}}>
+                R$ {calculateTotalBruto}
+              </Text>
             </View>
 
             <View style={styles.totalInfo}>
-              <Text>Desconto:</Text>
-              <Text style={{fontWeight: 'bold'}}>
+              <Text style={styles.colorBlack}>Desconto:</Text>
+              <Text style={{fontWeight: 'bold', color: colors.black}}>
                 R$
                 {(
                   Number(calculateTotalBruto) - Number(calculateTotalLiquido)
@@ -273,8 +287,8 @@ export default function ResumoPedido({navigation}) {
             </View>
 
             <View style={styles.totalInfo}>
-              <Text>Total Líquido</Text>
-              <Text style={{fontWeight: 'bold'}}>
+              <Text style={styles.colorBlack}>Total Líquido</Text>
+              <Text style={{fontWeight: 'bold', color: colors.black}}>
                 R$ {calculateTotalLiquido}
               </Text>
             </View>
@@ -305,6 +319,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
+    color: colors.black,
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
@@ -315,12 +330,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   rightAlignedText: {
+    color: colors.black,
     textAlign: 'right',
   },
   section: {
     marginVertical: 10,
   },
   sectionTitle: {
+    color: colors.black,
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
@@ -373,4 +390,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  colorBlack: {color: colors.black},
 });

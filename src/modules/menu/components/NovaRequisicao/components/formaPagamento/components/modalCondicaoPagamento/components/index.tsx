@@ -39,7 +39,7 @@ export default function SelectPayment({
         alignSelf: 'center',
       }}
       onPress={() => setModalVisible(!modalVisible)}>
-      <Text>{label}</Text>
+      <Text style={{color: colors.black}}>{label}</Text>
       <ModalSelect
         isActive={modalVisible}
         label="Selecione a Forma de Pagamento"

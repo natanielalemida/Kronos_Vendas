@@ -35,7 +35,7 @@ export default function SelectCondicao({
         alignSelf: 'center',
       }}
       onPress={() => setModalVisible(!modalVisible)}>
-      <Text>{label}</Text>
+      <Text style={{color: colors.black}}>{label}</Text>
       <ModalSelectCondicao
         isActive={modalVisible}
         label="Selecione a Condição de Pagamento"

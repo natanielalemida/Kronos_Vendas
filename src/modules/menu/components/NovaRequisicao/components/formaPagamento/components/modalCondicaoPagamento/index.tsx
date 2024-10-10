@@ -195,7 +195,11 @@ export default function ModalCondicaoPagamento({
               onEndEditing={handleSetValue}
               onChangeText={setValorPagamento}
               keyboardType="numeric"
-              style={{borderBottomColor: colors.black, borderBottomWidth: 1}}
+              style={{
+                borderBottomColor: colors.black,
+                borderBottomWidth: 1,
+                color: colors.black,
+              }}
             />
           </View>
         </View>

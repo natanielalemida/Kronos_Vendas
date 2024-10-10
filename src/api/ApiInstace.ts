@@ -19,7 +19,6 @@ class ApiService {
 
       const data = await this.settingsRepository.get();
       if (!data) {
-        Alert.alert('OOOPS', 'Host não configurado');
         return null;
       }
 
@@ -27,9 +26,47 @@ class ApiService {
         baseURL: `http://${data.host}/`,
       });
     } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  private async createAxiosInstanceLocalHost(
+    host: string,
+  ): Promise<AxiosInstance | null> {
+    try {
+      const isConnected = checkInternetConnection();
+
+      if (!isConnected) {
+        Alert.alert('Sem conexão com a internet');
+        return null;
+      }
+
+      return axios.create({
+        baseURL: `http://${host}/`,
+      });
+    } catch (error) {
       Alert.alert('Erro', 'Não foi possível configurar o Axios');
       console.error(error);
       return null;
+    }
+  }
+
+  public async openLocalUrl(host: string): Promise<any> {
+    const axiosInstance = await this.createAxiosInstanceLocalHost(host);
+    if (!axiosInstance) {
+      return undefined;
+    }
+
+    try {
+      const response = await axiosInstance({
+        url: 'arc/empresa/resumo',
+        method: 'GET',
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return undefined;
     }
   }
 
@@ -48,7 +85,6 @@ class ApiService {
       });
       return response.data;
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível realizar a requisição');
       console.error(error);
       throw error; // Re-throwing to let the caller handle the error if needed
     }

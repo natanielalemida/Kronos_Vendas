@@ -20,7 +20,6 @@ export default function Produto() {
     produtoModal,
     isAtacado,
     canSetAtacado,
-    setCanSetAtacado,
     setAtacado,
     setIsActive,
     handleOpenModal,
@@ -70,14 +69,20 @@ export default function Produto() {
 
             <View style={styles.itemBottomRow}>
               <View style={styles.itemDetailsLeft}>
-                <Text>{item.UnidadeMedida}</Text>
-                <Text>Est. 10</Text>
+                <Text style={{color: colors.black}}>{item.UnidadeMedida}</Text>
+                <Text style={{color: colors.black}}>Est. 10</Text>
               </View>
-              <Text>EAN: {item.CodigoDeBarras}</Text>
+              <Text style={{color: colors.black}}>
+                EAN: {item.CodigoDeBarras}
+              </Text>
             </View>
             <View>
               <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                }}>
                 <Text
                   style={{
                     color: 'black',
@@ -107,10 +112,10 @@ export default function Produto() {
 
             <View style={styles.itemBottomRow}>
               <View style={styles.itemDetailsLeft}>
-                <Text>{item.UnidadeMedida}</Text>
-                <Text>Est. 10</Text>
+                <Text style={{color: 'black'}}>{item.UnidadeMedida}</Text>
+                <Text style={{color: 'black'}}>Est. 10</Text>
               </View>
-              <Text>EAN: {item.CodigoDeBarras}</Text>
+              <Text style={{color: 'black'}}>EAN: {item.CodigoDeBarras}</Text>
             </View>
             <View>
               <Text style={{color: 'black', fontSize: 16}}>
@@ -221,6 +226,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   itemBottomRow: {
+    flexWrap: 'wrap',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

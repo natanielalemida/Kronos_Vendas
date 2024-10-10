@@ -54,10 +54,10 @@ export default function Produto() {
       </View>
       <View style={styles.itemBottomRow}>
         <View style={styles.itemDetailsLeft}>
-          <Text>{item.UnidadeMedida}</Text>
-          <Text>Est. 10</Text>
+          <Text style={styles.black}>{item.UnidadeMedida}</Text>
+          <Text style={styles.black}>Est. 10</Text>
         </View>
-        <Text>EAN: {item.CodigoDeBarras}</Text>
+        <Text style={styles.black}>EAN: {item.CodigoDeBarras}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -125,6 +125,9 @@ const styles = StyleSheet.create({
   itemBottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  black: {
+    color: colors.black,
   },
   itemDetailsLeft: {
     flexDirection: 'row',

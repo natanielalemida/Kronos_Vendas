@@ -6,6 +6,8 @@ export default class MunicipioRepository {
     const data = await knexConfig('municipio').select([
       'Codigo',
       'MunicipioNome',
+      'MunicipioCodigo',
+      'UFSigla as Estado',
     ]);
     return data;
   }

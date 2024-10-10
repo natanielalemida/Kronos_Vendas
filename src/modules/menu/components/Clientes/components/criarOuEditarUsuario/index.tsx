@@ -10,7 +10,7 @@ import {
 import CustomTextInput from '../../../../../components/customTextInput/customTextInput';
 import {colors} from '../../../../../styles';
 import UseSaveOrEdit from './hooks/useSaveOrEdit';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useState} from 'react';
 import {TextInputMask} from 'react-native-masked-text';
@@ -83,6 +83,7 @@ export default function CriarOuEditarUsuario() {
           value={value}
           onChangeText={onChangeText}
           onEndEditing={() => handleSetValueToForm(placeholder)}
+          placeholderTextColor={colors.black}
           style={styles.input}
         />
       ) : placeholder === 'Email' ? (
@@ -236,6 +237,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
   input: {
+    color: colors.black,
     flex: 1,
     paddingLeft: 12,
   },

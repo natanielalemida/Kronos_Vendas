@@ -1,6 +1,7 @@
 import {Alert} from 'react-native';
 import {SettingsService} from '../service';
 import {useSaveSettingsProps} from '../type';
+import ApiInstace from '../../../../../api/ApiInstace';
 
 export function useSaveSettings({
   host,
@@ -17,6 +18,13 @@ export function useSaveSettings({
         'Campos invalidos',
         'por favor, verifique os campos e tente novamente',
       );
+      return;
+    }
+
+    const result = await ApiInstace.openLocalUrl(host);
+
+    if (!result) {
+      Alert.alert('Falha', 'Não foi possivel conectar com o servidor');
       return;
     }
 

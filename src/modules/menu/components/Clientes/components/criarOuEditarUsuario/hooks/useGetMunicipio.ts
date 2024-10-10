@@ -10,6 +10,8 @@ export default function UseGetMunicipio() {
     const result = data.map(item => ({
       id: item.Codigo,
       title: item.MunicipioNome,
+      MunicipioCodigo: item.MunicipioCodigo,
+      Estado: item.Estado,
     }));
     setMunicipios(result);
     return data;

@@ -1,13 +1,16 @@
 import {knexConfig} from '../../../../database/connection';
 import {UsuarioDto} from '../../../login/hooks/type';
+import ClienteRepository from '../../../menu/components/Clientes/components/criarOuEditarUsuario/repository/saveOrEditClienteRepository';
 import NovoCliente from '../mapper/mapperCliente';
 import {EnviarPessoa} from '../type/enviarCliente';
 
 export default class EnviarClienteRepository {
   private mapper: NovoCliente;
+  private repository: ClienteRepository;
 
   constructor() {
     this.mapper = new NovoCliente();
+    this.repository = new ClienteRepository();
   }
   async getClientes(usuario: UsuarioDto): Promise<EnviarPessoa[]> {
     const data = await knexConfig('pessoa')
@@ -102,7 +105,11 @@ export default class EnviarClienteRepository {
     return result[0];
   }
 
-  async saveOneSync(cliente: ResultadoSingleClienteDto, id: number) {
+  async saveOneSync(
+    cliente: ResultadoSingleClienteDto,
+    id: number,
+    idEndereco,
+  ) {
     // Inicia a transação
     const trx = await knexConfig.transaction();
 
@@ -147,9 +154,9 @@ export default class EnviarClienteRepository {
                 Numero: currentEndereco.Numero,
                 Bairro: currentEndereco.Bairro,
                 Complemento: currentEndereco.Complemento,
-                CodigoMunicipio: currentEndereco.Municipio.Codigo,
+                CodigoMunicipio: currentEndereco.Municipio.MunicipioCodigo,
               })
-              .where('Codigo', currentEndereco.Codigo); // Ajuste o 'where' conforme necessário
+              .where('id', idEndereco); // Ajuste o 'where' conforme necessário
           }),
         );
       }
@@ -172,7 +179,7 @@ export default class EnviarClienteRepository {
 
       // Confirma a transação
       await trx.commit();
-      return id;
+      return this.repository.pessoaComEndereco(id);
     } catch (error) {
       // Reverte a transação se ocorrer um erro
       console.error(error);
@@ -184,11 +191,24 @@ export default class EnviarClienteRepository {
   async getByCode(code: number) {
     if (!code) return true;
     const result = await knexConfig('pessoa')
-      .select('pessoa.id')
+      .select('endereco.id')
+      .leftJoin('endereco', 'endereco.CodigoPessoa', 'pessoa.id')
       .first()
       .where('pessoa.Codigo', code);
-    if (!result) return true;
+    console.log({result});
+    if (!result) return result;
     return undefined;
+  }
+
+  async getById(code: number) {
+    if (!code) return true;
+    const result = await knexConfig('pessoa')
+      .select('endereco.id')
+      .leftJoin('endereco', 'endereco.CodigoPessoa', 'pessoa.id')
+      .first()
+      .where('pessoa.id', code);
+    if (!result) return undefined;
+    return result.id;
   }
 
   async saveSyncOne(cliente: ResultadoSingleClienteDto) {
@@ -232,7 +252,7 @@ export default class EnviarClienteRepository {
               Numero: currentEndereco.Numero,
               Bairro: currentEndereco.Bairro,
               Complemento: currentEndereco.Complemento,
-              CodigoMunicipio: currentEndereco.Municipio.Codigo,
+              CodigoMunicipio: currentEndereco.Municipio.MunicipioCodigo,
             });
           }),
         );
@@ -254,7 +274,7 @@ export default class EnviarClienteRepository {
 
       // Confirma a transação se tudo der certo
       await trx.commit();
-      return client;
+      return this.repository.pessoaComEndereco(client);
     } catch (error) {
       // Se houver erro, desfaz todas as operações
       await trx.rollback();

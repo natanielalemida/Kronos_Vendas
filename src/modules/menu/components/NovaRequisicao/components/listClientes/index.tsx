@@ -151,11 +151,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   itemCode: {
+    color: colors.black,
     marginRight: 5,
     fontSize: 16, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
   },
   itemCodeCNPJCPF: {
+    color: colors.black,
     marginRight: 5,
     fontSize: 14, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
@@ -168,9 +170,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   enderecoText: {
+    color: colors.black,
     fontSize: 14, // Aumentado para 14 para melhor legibilidade
   },
   noResultsText: {
+    color: colors.black,
     fontSize: 16,
     textAlign: 'center',
     marginTop: 20,

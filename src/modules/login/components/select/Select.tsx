@@ -9,7 +9,8 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import {styles} from '../input/styles';
 import ModalSelect from './ModalSelect';
-import {useMemo, useState} from 'react';
+import {useState} from 'react';
+import {colors} from '../../../styles';
 
 type InputProps = {
   leftIcon?: string;
@@ -56,7 +57,7 @@ export default function Select({
             style={styles.leftIcon}
           />
         )}
-        <Text>{label}</Text>
+        <Text style={{color: colors.black}}>{label}</Text>
         <ModalSelect
           isActive={modalVisible}
           closeModal={setModalVisible}

@@ -7,6 +7,7 @@ export type HeaderProps = {
   rightIcon?: string;
   rightSize?: number;
   rightButtonDisable?: boolean;
+  leftButtonDisable?: boolean;
   onPressLeftIcon?: () => void;
   onPressRighttIcon?: () => void;
 };

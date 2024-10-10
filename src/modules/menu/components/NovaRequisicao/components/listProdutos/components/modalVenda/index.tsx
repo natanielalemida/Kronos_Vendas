@@ -220,14 +220,18 @@ export default function ModalVenda({
 
             <View style={styles.inputContainerWithPadding}>
               <Text style={styles.leftAlignedText}>Observação</Text>
-              <TextInput value={observacao} onChangeText={setObservacao} />
+              <TextInput
+                value={observacao}
+                onChangeText={setObservacao}
+                style={{color: colors.black}}
+              />
               <View style={styles.divider} />
             </View>
 
             <View style={styles.inputContainer}>
               <View style={styles.rowSpaceAroundWithPaddingBottom}>
-                <Text>Total</Text>
-                <Text>
+                <Text style={{color: colors.black}}>Total</Text>
+                <Text style={{color: colors.black}}>
                   R$ {(parseFloat(valorVenda) * quantidade).toFixed(2)}
                 </Text>
               </View>
@@ -344,27 +348,33 @@ const styles = StyleSheet.create({
     width: '50%',
   },
   centeredTextInput: {
+    color: colors.black,
     textAlign: 'center',
     paddingVertical: 10,
   },
   borderedCenteredTextInput: {
+    color: colors.black,
     textAlign: 'center',
     borderBottomColor: 'black',
     borderBottomWidth: 1,
   },
   centeredText: {
+    color: colors.black,
     textAlign: 'center',
     fontWeight: '900',
   },
   boldCenteredText: {
+    color: colors.black,
     textAlign: 'center',
     fontWeight: '900',
   },
   leftAlignedText: {
+    color: colors.black,
     textAlign: 'left',
     fontWeight: '900',
   },
   paddedCenteredText: {
+    color: colors.black,
     paddingVertical: 10,
     textAlign: 'center',
     fontWeight: '900',
@@ -390,6 +400,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   quantityInput: {
+    color: colors.black,
     borderBottomColor: 'black',
     borderBottomWidth: 1,
     width: '25%',

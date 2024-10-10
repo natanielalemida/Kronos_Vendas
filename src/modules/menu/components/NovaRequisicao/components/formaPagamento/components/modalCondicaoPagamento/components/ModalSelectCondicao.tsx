@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import {CondicaoPagamento} from '../../../../../../../../../sync/pagamentos/type';
+import {colors} from '../../../../../../../../styles';
 
 type ModalSelectProp = {
   data: CondicaoPagamento[] | undefined;
@@ -118,6 +119,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   modalText: {
+    color: colors.black,
     marginBottom: 16,
     textAlign: 'left',
   },

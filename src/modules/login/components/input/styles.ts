@@ -13,6 +13,11 @@ export const styles = StyleSheet.create({
     borderColor: 'black',
     marginVertical: 5,
   },
-  leftIconContainer: {flexDirection: 'row', alignItems: 'center', height: 50},
+  leftIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+    width: '80%',
+  },
   leftIcon: {paddingHorizontal: 10},
 });

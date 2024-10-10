@@ -28,7 +28,6 @@ export default function NovaRequisicao() {
   const [isModalActive, setModalActive] = useState<boolean>(false);
 
   const handleSet = (produto: ProdutoBodyCreateQtAndObsDto) => {
-    console.log({produto});
     setProduto(produto);
     setModalActive(true);
   };

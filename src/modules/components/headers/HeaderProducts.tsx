@@ -48,6 +48,7 @@ export function HeaderProducts({
       {leftIcon && (
         <View
           style={{
+            alignItems: 'center',
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>

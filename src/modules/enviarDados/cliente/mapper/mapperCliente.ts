@@ -88,7 +88,7 @@ export default class NovoCliente {
 
   mappNovoClienteForm(pessoa: any, usuario: UsuarioDto) {
     const emails =
-      pessoa.Email && pessoa.Email.length
+      pessoa?.Email && pessoa.Email.length
         ? pessoa.Email.map(email => ({
             Codigo: 0,
             CodigoPessoa: 0,
@@ -97,7 +97,7 @@ export default class NovoCliente {
           }))
         : [];
     const celulars =
-      pessoa.Celular && pessoa.Celular.length
+      pessoa?.Celular && pessoa.Celular.length
         ? pessoa.Celular.map(celular => ({
             Codigo: 0,
             CodigoPessoa: 0,
@@ -106,12 +106,17 @@ export default class NovoCliente {
           }))
         : [];
 
+    const contatos =
+      [...emails, ...celulars] && [...emails, ...celulars].length
+        ? [...emails, ...celulars]
+        : null;
+
     return {
       Codigo: pessoa.Codigo || 0,
       Categoria: pessoa.CategoriaCodigo || null,
       Regiao: pessoa.RegiaoCodigo || null,
       DiaPagamento: pessoa.DiaPagamento || 30,
-      LimiteCompra: pessoa.LimiteCompra || 5000.0,
+      LimiteCompra: pessoa.LimiteCompra || 0,
       BloquearCliente: pessoa.BloquearCliente || true, // Mapeamento manual necessário
       ForcarAtualizacaoCadastro: pessoa.ForcarAtualizacaoCadastro || false, // Mapeamento manual necessário
       CarenciaPagamento: pessoa.CarenciaPagamento || 3, // Mapeamento manual necessário
@@ -148,12 +153,12 @@ export default class NovoCliente {
           Bairro: pessoa.Bairro || '',
           Complemento: pessoa.Complemento || '',
           Municipio: {
-            Codigo: 1,
-            MunicipioCodigo: 3306206,
+            Codigo: pessoa.Municipio.Codigo || 0,
+            MunicipioCodigo: pessoa.Municipio.MunicipioCodigo || 0,
           },
         },
       ],
-      Contatos: [...emails, ,],
+      Contatos: contatos,
     };
   }
 }

@@ -325,6 +325,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   labelTextInput: {
+    color: colors.black,
     fontSize: 16,
     paddingBottom: 10,
   },

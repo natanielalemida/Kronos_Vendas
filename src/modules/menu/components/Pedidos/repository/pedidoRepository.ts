@@ -179,9 +179,9 @@ export default class PedidoRepository {
         )
         .innerJoin('pessoa', function () {
           this.on(function () {
-            this.on('pessoa.Codigo', '=', 'pedido.CodigoPessoa').orOn(
+            this.on('pedido.CodigoPessoa', '=', 'pessoa.Codigo').orOn(
               knexConfig.raw(
-                'pessoa.Codigo IS NULL AND pessoa.id = pedido.CodigoPessoa',
+                'pessoa.Codigo IS NULL AND pedido.CodigoPessoa = pessoa.id',
               ),
             );
           });
@@ -273,7 +273,7 @@ export default class PedidoRepository {
           'pessoa.CNPJCPF as CNPJCPF',
           'pessoa.TipoPreco',
         )
-        .innerJoin('pessoa', 'pessoa.id', 'pedido.CodigoPessoa')
+        .innerJoin('pessoa', 'pessoa.id', '=', 'pedido.CodigoPessoa')
         .innerJoin('PedidoVinculoProduto', function () {
           this.on(function () {
             this.on(

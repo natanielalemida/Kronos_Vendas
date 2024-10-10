@@ -1,27 +1,40 @@
 import {useState} from 'react';
 import ApiInstace from '../../../../api/ApiInstace';
-import {UseFetchProps} from '../type';
+import {useNavigation} from '@react-navigation/native';
 
 export function useFetch() {
+  const navigation = useNavigation();
   const [organizations, setData] = useState<[]>([]);
+  const [isLoadingOrganization, setLoading] = useState(false);
 
   const getOrganizations = async () => {
-    const data = await ApiInstace.openUrl({
-      method: 'get',
-      endPoint: 'arc/empresa/resumo',
-      data: undefined,
-      headers: undefined,
-    });
+    try {
+      setLoading(true);
+      const data = await ApiInstace.openUrl({
+        method: 'get',
+        endPoint: 'arc/empresa/resumo',
+        data: undefined,
+        headers: undefined,
+      });
 
-    if (!data) {
-      return;
+      if (!data) {
+        setLoading(false);
+        navigation.navigate('Settings');
+        return;
+      }
+
+      setData(data.Resultado);
+    } catch (error) {
+      console.error('Erro ao buscar organizações:', error);
+      // Aqui você pode tratar o erro, exibir uma mensagem, etc.
+    } finally {
+      setLoading(false); // Sempre desativa o loading, independentemente do sucesso ou erro
     }
-
-    setData(data.Resultado);
   };
 
   return {
     organizations,
+    isLoadingOrganization,
     getOrganizations,
   };
 }

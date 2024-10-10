@@ -37,6 +37,7 @@ export default function SavePedido() {
       navigation.navigate('resumoPedidoNavigation', {
         id: idUpdate,
         goBack: true,
+        idCliente: !clienteOnContext?.Codigo ? clienteOnContext?.id : null,
       });
       return;
     }
@@ -45,7 +46,11 @@ export default function SavePedido() {
     await handleSaveFormaPagamento(id);
     await handleSaveProdutos(id);
     cleanPedido();
-    navigation.navigate('resumoPedidoNavigation', {id, goBack: true});
+    navigation.navigate('resumoPedidoNavigation', {
+      id,
+      goBack: true,
+      idCliente: !clienteOnContext?.Codigo ? clienteOnContext?.id : null,
+    });
   };
 
   const handleSaveFormaPagamento = async (id: number) => {

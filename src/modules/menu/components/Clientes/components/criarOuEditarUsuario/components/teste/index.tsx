@@ -29,7 +29,12 @@ export const RemoteDataSetExample3 = memo(() => {
           // @ts-ignore
           setForm(oldValue => ({
             ...oldValue,
-            Municipio: {Codigo: item.id, MunicipioNome: item.title},
+            Municipio: {
+              Codigo: item.id,
+              MunicipioNome: item.title,
+              MunicipioCodigo: item.MunicipioCodigo,
+              Estado: item.Estado,
+            },
           }));
       }}
       initialValue={'2'} // or just '2'

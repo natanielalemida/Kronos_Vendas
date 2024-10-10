@@ -8,11 +8,13 @@ import {useNavigation} from '@react-navigation/native';
 import EditarProdutoNaLista from '../components/editProdutosOnList';
 import FormaPagamento from '../components/formaPagamento';
 import Resumo from '../components/resumo';
+import {useCliente} from '../../Clientes/context/clientContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function ListAndSelectClientes() {
   const navigation = useNavigation();
+  const {setClienteOnContext} = useCliente();
 
   return (
     <Stack.Navigator>
@@ -29,7 +31,7 @@ export default function ListAndSelectClientes() {
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('RouterCliente', {
-                  goBack: true,
+                  setClienteOnContextActive: true,
                 })
               }
               style={styles.headerButton}>

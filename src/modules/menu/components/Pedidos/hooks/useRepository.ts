@@ -57,11 +57,8 @@ export default function UseRepository() {
       () => {},
     );
 
-    if (!clienteOnContext?.Codigo) {
-      console.log({aqui: 'sim'});
+    if (!clienteOnContext?.Codigo && clienteOnContext) {
       const userSynced = await serviceCliente.iniciarSincronizacaoSingle(true);
-
-      console.log({userSynced});
 
       if (!userSynced) {
         return;

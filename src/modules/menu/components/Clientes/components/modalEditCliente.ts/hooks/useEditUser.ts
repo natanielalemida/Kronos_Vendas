@@ -13,7 +13,6 @@ export default function useEditUser({setActive, setForm}: ModalUseModalType) {
     const data = clienteUpdate.Codigo
       ? await repositoy.pessoaComEndereco(clienteUpdate.id)
       : await repositoy.pessoaComEnderecoById(clienteUpdate.id);
-
     setForm({
       id: data.id,
       CNPJCPF: data.CNPJCPF,
@@ -24,14 +23,11 @@ export default function useEditUser({setActive, setForm}: ModalUseModalType) {
       Bairro: data.Bairro,
       Logradouro: data.Logradouro,
       Complemento: data.Complemento,
-      Municipio: {
-        Codigo: data.CodigoMunicipioRepository,
-        MunicipioNome: data.MunicipioNome,
-      },
+      Municipio: data.Municipio,
       CEP: data.CEP,
       Celular: [...data.Contatos.Celular],
       Email: [...data.Contatos.Email],
-      isSincronizado: data.isSincronizado,
+      isSincronizado: !!data.Codigo,
     });
     navigation.navigate('RouterCliente');
   };

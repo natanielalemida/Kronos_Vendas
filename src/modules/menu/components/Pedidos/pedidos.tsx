@@ -143,7 +143,9 @@ export default function Pedidos() {
           </Text>
         </View>
         <View style={styles.bottomRow}>
-          <Text>Emissão: {formatDate(item.DataEmissao)}</Text>
+          <Text style={styles.black}>
+            Emissão: {formatDate(item.DataEmissao)}
+          </Text>
           <View style={styles.neonContainer}>
             <Text style={styles.neonText}>Sinc</Text>
             <CheckBox
@@ -205,6 +207,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  black: {
+    color: colors.black,
+  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -253,6 +258,7 @@ const styles = StyleSheet.create({
   },
   neonText: {
     fontWeight: 'bold',
+    color: colors.black,
   },
   checkBoxContainer: {
     backgroundColor: undefined,

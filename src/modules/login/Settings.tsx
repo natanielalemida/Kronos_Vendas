@@ -26,6 +26,7 @@ export default function Settings() {
         leftColor="white"
         leftIcon="arrow-back"
         onPressLeftIcon={goBack}
+        leftButtonDisable={host ? false : true}
       />
       <TouchableOpacity
         onPress={() => setModalActive(!isModalActive)}
@@ -40,15 +41,23 @@ export default function Settings() {
           width: '90%',
           marginVertical: 15,
         }}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View
+          style={{flexDirection: 'row', alignItems: 'center', width: '90%'}}>
           <View style={{marginRight: 15}}>
             <Icon name="wifi-sharp" size={25} color="black" />
           </View>
-          <View>
-            <Text style={{fontWeight: 'bold', fontSize: 16}}>Conexao</Text>
-            <Text>Host: {host}</Text>
-            <Text>Cod Loja: {codStore}</Text>
-            <Text>Terminal: {terminal} </Text>
+          <View style={{width: '100%'}}>
+            <Text style={{fontWeight: 'bold', fontSize: 16, color: 'black'}}>
+              Conexao
+            </Text>
+            <Text
+              style={{color: 'black'}}
+              numberOfLines={1}
+              ellipsizeMode="head">
+              Host: {host}
+            </Text>
+            <Text style={{color: 'black'}}>Cod Loja: {codStore}</Text>
+            <Text style={{color: 'black'}}>Terminal: {terminal} </Text>
           </View>
         </View>
         <View style={{marginRight: 15}}>

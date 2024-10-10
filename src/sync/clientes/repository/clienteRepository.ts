@@ -60,7 +60,7 @@ export default class ClienteRepository {
           Numero: endereco.Numero,
           Bairro: endereco.Bairro,
           Complemento: endereco.Complemento,
-          CodigoMunicipio: endereco.Municipio.Codigo,
+          CodigoMunicipio: endereco.Municipio.MunicipioCodigo,
         });
       }),
     );

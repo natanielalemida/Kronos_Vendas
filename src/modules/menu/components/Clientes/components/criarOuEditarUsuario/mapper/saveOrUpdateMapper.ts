@@ -41,7 +41,8 @@ export default class MapperSaveOrUpdateCliente {
         CEP: cliente.CEP,
         Complemento: cliente.Complemento,
         CodigoMunicipio:
-          cliente.Municipio?.Codigo || cliente.CodigoMunicipioRepository,
+          cliente.Municipio?.MunicipioCodigo ||
+          cliente.CodigoMunicipioRepository,
       },
       Contatos: contatos,
     };

@@ -26,6 +26,7 @@ import UseRepository from '../components/Pedidos/hooks/useRepository';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
 import Exit from './exit';
+import {ShowIf} from '../../components/showIf';
 
 const Drawer = createDrawerNavigator();
 
@@ -53,7 +54,7 @@ function CustomDrawerContent(props) {
 export default function Menu() {
   const [isModalActive, setIsModalActive] = React.useState(false);
 
-  const {clienteOnContext, isSyncing} = useCliente();
+  const {clienteOnContext, isSyncing, ProdutosSelecionados} = useCliente();
   const userName = clienteOnContext?.NomeFantasia
     ? clienteOnContext.NomeFantasia
     : 'Novo Pedido';
@@ -85,16 +86,21 @@ export default function Menu() {
           options={{
             headerTitle: userName,
             headerRight: () => (
-              <TouchableOpacity
-                disabled={!clienteOnContext}
-                onPress={() => setIsModalActive(true)}>
-                <Icon
-                  name="ellipsis-vertical-sharp"
-                  size={24}
-                  color={colors.white}
-                  style={{marginRight: 16}}
-                />
-              </TouchableOpacity>
+              <ShowIf
+                condition={
+                  !!clienteOnContext?.NomeFantasia ||
+                  ProdutosSelecionados.length > 0
+                }>
+                <TouchableOpacity
+                  onPress={() => setIsModalActive(!isModalActive)}>
+                  <Icon
+                    name="ellipsis-vertical-sharp"
+                    size={24}
+                    color={colors.white}
+                    style={{marginRight: 16}}
+                  />
+                </TouchableOpacity>
+              </ShowIf>
             ),
             drawerIcon: ({color, size}) => (
               <Icon name="document-text-outline" color={color} size={size} />

@@ -12,6 +12,7 @@ export function Header({
   rightColor = 'white',
   rightSize = 24,
   rightButtonDisable = false,
+  leftButtonDisable = false,
   onPressLeftIcon,
   onPressRighttIcon,
 }: HeaderProps) {
@@ -21,7 +22,7 @@ export function Header({
         <ShowIf condition={!!leftIcon}>
           <TouchableOpacity
             onPress={onPressLeftIcon}
-            disabled={!onPressLeftIcon}
+            disabled={!onPressLeftIcon || leftButtonDisable}
             style={styles.iconButton} // Estilo adicionado
           >
             <Icon

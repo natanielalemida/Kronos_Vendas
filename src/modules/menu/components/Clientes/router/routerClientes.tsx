@@ -8,6 +8,7 @@ import Resumo from '../components/criarOuEditarUsuario/resumo';
 import {colors} from '../../../../styles';
 import UseSaveOrEdit from '../components/criarOuEditarUsuario/hooks/useSaveOrEdit';
 import {useCliente} from '../context/clientContext';
+import {useRoute} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
@@ -57,6 +58,9 @@ const ScreenOptions = ({route, form}) => ({
 export default function RouterCliente() {
   const {handleClearForm} = UseSaveOrEdit();
   const {form} = useCliente();
+  const route = useRoute();
+  const {params} = route;
+  const {setClienteOnContextActive} = params || {};
 
   return (
     <Tab.Navigator
@@ -96,6 +100,7 @@ export default function RouterCliente() {
             <Ionicons name="clipboard-outline" size={size} color={color} />
           ),
         }}
+        initialParams={{setClienteOnContextActive}}
       />
     </Tab.Navigator>
   );

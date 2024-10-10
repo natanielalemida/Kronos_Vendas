@@ -107,10 +107,7 @@ export default function Clientes() {
                       : colors.white,
                   },
                 ]}
-                onPress={() => {
-                  console.log('Item index:', index);
-                  handleEditUser(item);
-                }}
+                onPress={() => handleEditUser(item)}
                 key={item.Codigo}>
                 <View style={styles.itemTopRow}>
                   <Text style={styles.itemCode}>{item.Codigo}</Text>
@@ -162,12 +159,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
+  black: {
+    color: colors.black,
+  },
   itemCode: {
+    color: colors.black,
     marginRight: 5,
     fontSize: 16, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
   },
   itemCodeCNPJCPF: {
+    color: colors.black,
     marginRight: 5,
     fontSize: 14, // Aumentado para 16 para melhor legibilidade
     fontWeight: 'bold',
@@ -180,9 +182,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   enderecoText: {
+    color: colors.black,
     fontSize: 14, // Aumentado para 14 para melhor legibilidade
   },
   noResultsText: {
+    color: colors.black,
     fontSize: 16,
     textAlign: 'center',
     marginTop: 20,

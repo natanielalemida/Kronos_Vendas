@@ -35,6 +35,7 @@ import {createPedidoTable} from '../../database/migration/createPedidoMigration'
 import {createPedidoVinculoMeioPagamentoTable} from '../../database/migration/createPedidoVinculoMeioPagamentoMigration';
 import {createPedidoVinculoProdutoTable} from '../../database/migration/createPedidoVinculoProdutoMigration';
 import {getNomeUsuario} from '../../storage';
+import Loading from '../components/loading/Loading';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -51,7 +52,7 @@ export default function Login({navigation}) {
     setOrganizationCode(value.Codigo || 0);
   };
 
-  const {organizations, getOrganizations} = useFetch();
+  const {organizations, isLoadingOrganization, getOrganizations} = useFetch();
   const {handleLogin, progress} = UseLogin();
 
   const handleSetLastUser = async () => {
@@ -121,6 +122,10 @@ export default function Login({navigation}) {
 
       <ShowIf condition={!!progress}>
         <LoadingLogin progress={progress} />
+      </ShowIf>
+
+      <ShowIf condition={isLoadingOrganization}>
+        <Loading isModalLoadingActive={isLoadingOrganization} />
       </ShowIf>
 
       <ShowIf

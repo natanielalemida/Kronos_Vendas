@@ -2,6 +2,7 @@ import {DimensionValue, TextInput, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {styles} from './styles';
 import {useEffect, useRef} from 'react';
+import {colors} from '../../../styles';
 
 type InputProps = {
   leftIcon?: string;
@@ -73,7 +74,8 @@ export default function Input({
           value={value}
           placeholder={placeholder}
           onChangeText={(value: string) => onChangeText(value)}
-          style={{width: '80%'}}
+          style={{width: '80%', color: colors.black}}
+          placeholderTextColor={colors.black}
         />
       </View>
       {rightIcon && (

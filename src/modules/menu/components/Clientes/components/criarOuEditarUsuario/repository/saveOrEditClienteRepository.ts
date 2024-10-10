@@ -26,7 +26,7 @@ export default class ClienteRepository {
         Numero: Endereco.Numero,
         Bairro: Endereco.Bairro,
         Complemento: Endereco.Complemento,
-        CodigoMunicipio: 1,
+        CodigoMunicipio: Endereco.CodigoMunicipio,
       });
 
       await Promise.all(
@@ -41,7 +41,7 @@ export default class ClienteRepository {
 
       // Confirmando as operações, finalizando a transação
       await trx.commit();
-      return id;
+      return this.pessoaComEnderecoById(id);
     } catch (error) {
       // Desfazendo as operações caso ocorra algum erro
       await trx.rollback();
@@ -78,7 +78,7 @@ export default class ClienteRepository {
         })
         .where('id', Endereco.id);
       await transaction.commit();
-      return Cliente.id;
+      return this.pessoaComEnderecoById(Cliente.id);
     } catch (err) {
       console.log(err);
       await transaction.rollback();
@@ -100,13 +100,18 @@ export default class ClienteRepository {
         'endereco.Tipo',
         'endereco.TipoDescricao',
         'municipio.MunicipioNome',
+        'municipio.UFSigla as Estado',
         'municipio.Codigo as CodigoMunicipioRepository',
         'contato.Tipo as TipoContato',
         'contato.Codigo as CodigoContato',
         'contato.Contato',
       )
       .leftJoin('endereco', 'endereco.CodigoPessoa', 'pessoa.CodigoPessoa')
-      .leftJoin('municipio', 'municipio.Codigo', 'endereco.CodigoMunicipio')
+      .leftJoin(
+        'municipio',
+        'municipio.MunicipioCodigo',
+        'endereco.CodigoMunicipio',
+      )
       .leftJoin('contato', 'contato.CodigoPessoa', 'pessoa.CodigoPessoa')
       .where('pessoa.id', id);
 
@@ -124,11 +129,13 @@ export default class ClienteRepository {
         acc.Bairro = curr.Bairro;
         acc.Logradouro = curr.Logradouro;
         acc.Numero = curr.Numero;
+        acc.TipoPreco = curr.TipoPreco;
         acc.Complemento = curr.Complemento;
         acc.CEP = curr.CEP;
         acc.Municipio = {
-          Codigo: acc.CodigoMunicipioRepository,
-          MunicipioNome: acc.MunicipioNome,
+          Codigo: curr.CodigoMunicipioRepository,
+          MunicipioNome: curr.MunicipioNome,
+          Estado: curr.Estado,
         };
         acc.DiaPagamento = curr.DiaPagamento;
         acc.Contatos = {
@@ -172,12 +179,18 @@ export default class ClienteRepository {
         'endereco.TipoDescricao',
         'municipio.MunicipioNome',
         'municipio.Codigo as CodigoMunicipioRepository',
+        'municipio.MunicipioCodigo',
+        'municipio.UFSigla as Estado',
         'contato.Tipo as TipoContato',
         'contato.Codigo as CodigoContato',
         'contato.Contato',
       )
       .leftJoin('endereco', 'endereco.CodigoPessoa', 'pessoa.id')
-      .leftJoin('municipio', 'municipio.Codigo', 'endereco.CodigoMunicipio')
+      .leftJoin(
+        'municipio',
+        'municipio.MunicipioCodigo',
+        'endereco.CodigoMunicipio',
+      )
       .leftJoin('contato', 'contato.CodigoPessoa', 'pessoa.id')
       .where('pessoa.id', id);
 
@@ -197,10 +210,13 @@ export default class ClienteRepository {
           acc.Bairro = item.Bairro;
           acc.Logradouro = item.Logradouro;
           acc.Numero = item.Numero;
+          acc.TipoPreco = item.TipoPreco;
           acc.Complemento = item.Complemento;
           acc.Municipio = {
-            Codigo: acc.CodigoMunicipioRepository,
-            MunicipioNome: acc.MunicipioNome,
+            Codigo: item.CodigoMunicipioRepository,
+            MunicipioNome: item.MunicipioNome,
+            MunicipioCodigo: item.MunicipioCodigo,
+            Estado: item.Estado,
           };
           acc.CEP = item.CEP;
           acc.DiaPagamento = item.DiaPagamento;

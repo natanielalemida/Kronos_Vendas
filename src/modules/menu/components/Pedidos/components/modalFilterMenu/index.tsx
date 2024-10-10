@@ -6,20 +6,16 @@ import {useNavigation} from '@react-navigation/native';
 import {ShowIf} from '../../../../../components/showIf';
 
 export default function ModalFilterMenu({isActive, setIsActive}) {
-  const {cleanPedido, clearAllContext, clienteOnContext} = useCliente();
+  const {cleanPedido} = useCliente();
   const navigation = useNavigation();
 
   const cancelarPedidoAtual = () => {
     cleanPedido();
-    setIsActive(!isActive);
-  };
-
-  const loggout = () => {
-    clearAllContext();
-    navigation.navigate('Login');
+    setIsActive(false);
   };
 
   const trocarCliente = () => {
+    setIsActive(false);
     //@ts-ignore
     navigation.navigate('ListClientes', {
       screen: 'SelectClientes',
@@ -32,31 +28,27 @@ export default function ModalFilterMenu({isActive, setIsActive}) {
       transparent={true}
       statusBarTranslucent
       visible={isActive}
-      onRequestClose={() => setIsActive(!isActive)}>
+      onRequestClose={() => setIsActive(false)}>
       <TouchableOpacity
         style={{padding: 5, paddingTop: 40, flex: 1}}
-        onPress={() => setIsActive(!isActive)}>
+        onPress={() => setIsActive(false)}>
         <View
           style={{
             padding: 15,
             backgroundColor: '#303030',
             alignSelf: 'flex-end',
           }}>
-          <ShowIf condition={!!clienteOnContext}>
-            <TouchableOpacity
-              onPress={trocarCliente}
-              style={{paddingVertical: 10}}>
-              <Text style={{color: 'white'}}>Trocar cliente</Text>
-            </TouchableOpacity>
-          </ShowIf>
+          <TouchableOpacity
+            onPress={trocarCliente}
+            style={{paddingVertical: 10}}>
+            <Text style={{color: 'white'}}>Trocar cliente</Text>
+          </TouchableOpacity>
 
-          <ShowIf condition={!!clienteOnContext}>
-            <TouchableOpacity
-              onPress={cancelarPedidoAtual}
-              style={{paddingVertical: 10}}>
-              <Text style={{color: 'white'}}>Cancelar Pedido Atual</Text>
-            </TouchableOpacity>
-          </ShowIf>
+          <TouchableOpacity
+            onPress={cancelarPedidoAtual}
+            style={{paddingVertical: 10}}>
+            <Text style={{color: 'white'}}>Cancelar Pedido Atual</Text>
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     </Modal>
