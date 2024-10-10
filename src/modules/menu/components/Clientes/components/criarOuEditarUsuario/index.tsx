@@ -10,9 +10,13 @@ import {
 import CustomTextInput from '../../../../../components/customTextInput/customTextInput';
 import {colors} from '../../../../../styles';
 import UseSaveOrEdit from './hooks/useSaveOrEdit';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {TextInputMask} from 'react-native-masked-text';
 import {ShowIf} from '../../../../../components/showIf';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -22,6 +26,22 @@ export default function CriarOuEditarUsuario() {
   const {form, setForm, handleClearForm} = UseSaveOrEdit();
   const [celular, setCelular] = useState();
   const [email, setEmail] = useState();
+
+  const CNPJCPFref = useRef(null);
+  const IEref = useRef(null);
+  const nomeFantasiaRef = useRef(null);
+  const razaoSocialRef = useRef(null);
+  const celularRef = useRef(null);
+  const emailRef = useRef(null);
+
+  let phoneRef;
+
+  useFocusEffect(
+    useCallback(() => {
+      CNPJCPFref.current.focus();
+      return () => {};
+    }, []),
+  );
 
   const sureDelete = (contato: string, placeholder: string) => {
     setForm(oldValue => ({
@@ -52,15 +72,17 @@ export default function CriarOuEditarUsuario() {
 
   const handleSetValueToForm = (placeholder: string) => {
     const isEmail = placeholder === 'Email';
-    setForm(oldValue => ({
-      ...oldValue,
-      [placeholder]: [
-        ...oldValue[placeholder],
-        isEmail ? {Contato: email} : {Contato: celular},
-      ],
-    }));
+    if (email || celular) {
+      setForm(oldValue => ({
+        ...oldValue,
+        [placeholder]: [
+          ...oldValue[placeholder],
+          isEmail ? {Contato: email} : {Contato: celular},
+        ],
+      }));
 
-    isEmail ? setEmail('') : setCelular('');
+      isEmail ? setEmail('') : setCelular('');
+    }
   };
 
   const renderInputWithIcon = (
@@ -72,6 +94,7 @@ export default function CriarOuEditarUsuario() {
     <View style={styles.inputContainer}>
       {placeholder === 'Celular' ? (
         <TextInputMask
+          ref={ref => (phoneRef = ref)}
           type={'cel-phone'}
           options={{
             maskType: 'BRL',
@@ -82,16 +105,23 @@ export default function CriarOuEditarUsuario() {
           keyboardType={keyboardType}
           value={value}
           onChangeText={onChangeText}
-          onEndEditing={() => handleSetValueToForm(placeholder)}
+          onSubmitEditing={() => {
+            handleSetValueToForm(placeholder);
+            emailRef.current.focus();
+          }}
           placeholderTextColor={colors.black}
           style={styles.input}
         />
       ) : placeholder === 'Email' ? (
         <CustomTextInput
+          ref={emailRef}
           placeholder={placeholder}
           value={value}
           onChangeText={onChangeText}
-          onEndEditing={() => handleSetValueToForm(placeholder)}
+          onSubmitEditing={() => {
+            handleSetValueToForm(placeholder);
+            navigation.navigate('Endereco');
+          }}
           keyboardType={keyboardType}
           style={styles.input}
         />
@@ -112,6 +142,8 @@ export default function CriarOuEditarUsuario() {
         <View style={styles.row}>
           <View style={styles.inputContainer}>
             <CustomTextInput
+              ref={CNPJCPFref}
+              onSubmitEditing={() => IEref.current?.focus()}
               style={styles.input}
               placeholder="CPF/CNPJ"
               width="60%"
@@ -122,6 +154,9 @@ export default function CriarOuEditarUsuario() {
               }
             />
             <CustomTextInput
+              ref={IEref}
+              onSubmitEditing={() => nomeFantasiaRef.current?.focus()}
+              placeholderTextColor={colors.black}
               style={styles.input}
               placeholder="IE"
               keyboardType="numeric"
@@ -137,6 +172,12 @@ export default function CriarOuEditarUsuario() {
           <View style={styles.inputContainer}>
             <CustomTextInput
               style={styles.input}
+              ref={nomeFantasiaRef}
+              onSubmitEditing={
+                form.CNPJCPF?.length > 11
+                  ? () => razaoSocialRef.current?.focus()
+                  : () => phoneRef.getElement().focus()
+              }
               placeholder="Nome Fantasia"
               value={form.NomeFantasia}
               flex={1}
@@ -150,6 +191,7 @@ export default function CriarOuEditarUsuario() {
           <View style={styles.row}>
             <View style={styles.inputContainer}>
               <CustomTextInput
+                ref={razaoSocialRef}
                 style={styles.input}
                 placeholder="Razão Social"
                 value={form.RazaoSocial}

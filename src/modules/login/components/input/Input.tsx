@@ -20,6 +20,7 @@ type InputProps = {
   onChangeText: (value: string) => void;
   inputWidth?: DimensionValue;
   onEndEditing?: () => void;
+  onPressRigthIcon?: () => void;
 };
 
 export default function Input({
@@ -34,6 +35,7 @@ export default function Input({
   inputWidth,
   password,
   refName,
+  onPressRigthIcon,
   onFocus,
   onEndEditing,
   onChangeText,
@@ -79,7 +81,12 @@ export default function Input({
         />
       </View>
       {rightIcon && (
-        <Icon name={rightIcon} color={rightColor} size={rightSize} />
+        <Icon
+          name={rightIcon}
+          color={rightColor}
+          size={rightSize}
+          onPress={onPressRigthIcon}
+        />
       )}
     </View>
   );

@@ -42,6 +42,7 @@ export default function Login({navigation}) {
   const [password, setPassword] = useState<string>();
   const [organization, setOrganization] = useState<string>();
   const [organizationCode, setOrganizationCode] = useState<number>();
+  const [showPassword, setShowPassword] = useState(true);
   const [ref, setRef] = useState('Usuário');
 
   // Novo estado para controle da visibilidade do teclado
@@ -161,13 +162,17 @@ export default function Login({navigation}) {
         <Input
           refName={ref}
           leftIcon="lock-closed"
-          password={true}
+          password={showPassword}
           value={password}
           onChangeText={value => setPassword(value)}
           leftColor="black"
           leftSize={25}
           placeholder="Senha"
           inputWidth="90%"
+          rightColor="black"
+          rightSize={25}
+          rightIcon={showPassword ? 'eye-outline' : 'eye-off'}
+          onPressRigthIcon={() => setShowPassword(!showPassword)}
         />
 
         <View style={styles.buttonsLabel}>

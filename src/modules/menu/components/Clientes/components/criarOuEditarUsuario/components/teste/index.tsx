@@ -6,7 +6,7 @@ import Init from '../../../../hooks/init';
 import {View, ActivityIndicator} from 'react-native';
 
 export const RemoteDataSetExample3 = memo(() => {
-  const {form, setForm} = useCliente();
+  const {setForm} = useCliente();
   const {getMunicipio, municipios} = UseGetMunicipio();
 
   Init({handleGetUsers: getMunicipio});
