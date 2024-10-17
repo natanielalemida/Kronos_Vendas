@@ -1,5 +1,6 @@
 import {
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -252,9 +253,7 @@ export default function FormaPagamento() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1},
   condicaoContainer: {
     marginVertical: 10,
     padding: 10,

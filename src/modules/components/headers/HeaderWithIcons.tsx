@@ -55,7 +55,7 @@ export function HeaderWithIcons({
           justifyContent: 'space-between',
           marginTop: 20,
         }}>
-        <Text style={{color: 'white', fontSize: 20}}>{label}</Text>
+        <Text style={{color: 'white', fontSize: 18}}>{label}</Text>
       </View>
       {rightIcon && (
         <TouchableOpacity

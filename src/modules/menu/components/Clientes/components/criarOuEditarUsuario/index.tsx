@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
   input: {
     color: colors.black,
     flex: 1,
+    height: 40,
     paddingLeft: 12,
   },
   inputIcon: {

@@ -60,6 +60,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 5,
+    marginBottom: 15,
   },
 });

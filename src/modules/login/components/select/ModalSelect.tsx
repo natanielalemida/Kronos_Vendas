@@ -1,7 +1,6 @@
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {getEmpresa} from '../../../../storage/empresaStorage';
-import {useCallback, useEffect} from 'react';
-import {useFocusEffect} from '@react-navigation/native';
+import {useEffect} from 'react';
 
 type ModalSelectProp = {
   data: {NomeFantasia: string; Codigo: number}[];
@@ -37,14 +36,9 @@ export default function ModalSelect({
     onTextChange(index);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      defaultValue();
-      return () => {
-        // Limpeza aqui
-      };
-    }, []),
-  );
+  useEffect(() => {
+    defaultValue();
+  }, [data]);
 
   return (
     <Modal

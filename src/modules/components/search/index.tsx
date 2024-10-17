@@ -39,6 +39,7 @@ export default function Search({
 const styles = StyleSheet.create({
   container: {
     width: '90%',
+    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#d4d4d4',

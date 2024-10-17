@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  StatusBar,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -152,6 +153,12 @@ export default function ModalCondicaoPagamento({
 
   return (
     <Modal visible={isActive} animationType="slide">
+      <StatusBar
+        translucent
+        backgroundColor="transparent" // Faz o fundo da StatusBar transparente
+        barStyle="dark-content" // Use "light-content" se o fundo da sua tela for escuro
+      />
+
       <View style={styles.container}>
         <View style={{flex: 1, padding: 20}}>
           <View>
@@ -172,7 +179,7 @@ export default function ModalCondicaoPagamento({
             <View style={{paddingVertical: 15}}>
               <View style={{paddingVertical: 5}}>
                 <Text style={{color: colors.black, fontWeight: '600'}}>
-                  Condição de Pagamento:
+                  Condição de Pagamentoooooo:
                 </Text>
               </View>
 
@@ -194,7 +201,8 @@ export default function ModalCondicaoPagamento({
               value={valorPagamento}
               onEndEditing={handleSetValue}
               onChangeText={setValorPagamento}
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
+              returnKeyType="done"
               style={{
                 borderBottomColor: colors.black,
                 borderBottomWidth: 1,
@@ -228,6 +236,7 @@ export default function ModalCondicaoPagamento({
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 30,
     flex: 1,
   },
   top: {

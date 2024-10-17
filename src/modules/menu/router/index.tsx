@@ -33,18 +33,28 @@ const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const {usuario} = useCliente();
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView {...props} contentContainerStyle={{paddingTop: 0}}>
       <View style={styles.userBar}>
         <View>
           <Text style={styles.userTextPhoto}>{usuario?.Login}</Text>
           <Text style={styles.userText}>Kronos vendas</Text>
         </View>
-        <Image
-          style={{width: 50, height: 50, borderRadius: 100}}
-          source={{
-            uri: 'https://img.freepik.com/vetores-gratis/gato-bonito-sentado-ilustracao-em-vetor-icone-dos-desenhos-animados-conceito-de-icone-de-natureza-animal-isolado-de-vetor-premium-estilo-de-desenho-animado-plano_138676-4148.jpg',
-          }}
-        />
+        <View
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 100,
+            backgroundColor: colors.white,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Image
+            style={{width: 40, height: 40}}
+            source={{
+              uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png',
+            }}
+          />
+        </View>
       </View>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
@@ -88,11 +98,13 @@ export default function Menu() {
                   ProdutosSelecionados.length > 0
                 }>
                 <TouchableOpacity
-                  onPress={() => setIsModalActive(!isModalActive)}>
+                  onPress={() => setIsModalActive(!isModalActive)}
+                  style={{paddingHorizontal: 10}}>
                   <Icon
                     name="ellipsis-vertical-sharp"
                     size={24}
                     color={colors.white}
+                    onPress={() => setIsModalActive(!isModalActive)}
                     style={{marginRight: 16}}
                   />
                 </TouchableOpacity>
@@ -182,11 +194,11 @@ const style = {
 const styles = StyleSheet.create({
   userBar: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
     backgroundColor: colors.arcGreen, // Cor de fundo azul
     padding: 16,
-    marginTop: -4,
+    minHeight: '14%',
   },
   userText: {
     color: colors.white, // Cor do texto branca

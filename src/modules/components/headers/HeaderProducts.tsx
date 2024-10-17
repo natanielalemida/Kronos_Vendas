@@ -37,12 +37,13 @@ export function HeaderProducts({
     <View
       style={{
         backgroundColor: colors.arcGreen,
-        alignItems: 'center',
+        alignItems: 'flex-end',
         flexDirection: 'row',
-        height: 80,
+        height: '11%',
         justifyContent: 'space-between',
         paddingTop: 25,
         paddingHorizontal: 10,
+        paddingVertical: 10,
         width: '100%',
       }}>
       {leftIcon && (
@@ -65,7 +66,7 @@ export function HeaderProducts({
           <Text
             style={{
               color: 'white',
-              fontSize: 21,
+              fontSize: 18,
               fontWeight: '500',
             }}>
             {label}

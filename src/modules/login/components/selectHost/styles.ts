@@ -48,6 +48,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     fontSize: 18,
+    height: 30,
   },
   inputStore: {
     borderColor: 'black',
@@ -57,12 +58,14 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     fontSize: 18,
+    height: 30,
   },
   inputTerminal: {
     borderColor: 'black',
     color: 'black',
     borderWidth: 1,
     width: '75%',
+    height: 30,
     borderRadius: 8,
     paddingHorizontal: 10,
     fontSize: 18,

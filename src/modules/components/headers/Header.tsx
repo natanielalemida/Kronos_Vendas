@@ -22,10 +22,11 @@ export function Header({
         <ShowIf condition={!!leftIcon}>
           <TouchableOpacity
             onPress={onPressLeftIcon}
-            disabled={!onPressLeftIcon || leftButtonDisable}
+            disabled={leftButtonDisable}
             style={styles.iconButton} // Estilo adicionado
           >
             <Icon
+              onPress={onPressLeftIcon}
               name={leftIcon}
               size={leftSize}
               color={leftColor}
@@ -44,6 +45,7 @@ export function Header({
           <Icon
             name={rightIcon}
             size={rightSize}
+            onPress={onPressRighttIcon}
             color={rightColor}
             style={styles.icon}
           />
@@ -56,9 +58,9 @@ export function Header({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#00B08F',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     flexDirection: 'row',
-    height: 80,
+    minHeight: '11%',
     paddingHorizontal: 15,
     justifyContent: 'space-between',
     width: '100%',
@@ -72,12 +74,13 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
   },
   icon: {
     // Estilo para o ícone
   },
   iconButton: {
+    padding: 20,
     alignItems: 'center', // Centraliza o conteúdo dentro do TouchableOpacity
     justifyContent: 'center',
   },

@@ -27,6 +27,13 @@ export default function ListAndSelectClientes() {
             backgroundColor: colors.arcGreen,
           },
           headerTintColor: '#fff',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.headerButton}>
+              <Icon name="arrow-back-outline" size={24} color={colors.white} />
+            </TouchableOpacity>
+          ),
           headerRight: () => (
             <TouchableOpacity
               onPress={() =>
@@ -83,19 +90,25 @@ export default function ListAndSelectClientes() {
       <Stack.Screen
         name="FormaPagamento"
         component={FormaPagamento}
-        options={{
+        options={({navigation}) => ({
           title: 'Forma de Pagamento',
           headerStyle: {
             backgroundColor: colors.arcGreen,
           },
           headerTintColor: '#fff',
-        }}
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}>
+              <Icon name="arrow-back" size={24} color="#fff" />
+            </TouchableOpacity>
+          ),
+        })}
       />
+
       <Stack.Screen
         name="ResumoPedido"
         component={Resumo}
         options={{
-          title: 'Forma pagamento',
           headerStyle: {
             backgroundColor: colors.arcGreen,
           },

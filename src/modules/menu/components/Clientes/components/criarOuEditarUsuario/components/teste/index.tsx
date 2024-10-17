@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   input: {
+    height: 40,
     color: colors.black,
   },
   suggestionsContainer: {

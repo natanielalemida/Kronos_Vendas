@@ -42,7 +42,7 @@ export function HeaderLeft({
           width: '65%',
           marginTop: 20,
         }}>
-        <Text style={{color: 'white', fontSize: 20, fontWeight: '500'}}>
+        <Text style={{color: 'white', fontSize: 18, fontWeight: '500'}}>
           {label}
         </Text>
       </View>

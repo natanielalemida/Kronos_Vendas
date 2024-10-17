@@ -24,9 +24,11 @@ export function useFetch() {
       }
 
       setData(data.Resultado);
+      setLoading(false);
     } catch (error) {
       console.error('Erro ao buscar organizações:', error);
       // Aqui você pode tratar o erro, exibir uma mensagem, etc.
+      setLoading(false);
     } finally {
       setLoading(false); // Sempre desativa o loading, independentemente do sucesso ou erro
     }
