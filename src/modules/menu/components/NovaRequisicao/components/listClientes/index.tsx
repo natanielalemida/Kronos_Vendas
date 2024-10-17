@@ -85,7 +85,6 @@ export default function SelectClientes() {
       ]}
       onPress={() => handleSelectCliente(item)}
       key={`${item.Codigo}-${index}`}>
-      {/* Chave única */}
       <View style={styles.itemTopRow}>
         <Text style={styles.itemCode}>{item.Codigo}</Text>
         <Text style={styles.itemDescription}>{item.NomeFantasia}</Text>
@@ -93,6 +92,7 @@ export default function SelectClientes() {
       <ShowIf condition={!!item.CNPJCPF}>
         <View style={styles.itemTopRow}>
           <ShowIf condition={!!item.CNPJCPF && item?.CNPJCPF.length > 11}>
+            <Text style={styles.itemCodeCNPJCPF}>{item.RazaoSocial}</Text>
             <Text style={styles.itemCodeCNPJCPF}>
               CNPJ: {mascararCNPJ(item.CNPJCPF)}
             </Text>

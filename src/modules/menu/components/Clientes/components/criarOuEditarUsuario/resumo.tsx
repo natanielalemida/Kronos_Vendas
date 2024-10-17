@@ -111,8 +111,6 @@ export default function Resumo() {
     }
   };
 
-  const syncAndSave = false;
-
   return (
     <View style={styles.container}>
       <HeaderProducts
@@ -120,10 +118,10 @@ export default function Resumo() {
         leftIcon="chevron-back-outline"
         leftSize={25}
         leftColor="white"
-        rightIcon={syncAndSave ? undefined : 'save-outline'}
+        rightIcon={form.isSincronizado ? undefined : 'save-outline'}
         rightColor="white"
         rightSize={25}
-        rightIcon2={'cloud-upload-outline'}
+        rightIcon2={form.isSincronizado ? undefined : 'cloud-upload-outline'}
         rightColor2="white"
         rightSize2={25}
         onPressRightIcon2={() => handle(true)}

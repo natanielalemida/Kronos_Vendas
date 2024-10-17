@@ -40,24 +40,41 @@ export default function Produto() {
     <TouchableOpacity
       style={[
         styles.itemContainer,
-        {
-          backgroundColor: isEven(index) ? colors.grayList : colors.white,
-        },
+        {backgroundColor: isEven(index) ? colors.grayList : colors.white},
       ]}
       key={item.Codigo}>
       <View style={styles.itemTopRow}>
-        <View style={styles.itemLeft}>
-          <Text style={styles.itemCode}>{item.Codigo}</Text>
-          <Text style={styles.itemDescription}>{item.Descricao}</Text>
-        </View>
-        <Text style={styles.itemPrice}>R$ {item.ValorVenda.toFixed(2)}</Text>
+        <Text
+          style={
+            styles.itemDescription
+          }>{`${item.Codigo} - ${item.Descricao}`}</Text>
       </View>
+
       <View style={styles.itemBottomRow}>
         <View style={styles.itemDetailsLeft}>
-          <Text style={styles.black}>{item.UnidadeMedida}</Text>
-          <Text style={styles.black}>Est. 10</Text>
+          <Text style={{color: colors.black}}>{item.UnidadeMedida}</Text>
+          <Text style={{color: colors.black}}>Est. 10</Text>
         </View>
-        <Text style={styles.black}>EAN: {item.CodigoDeBarras}</Text>
+        <Text style={{color: colors.black}}>EAN: {item.CodigoDeBarras}</Text>
+      </View>
+      <View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}>
+          <Text
+            style={{
+              color: 'black',
+              fontSize: 16,
+            }}>
+            Valor R$ {item.ValorVenda.toFixed(2)}
+          </Text>
+          <Text style={{color: 'black', fontSize: 16}}>
+            Atac: R$ {item.ValorVendaAtacado.toFixed(2)}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );

@@ -120,6 +120,9 @@ export default function Clientes() {
                     <ShowIf
                       condition={!!item.CNPJCPF && item?.CNPJCPF.length > 11}>
                       <Text style={styles.itemCodeCNPJCPF}>
+                        {item.RazaoSocial}
+                      </Text>
+                      <Text style={styles.itemCodeCNPJCPF}>
                         CNPJ: {mascararCNPJ(item.CNPJCPF)}
                       </Text>
                     </ShowIf>

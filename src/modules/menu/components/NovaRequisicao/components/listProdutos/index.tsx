@@ -47,7 +47,7 @@ export default function Produto() {
 
   const isEven = (index: number) => index % 2 === 0;
 
-  const renderItem = ({item, index}: {item: ProdutoDto; index}) => {
+  const renderItem = ({item, index}: {item: ProdutoDto; index: number}) => {
     const color2 = isEven(index) ? colors.grayList : colors.white;
     const color = findIndex(item);
     return (
@@ -88,10 +88,10 @@ export default function Produto() {
                     color: 'black',
                     fontSize: 16,
                   }}>
-                  Valor Varejo: R$ {item.ValorVenda.toFixed(2)}
+                  Valor R$ {item.ValorVenda.toFixed(2)}
                 </Text>
                 <Text style={{color: 'black', fontSize: 16}}>
-                  Valor Atac: R$ {item.ValorVendaAtacado.toFixed(2)}
+                  Atac: R$ {item.ValorVendaAtacado.toFixed(2)}
                 </Text>
               </View>
             </View>

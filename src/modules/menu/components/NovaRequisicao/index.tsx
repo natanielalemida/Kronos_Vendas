@@ -46,6 +46,24 @@ export default function NovaRequisicao() {
     ).toFixed(2);
   };
 
+  function mascararCPF(cpf: string) {
+    if (!cpf) return;
+    cpf = cpf.replace(/\D/g, '');
+
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  function mascararCNPJ(cnpj: string) {
+    if (!cnpj) return;
+    cnpj = cnpj.replace(/\D/g, '');
+
+    // Aplica a máscara no formato XX.XXX.XXX/XXXX-XX
+    return cnpj.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      '$1.$2.$3/$4-$5',
+    );
+  }
+
   const isEven = (index: number) => index % 2 === 0;
 
   return (
@@ -66,6 +84,112 @@ export default function NovaRequisicao() {
           setAtacadoActive={() => {}}
           produto={produto}
         />
+        <View
+          style={{
+            marginTop: 5,
+            padding: 10,
+            backgroundColor: colors.white,
+            width: '98%',
+            alignSelf: 'center',
+            borderRadius: 15,
+          }}>
+          <Text style={{color: colors.black, fontSize: 16, fontWeight: '800'}}>
+            Cliente
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}>
+            <Text style={{color: colors.black}}>Nome:</Text>
+            <Text
+              style={{
+                color: colors.black,
+                width: '85%',
+                textAlign: 'right',
+              }}>
+              {clienteOnContext?.NomeFantasia}
+            </Text>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <ShowIf
+              condition={
+                !!clienteOnContext?.CNPJCPF &&
+                clienteOnContext?.CNPJCPF.length > 11
+              }>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}>
+                <Text
+                  style={{
+                    color: colors.black,
+                  }}>
+                  CNPJ:
+                </Text>
+                <Text
+                  style={{
+                    color: colors.black,
+                    textAlign: 'right',
+                  }}>
+                  {mascararCNPJ(clienteOnContext?.CNPJCPF)}
+                </Text>
+              </View>
+            </ShowIf>
+            <ShowIf
+              condition={
+                (!!clienteOnContext?.CNPJCPF &&
+                  clienteOnContext?.CNPJCPF.length <= 11) ||
+                !clienteOnContext?.CNPJCPF
+              }>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}>
+                <Text
+                  style={{
+                    color: colors.black,
+                  }}>
+                  CPF:
+                </Text>
+                <Text
+                  style={{
+                    color: colors.black,
+                    textAlign: 'right',
+                  }}>
+                  {mascararCPF(clienteOnContext?.CNPJCPF)}
+                </Text>
+              </View>
+            </ShowIf>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text style={{color: colors.black}}>Enderecos:</Text>
+            {clienteOnContext?.Enderecos &&
+              clienteOnContext?.Enderecos.length > 0 &&
+              clienteOnContext?.Enderecos.map(endereco => {
+                return (
+                  <Text style={{color: colors.black}}>
+                    {endereco.Logradouro} - {endereco.Numero} -{' '}
+                    {endereco.Bairro}
+                  </Text>
+                );
+              })}
+          </View>
+        </View>
+        <Text
+          style={{
+            color: colors.black,
+            fontSize: 16,
+            fontWeight: '800',
+            paddingHorizontal: 10,
+          }}>
+          Itens
+        </Text>
         <ScrollView>
           {ProdutosSelecionados.map((item, index) => (
             <TouchableOpacity
@@ -74,7 +198,7 @@ export default function NovaRequisicao() {
                 {
                   backgroundColor:
                     item.Codigo === produto?.Codigo
-                      ? colors.arcGreen400
+                      ? colors.arcGreenNeon
                       : isEven(index)
                       ? colors.grayList
                       : colors.white,
@@ -93,17 +217,21 @@ export default function NovaRequisicao() {
               </View>
               <View style={style.itemBottomRow}>
                 <View style={style.itemDetailsLeft}>
-                  <Text>Qtd. {item.Quantidade}</Text>
-                  <Text>X</Text>
-                  <Text>{item.ValorVendaDesconto.toFixed(2)}</Text>
+                  <Text style={{color: colors.black}}>
+                    Qtd. {item.Quantidade}
+                  </Text>
+                  <Text style={{color: colors.black}}>X</Text>
+                  <Text style={{color: colors.black}}>
+                    {item.ValorVendaDesconto.toFixed(2)}
+                  </Text>
                 </View>
-                <Text>
+                <Text style={{color: colors.black}}>
                   Total: R${' '}
                   {(item.Quantidade * item.ValorVendaDesconto).toFixed(2)}
                 </Text>
               </View>
               <ShowIf condition={!!item.Observacao}>
-                <Text>{item.Observacao}</Text>
+                <Text style={{color: colors.black}}>{item.Observacao}</Text>
               </ShowIf>
             </TouchableOpacity>
           ))}
@@ -154,6 +282,7 @@ const style = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
+    backgroundColor: colors.arcGreen400,
   },
   top: {
     flex: 1,
@@ -186,11 +315,13 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   totalText: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.white,
   },
   itemContainer: {
     padding: 15,
+    borderRadius: 15,
+    margin: 2,
   },
   itemTopRow: {
     width: '100%',
@@ -203,20 +334,20 @@ const style = StyleSheet.create({
   },
   itemCode: {
     marginRight: 5,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },
   itemDescription: {
     marginHorizontal: 10,
     width: '80%',
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },
   itemPrice: {
     marginLeft: 10,
-    fontSize: 16,
+    fontSize: 14,
     color: colors.black,
     fontWeight: 'bold',
   },

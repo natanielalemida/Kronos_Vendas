@@ -85,6 +85,24 @@ export default function CriarOuEditarUsuario() {
     }
   };
 
+  function mascararCPF(cpf: string) {
+    if (!cpf) return;
+    cpf = cpf.replace(/\D/g, '');
+
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  function mascararCNPJ(cnpj: string) {
+    if (!cnpj) return;
+    cnpj = cnpj.replace(/\D/g, '');
+
+    // Aplica a máscara no formato XX.XXX.XXX/XXXX-XX
+    return cnpj.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      '$1.$2.$3/$4-$5',
+    );
+  }
+
   const renderInputWithIcon = (
     placeholder,
     value,
@@ -148,7 +166,11 @@ export default function CriarOuEditarUsuario() {
               placeholder="CPF/CNPJ"
               width="60%"
               keyboardType="numeric"
-              value={form.CNPJCPF}
+              value={
+                form.CNPJCPF?.length > 11
+                  ? mascararCNPJ(form.CNPJCPF)
+                  : mascararCPF(form.CNPJCPF)
+              }
               onChangeText={value =>
                 setForm(oldValue => ({...oldValue, CNPJCPF: value}))
               }
@@ -158,7 +180,7 @@ export default function CriarOuEditarUsuario() {
               onSubmitEditing={() => nomeFantasiaRef.current?.focus()}
               placeholderTextColor={colors.black}
               style={styles.input}
-              placeholder="IE"
+              placeholder={form.CNPJCPF?.length > 11 ? 'IE' : 'RG'}
               keyboardType="numeric"
               flex={1}
               value={form.IE}
@@ -193,6 +215,7 @@ export default function CriarOuEditarUsuario() {
               <CustomTextInput
                 ref={razaoSocialRef}
                 style={styles.input}
+                onSubmitEditing={() => phoneRef.getElement().focus()}
                 placeholder="Razão Social"
                 value={form.RazaoSocial}
                 flex={1}

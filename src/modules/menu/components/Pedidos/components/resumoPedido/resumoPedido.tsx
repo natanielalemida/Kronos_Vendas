@@ -243,7 +243,7 @@ export default function ResumoPedido({navigation}) {
           <Text style={styles.title}>Pedido nº {data?.Codigo}</Text>
           <View style={styles.row}>
             <Text style={styles.colorBlack}>Cliente</Text>
-            <Text style={styles.rightAlignedText}>
+            <Text style={[styles.rightAlignedText, {width: '80%'}]}>
               {data?.Pessoa?.NomeFantasia}
             </Text>
           </View>

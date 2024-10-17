@@ -55,9 +55,6 @@ export default function Menu() {
   const [isModalActive, setIsModalActive] = React.useState(false);
 
   const {clienteOnContext, isSyncing, ProdutosSelecionados} = useCliente();
-  const userName = clienteOnContext?.NomeFantasia
-    ? clienteOnContext.NomeFantasia
-    : 'Novo Pedido';
 
   return (
     <>
@@ -84,7 +81,6 @@ export default function Menu() {
           name="Novo Pedido"
           component={NovaRequisicao}
           options={{
-            headerTitle: userName,
             headerRight: () => (
               <ShowIf
                 condition={

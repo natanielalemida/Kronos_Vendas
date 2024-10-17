@@ -19,6 +19,7 @@ export default function Endereco() {
   const BairroRef = useRef(null);
   const ComplementoRef = useRef(null);
   const CEPRef = useRef(null);
+  const MunicipioRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -92,6 +93,7 @@ export default function Endereco() {
               style={styles.input}
               keyboardType="numeric"
               value={form.CEP}
+              onSubmitEditing={() => MunicipioRef.current.focus()}
               onChangeText={value =>
                 setForm(oldValue => ({...oldValue, CEP: value}))
               }
@@ -100,7 +102,7 @@ export default function Endereco() {
         </View>
         <View style={styles.row}>
           <View style={styles.inputContainer}>
-            <RemoteDataSetExample3 />
+            <RemoteDataSetExample3 ref={MunicipioRef} />
           </View>
         </View>
       </View>

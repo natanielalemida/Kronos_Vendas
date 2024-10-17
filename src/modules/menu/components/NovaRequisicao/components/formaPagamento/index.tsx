@@ -156,7 +156,7 @@ export default function FormaPagamento() {
                   pagamento.CondicaoPagamento.map(condicao => {
                     return (
                       <View key={condicao.Codigo}>
-                        <Text>{`${
+                        <Text style={{color: colors.black}}>{`${
                           condicao.Codigo
                         } | R$ ${condicao.ValorPago.toFixed(2)}`}</Text>
                       </View>
@@ -364,6 +364,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   modalText: {
+    color: colors.black,
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,

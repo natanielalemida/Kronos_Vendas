@@ -182,6 +182,7 @@ export default class ClienteRepository {
         'pessoa.NomeFantasia',
         'pessoa.CNPJCPF',
         'pessoa.isSincronizado',
+        'pessoa.RazaoSocial',
         'pessoa.TipoPreco',
         'endereco.Bairro',
         'endereco.Logradouro',
@@ -201,9 +202,11 @@ export default class ClienteRepository {
 
     // Adiciona o filtro se estiver presente
     if (textFilter && textFilter.length > 0) {
-      query.andWhereRaw('LOWER(pessoa.NomeFantasia) LIKE ?', [
-        `%${textFilter.toLowerCase()}%`,
-      ]);
+      query.andWhere(function () {
+        this.whereRaw('LOWER(pessoa.NomeFantasia) LIKE ?', [
+          `%${textFilter.toLowerCase()}%`,
+        ]).orWhereRaw('pessoa.CNPJCPF LIKE ?', [`%${textFilter}%`]);
+      });
     }
 
     // Obtém os dados filtrados
@@ -241,6 +244,7 @@ export default class ClienteRepository {
           Codigo: curr.Codigo,
           CodigoPessoa: curr.CodigoPessoa,
           NomeFantasia: curr.NomeFantasia,
+          RazaoSocial: curr.RazaoSocial,
           id: curr.id,
           CNPJCPF: curr.CNPJCPF,
           TipoPreco: curr.TipoPreco,

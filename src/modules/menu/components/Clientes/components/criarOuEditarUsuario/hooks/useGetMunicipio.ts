@@ -7,13 +7,7 @@ export default function UseGetMunicipio() {
   const repository = new MunicipioRepository();
   const getMunicipio = async () => {
     const data = await repository.getMunicipios();
-    const result = data.map(item => ({
-      id: item.Codigo,
-      title: item.MunicipioNome,
-      MunicipioCodigo: item.MunicipioCodigo,
-      Estado: item.Estado,
-    }));
-    setMunicipios(result);
+    setMunicipios(data);
     return data;
   };
   return {

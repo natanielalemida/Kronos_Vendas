@@ -66,13 +66,13 @@ export default function RouterCliente() {
     <Tab.Navigator
       initialRouteName={form.id ? 'Resumo' : 'CriarOuEditarUsuario'}
       screenOptions={props => ScreenOptions({...props, form})}>
-      {form.isSincronizado !== 1 && (
+      {!form.isSincronizado && (
         <>
           <Tab.Screen
             name="CriarOuEditarUsuario"
             component={CriarOuEditarUsuario}
             options={{
-              title: 'Usuário',
+              title: 'Cliente',
               headerStyle: {backgroundColor: colors.arcGreen},
               headerTintColor: '#fff',
               headerLeft: () => <HeaderLeft onPress={handleClearForm} />,
