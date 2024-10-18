@@ -179,7 +179,7 @@ export default function ModalCondicaoPagamento({
             <View style={{paddingVertical: 15}}>
               <View style={{paddingVertical: 5}}>
                 <Text style={{color: colors.black, fontWeight: '600'}}>
-                  Condição de Pagamentoooooo:
+                  Condição de Pagamento:
                 </Text>
               </View>
 
