@@ -8,11 +8,14 @@ import Init from '../../hooks/init';
 import UseGetMunicipio from './hooks/useGetMunicipio';
 import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
 import {RemoteDataSetExample3} from './components/teste';
-import {useCallback, useRef} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {CheckBox} from '@rneui/themed';
 
 export default function Endereco() {
   const {form, setForm} = UseSaveOrEdit();
+  const [semNumero, isSemNumero] = useState(false);
 
   const LogradouroRef = useRef(null);
   const NumeroRef = useRef(null);
@@ -27,6 +30,15 @@ export default function Endereco() {
       return () => {};
     }, []),
   );
+
+  const handleSetIsNumero = value => {
+    isSemNumero(value);
+    if (value) {
+      setForm(oldValue => ({...oldValue, NumeroEndereco: 'S/N'}));
+      return;
+    }
+    setForm(oldValue => ({...oldValue, NumeroEndereco: undefined}));
+  };
 
   return (
     <View style={styles.container}>
@@ -43,18 +55,37 @@ export default function Endereco() {
                 setForm(oldValue => ({...oldValue, Logradouro: value}))
               }
             />
-            <CustomTextInput
-              ref={NumeroRef}
-              placeholder="Nº"
-              style={styles.input}
-              onSubmitEditing={() => BairroRef.current.focus()}
-              flex={1}
-              keyboardType="numeric"
-              value={form.NumeroEndereco}
-              onChangeText={value =>
-                setForm(oldValue => ({...oldValue, NumeroEndereco: value}))
-              }
-            />
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <CustomTextInput
+                ref={NumeroRef}
+                placeholder="Nº"
+                style={styles.input}
+                onSubmitEditing={() => BairroRef.current.focus()}
+                flex={1}
+                keyboardType="numeric"
+                value={form.NumeroEndereco}
+                onChangeText={value =>
+                  setForm(oldValue => ({...oldValue, NumeroEndereco: value}))
+                }
+              />
+              <TouchableOpacity
+                onPress={() => handleSetIsNumero(!semNumero)}
+                style={{
+                  height: 30,
+                  width: 30,
+                  marginLeft: 15,
+                }}>
+                <CheckBox
+                  checked={semNumero}
+                  onPress={() => handleSetIsNumero(!semNumero)}
+                  containerStyle={{
+                    backgroundColor: undefined,
+                    padding: 0,
+                    paddingRight: 30,
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <View style={styles.row}>
