@@ -22,9 +22,6 @@ import Sincronizacao from '../components/sync';
 import Configuracoes from '../components/Configuracoes';
 import Pedidos from '../components/Pedidos/pedidos';
 import ModalFilterMenu from '../components/Pedidos/components/modalFilterMenu';
-import UseRepository from '../components/Pedidos/hooks/useRepository';
-import Toast from 'react-native-toast-message';
-import {useNavigation} from '@react-navigation/native';
 import Exit from './exit';
 import {ShowIf} from '../../components/showIf';
 
@@ -33,7 +30,9 @@ const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const {usuario} = useCliente();
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{paddingTop: 0}}>
+    <DrawerContentScrollView
+      {...props}
+      contentContainerStyle={{paddingTop: 0, paddingBottom: 35}}>
       <View style={styles.userBar}>
         <View>
           <Text style={styles.userTextPhoto}>{usuario?.Login}</Text>
@@ -176,6 +175,7 @@ export default function Menu() {
               <Icon name="exit-outline" color={color} size={size} />
             ),
             drawerLabel: 'Sair',
+            drawerStyle: {marginBottom: 20}, // Adiciona margem inferior
           })}
         />
       </Drawer.Navigator>

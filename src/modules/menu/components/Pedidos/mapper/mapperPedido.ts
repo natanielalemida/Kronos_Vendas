@@ -143,6 +143,7 @@ export default class mapPedido {
   mapItems(items: Item[]): Item[] {
     const mappedItems: {[key: number]: Item} = {};
 
+    // Agrupa os itens pelo id, somando o ValorRecebido se necessário
     items.forEach(item => {
       if (item.id !== null) {
         if (mappedItems[item.id]) {
@@ -153,6 +154,21 @@ export default class mapPedido {
       }
     });
 
-    return Object.values(mappedItems);
+    // Converte para um array e ordena os itens
+    const sortedItems = Object.values(mappedItems).sort((a, b) => {
+      // Ordem decrescente pelo id
+      if (a.id !== b.id) {
+        return b.id - a.id;
+      }
+      return 0;
+    });
+
+    // Verifica se o item com o maior id tem 'codigo' e, se sim, move para o final
+    const highestIdItem = sortedItems[0];
+    if (highestIdItem && highestIdItem.Codigo) {
+      sortedItems.push(sortedItems.shift() as Item); // Move o primeiro item para o final
+    }
+
+    return sortedItems;
   }
 }
