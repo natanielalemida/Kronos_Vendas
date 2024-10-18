@@ -91,7 +91,7 @@ export default function Clientes() {
         setActive={handleSetActive}
       />
       <View style={styles.top}>
-        <Loading isModalLoadingActive={isLoading} />
+        {/* <Loading isModalLoadingActive={isLoading} /> */}
         {clientes.length === 0 && !isLoading ? ( // Exibir mensagem se não houver clientes
           <Text style={styles.noResultsText}>Nenhum cliente encontrado.</Text>
         ) : (
@@ -138,6 +138,7 @@ export default function Clientes() {
                 {item.Enderecos?.map(renderEndereco)}
               </TouchableOpacity>
             )}
+            keyboardShouldPersistTaps="always"
             keyExtractor={item => `${item.Codigo}`}
           />
         )}

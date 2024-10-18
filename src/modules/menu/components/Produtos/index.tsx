@@ -27,11 +27,7 @@ export default function Produto() {
       handleGetProdutos(textFilter);
     }, 500); // Aguarda 500ms após o último caractere digitado
 
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
+    return () => {};
   }, [textFilter]);
 
   const isEven = (index: number) => index % 2 === 0;
@@ -87,11 +83,12 @@ export default function Produto() {
         onChangeText={setTextFilter}
       />
       <View style={styles.top}>
-        <Loading isModalLoadingActive={isLoading} />
+        {/* <Loading isModalLoadingActive={isLoading} /> */}
         <FlatList
           data={produtos}
           renderItem={renderItem}
           keyExtractor={item => item.Codigo.toString()}
+          keyboardShouldPersistTaps="always"
         />
       </View>
     </View>

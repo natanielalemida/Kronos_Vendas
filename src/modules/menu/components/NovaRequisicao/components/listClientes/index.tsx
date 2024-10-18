@@ -25,15 +25,12 @@ export default function SelectClientes() {
       handleGetUsers(textFilter);
     }, 500);
 
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
+    return () => {};
   }, [textFilter]);
 
   const handleSelectCliente = (cliente: ClienteDto) => {
     setClienteOnContext(cliente);
+    setTextFilter('');
     navigation.goBack();
   };
 
@@ -116,7 +113,7 @@ export default function SelectClientes() {
         onChangeText={setTextFilter}
       />
       <View style={styles.top}>
-        <Loading isModalLoadingActive={isLoading} />
+        {/* <Loading isModalLoadingActive={isLoading} /> */}
         {clientes.length === 0 && !isLoading ? ( // Exibir mensagem se não houver clientes
           <Text style={styles.noResultsText}>Nenhum cliente encontrado.</Text>
         ) : (
@@ -127,6 +124,7 @@ export default function SelectClientes() {
             initialNumToRender={10} // Adicione as propriedades de otimização
             maxToRenderPerBatch={10}
             scrollEventThrottle={16}
+            keyboardShouldPersistTaps="always"
           />
         )}
       </View>

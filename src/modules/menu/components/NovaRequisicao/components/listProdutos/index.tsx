@@ -1,7 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native';
 import {useEffect, useState, useRef} from 'react';
 import UseGetProdutos from './hooks/useGetProdutos';
-import Init from './hooks/init';
 import {ProdutoDto} from '../../../../../../sync/products/type';
 import Search from '../../../../../components/search';
 import Loading from '../../../../../components/loading/Loading';
@@ -175,7 +174,7 @@ export default function Produto() {
         produto={produtoModal}
       />
       <View style={styles.top}>
-        <Loading isModalLoadingActive={isLoading} />
+        {/* <Loading isModalLoadingActive={isLoading} /> */}
         <FlatList
           data={produtos}
           renderItem={renderItem}
