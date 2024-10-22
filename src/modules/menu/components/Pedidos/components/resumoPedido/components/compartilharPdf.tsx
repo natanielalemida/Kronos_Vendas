@@ -291,9 +291,14 @@ export default function useExportPdf() {
   }
 </p>
 
-                      <p><strong>Endereço:</strong> ${pessoa.CEP} - ${
-      pessoa.Municipio.MunicipioNome
-    } - ${pessoa.Municipio.Estado}</p>
+<p>
+  <strong>Endereço:</strong>
+  ${
+    pessoa?.CEP && pessoa?.Municipio?.MunicipioNome && pessoa?.Municipio?.Estado
+      ? `${pessoa.CEP} - ${pessoa.Municipio.MunicipioNome} - ${pessoa.Municipio.Estado}`
+      : 'Endereço não cadastrado'
+  }
+</p>
                   </div>
                   <div class="details">
                       <table>
