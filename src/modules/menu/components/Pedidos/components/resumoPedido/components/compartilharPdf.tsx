@@ -368,7 +368,11 @@ export default function useExportPdf() {
                           <div class="title">
                               <p>Observações</p>
                           </div>
-                          <p>${Pedido.Observacao}</p>
+                                                    <p>${
+                                                      Pedido.Observacao
+                                                        ? `${Pedido.Observacao}`
+                                                        : ''
+                                                    }</p>
                       </div>
                       <div class="payment-info">
                           <div class="title">
