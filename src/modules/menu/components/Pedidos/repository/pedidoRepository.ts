@@ -173,6 +173,7 @@ export default class PedidoRepository {
           'pessoa.Codigo as PessoaCodigo',
           'pessoa.CodigoPessoa as CodigoPessoa',
           'pessoa.NomeFantasia',
+          'pessoa.RazaoSocial',
           'pessoa.CNPJCPF as CNPJCPF',
           'pessoa.TipoPreco',
         )

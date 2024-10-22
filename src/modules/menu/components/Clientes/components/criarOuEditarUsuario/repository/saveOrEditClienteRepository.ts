@@ -261,6 +261,116 @@ export default class ClienteRepository {
     return pessoaComContatos;
   }
 
+  async pessoaComEnderecoByCpf(cpf: string) {
+    const data = await knexConfig('pessoa')
+      .select(
+        'pessoa.*',
+        'endereco.CEP',
+        'endereco.Logradouro',
+        'endereco.Numero',
+        'endereco.Bairro',
+        'endereco.Complemento',
+        'endereco.CodigoMunicipio',
+        'endereco.Tipo',
+        'endereco.TipoDescricao',
+        'municipio.MunicipioNome',
+        'municipio.Codigo as CodigoMunicipioRepository',
+        'municipio.MunicipioCodigo',
+        'municipio.UFSigla as Estado',
+        'contato.Tipo as TipoContato',
+        'contato.Codigo as CodigoContato',
+        'contato.Contato',
+      )
+      .leftJoin('endereco', function () {
+        this.on(function () {
+          this.on('pessoa.CodigoPessoa', '=', 'endereco.CodigoPessoa').orOn(
+            knexConfig.raw(
+              'pessoa.Codigo IS NULL AND pessoa.id = endereco.CodigoPessoa',
+            ),
+          );
+        });
+      })
+      .leftJoin(
+        'municipio',
+        'municipio.MunicipioCodigo',
+        'endereco.CodigoMunicipio',
+      )
+      .leftJoin('contato', function () {
+        this.on('contato.CodigoPessoa', 'pessoa.CodigoPessoa')
+          .orOn(function () {
+            this.on('pessoa.Codigo', 0).orOnNull('pessoa.Codigo');
+          })
+          .on('contato.CodigoPessoa', 'pessoa.id');
+      })
+      .where('pessoa.CNPJCPF', cpf);
+
+    const pessoaComContatos = data.reduce(
+      (acc, item) => {
+        // Atualiza as informações principais apenas uma vez
+        if (acc.CodigoPessoa === null) {
+          (acc.id = item.id), (acc.Codigo = item.Codigo);
+          acc.isSincronizado = item.isSincronizado;
+          acc.CodigoPessoa = item.CodigoPessoa;
+          acc.NomeFantasia = item.NomeFantasia;
+          acc.RazaoSocial = item.RazaoSocial;
+          acc.CNPJCPF = item.CNPJCPF;
+          acc.IERG = item.IERG;
+          acc.LimiteCompra = item.LimiteCompra;
+          acc.DescontoMaximo = item.DescontoMaximo;
+          acc.Bairro = item.Bairro;
+          acc.Logradouro = item.Logradouro;
+          acc.Numero = item.Numero;
+          acc.TipoPreco = item.TipoPreco;
+          acc.Complemento = item.Complemento;
+          acc.Municipio = {
+            Codigo: item.CodigoMunicipioRepository,
+            MunicipioNome: item.MunicipioNome,
+            MunicipioCodigo: item.MunicipioCodigo,
+            Estado: item.Estado,
+          };
+          acc.CEP = item.CEP;
+          acc.DiaPagamento = item.DiaPagamento;
+        }
+
+        // Adiciona contatos ao array
+        const contato = {
+          Codigo: item.CodigoContato,
+          Tipo: item.TipoContato,
+          Contato: item.Contato,
+        };
+
+        if (item.TipoContato === 2) {
+          acc.Contatos.Email.push(contato);
+        } else if (item.TipoContato === 1) {
+          acc.Contatos.Celular.push(contato);
+        }
+
+        return acc;
+      },
+      {
+        CodigoPessoa: null,
+        NomeFantasia: null,
+        RazaoSocial: null,
+        CNPJCPF: null,
+        IERG: null,
+        LimiteCompra: null,
+        DescontoMaximo: null,
+        Bairro: null,
+        Logradouro: null,
+        Numero: null,
+        Complemento: null,
+        CEP: null,
+        DiaPagamento: null,
+        Contatos: {
+          Email: [],
+          Celular: [],
+        },
+      },
+    );
+
+    return pessoaComContatos;
+  }
+
   async deleteByCNPJCPF(CNPJCPF: string): Promise<void> {
     await knexConfig('pessoa').where('CNPJCPF', CNPJCPF).del();
   }

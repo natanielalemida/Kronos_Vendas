@@ -21,6 +21,7 @@ import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import UseRepository from '../../hooks/useRepository';
 import {getClienteToSave} from './hooks/getClienteToSave';
 import Loading from '../../../../../components/loading/Loading';
+import useExportPdf from './components/compartilharPdf';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
@@ -34,12 +35,14 @@ export default function ResumoPedido({navigation}) {
   const {id, Codigo, goBack, idCliente} = params || {};
 
   const {teste} = UseRepository();
-  const {getByIdToSave, getByCodeToSave} = getClienteToSave();
+  const {getByIdToSave} = getClienteToSave();
 
   const viewRef = useRef(null);
   const [data, setData] = useState<PedidoSearchDto>();
   const [isLoading, setIsLoading] = useState(false);
   const repository = new PedidoRepository();
+
+  const {PedidoPDF} = useExportPdf();
 
   const handleGetPedido = async () => {
     if (clienteOnContext?.Codigo) {
@@ -125,21 +128,6 @@ export default function ResumoPedido({navigation}) {
     return porcentagemDesconto.toFixed(2);
   };
 
-  const handleSharePDF = async () => {
-    const uri = await viewRef.current.capture(); // Captura a imagem do ScrollView
-    const html = `<h1>Pedido nº ${data?.Codigo}</h1><img src="${uri}" />`; // Cria um HTML simples com a imagem
-
-    // Converte o HTML para PDF
-    const pdf = await RNHTMLtoPDF.convert({
-      html,
-      fileName: 'pedido',
-      directory: 'Documents',
-    });
-
-    // Compartilha o PDF
-    await Share.open({url: `file://${pdf.filePath}`});
-  };
-
   Init({handleGetUsers: handleGetPedido});
 
   const renderProdutos = () => (
@@ -148,7 +136,7 @@ export default function ResumoPedido({navigation}) {
       {data?.Itens.map((produto, index) => (
         <View key={index} style={styles.productRow}>
           <View style={styles.productDetails}>
-            <Text style={{width: '75%', color: colors.black}}>
+            <Text style={{width: '84%', color: colors.black}}>
               {produto.Descricao}
             </Text>
             <Text style={{fontWeight: 'bold', color: colors.confirmButton}}>
@@ -298,7 +286,7 @@ export default function ResumoPedido({navigation}) {
       </ViewShot>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleSharePDF}>
+        <TouchableOpacity style={styles.button} onPress={() => PedidoPDF(data)}>
           <Text style={styles.buttonText}>Compartilhar PDF</Text>
         </TouchableOpacity>
 

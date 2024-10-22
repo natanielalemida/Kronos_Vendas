@@ -6,6 +6,10 @@ export function getClienteToSave() {
     return await repository.pessoaComEnderecoById(id);
   };
 
+  const getByIdToSaveByCpf = async (cpf: string) => {
+    return await repository.pessoaComEnderecoByCpf(cpf);
+  };
+
   const getByCodeToSave = async (id: number) => {
     return await repository.pessoaComEndereco(id);
   };
@@ -13,5 +17,6 @@ export function getClienteToSave() {
   return {
     getByIdToSave,
     getByCodeToSave,
+    getByIdToSaveByCpf,
   };
 }

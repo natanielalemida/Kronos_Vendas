@@ -12,7 +12,11 @@ import UseGetMunicipio from '../../../menu/components/Clientes/components/criarO
 export function UseLogin() {
   const [progress, setProgress] = useState<{}>();
   const navigation = useNavigation();
-  const {setUsuario, setOrganizationCode} = useCliente();
+  const {
+    setUsuario,
+    setOrganizationCode,
+    setEmpresa: setEmpresaContext,
+  } = useCliente();
 
   const verify = async (
     data: MainResponse,
@@ -25,6 +29,19 @@ export function UseLogin() {
       Alert.alert('Falha ao realizar login', `${data.mensagens[0].conteudo}`);
       setProgress(undefined);
       return;
+    }
+
+    const empresa = await ApiInstace.openUrl({
+      method: 'get',
+      endPoint: `arc/empresa/${organizationCode}`,
+      data: undefined,
+      headers: undefined,
+    });
+
+    const successfullyEmpresa = Array.isArray(empresa.Mensagens);
+
+    if (successfullyEmpresa) {
+      setEmpresaContext(empresa.Resultado);
     }
 
     await setNomeUsuario(cpf);

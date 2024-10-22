@@ -37,6 +37,8 @@ interface CounterContextType {
   setPedidosSelecionados: (value: PedidoSearchDto[]) => void;
   cleanPedido: () => void;
   clearAllContext: () => void;
+  empresa;
+  setEmpresa;
 }
 
 const CounterContext = createContext<CounterContextType | undefined>(undefined);
@@ -127,6 +129,8 @@ export const ClienteProvider: React.FC<{children: ReactNode}> = ({
     PedidoSearchDto[]
   >([]);
 
+  const [empresa, setEmpresa] = useState({});
+
   return (
     <CounterContext.Provider
       value={{
@@ -157,6 +161,8 @@ export const ClienteProvider: React.FC<{children: ReactNode}> = ({
         setPedidosSelecionados,
         cleanPedido,
         clearAllContext,
+        setEmpresa,
+        empresa,
       }}>
       {children}
     </CounterContext.Provider>
