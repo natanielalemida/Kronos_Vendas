@@ -281,16 +281,16 @@ export default function useExportPdf() {
       Pedido.Pessoa.NomeFantasia
     }</strong>
                       </p>
-                                               <p>${
-                                                 Pedido.Pessoa.CNPJCPF.length >
-                                                 11
-                                                   ? `CNPJ: ${mascararCNPJ(
-                                                       Pedido.Pessoa.CNPJCPF,
-                                                     )}`
-                                                   : `CPF: ${mascararCPF(
-                                                       Pedido.Pessoa.CNPJCPF,
-                                                     )}`
-                                               }</p>
+<p>
+  ${
+    Pedido.Pessoa?.CNPJCPF
+      ? Pedido.Pessoa.CNPJCPF.length > 11
+        ? `CNPJ: ${mascararCNPJ(Pedido.Pessoa.CNPJCPF)}`
+        : `CPF: ${mascararCPF(Pedido.Pessoa.CNPJCPF)}`
+      : 'CNPJ/CPF não cadastrado'
+  }
+</p>
+
                       <p><strong>Endereço:</strong> ${pessoa.CEP} - ${
       pessoa.Municipio.MunicipioNome
     } - ${pessoa.Municipio.Estado}</p>
