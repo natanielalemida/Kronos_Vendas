@@ -411,7 +411,9 @@ export default function useExportPdf() {
                               <hr />
                           </div>
                           <p class="textCenter"><strong>${
-                            Pedido.Pessoa.RazaoSocial
+                            pessoa.RazaoSocial
+                              ? pessoa.RazaoSocial
+                              : Pedido.Pessoa.NomeFantasia
                           }</strong></p>
                       </div>
                   </div>

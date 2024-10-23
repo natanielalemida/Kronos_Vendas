@@ -16,7 +16,7 @@ const Tag: React.FC<TagProps> = ({color, label}) => {
 
 const styles = StyleSheet.create({
   tag: {
-    paddingVertical: 6,
+    paddingVertical: 3,
     paddingHorizontal: 12,
     borderRadius: 20,
     margin: 5,
