@@ -74,7 +74,7 @@ export default function ResumoPedido({navigation}) {
       if (idCliente) {
         cliente = await getByIdToSave(idCliente);
       }
-      const result = await teste(id, cliente, usuario, idCliente);
+      const result = await teste(id, cliente, usuario);
       if (result) {
         Alert.alert('Sucesso', 'Pedido enviado com sucesso');
         setTimeout(() => {

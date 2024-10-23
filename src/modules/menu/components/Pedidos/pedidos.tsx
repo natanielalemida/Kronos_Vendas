@@ -20,18 +20,14 @@ import {CheckBox} from '@rneui/themed';
 import Toast from 'react-native-toast-message';
 import {HeaderProducts} from '../../../components/headers/HeaderProducts';
 import Tag from '../../../components/tag/tag';
+import {useCliente} from '../Clientes/context/clientContext';
+import {getClienteToSave} from './components/resumoPedido/hooks/getClienteToSave';
 
 export default function Pedidos() {
   const navigation = useNavigation();
-  const {
-    getPedidos,
-    pedidos,
-    isLoading,
-    teste,
-    setLoading,
-    getPedidosNotSynced,
-  } = UseRepository();
-
+  const {getPedidos, pedidos, isLoading, teste, setLoading} = UseRepository();
+  const {usuario} = useCliente();
+  const {getByIdToSave} = getClienteToSave();
   const [options, setOptions] = useState({syncds: true, notSyncd: true});
   const [textFilter, setTextFilter] = useState<string>('');
   const [filteredPedidos, setFilteredPedidos] = useState<PedidoSearchDto[]>([]);
@@ -91,25 +87,33 @@ export default function Pedidos() {
 
   const enviarPedidos = async () => {
     try {
-      if (pedidosSelecionados.length > 0) {
-        await Promise.all(
-          pedidosSelecionados.map(async pedido => await teste(pedido.id)),
-        );
-        setPedidosSelecionados([]);
-        Toast.show({
-          type: 'success',
-          text1: 'Sucesso',
-          text2: 'Pedido enviado com sucesso',
-          visibilityTime: 2000,
-        });
-      } else {
+      if (pedidosSelecionados.length === 0) {
         Toast.show({
           type: 'error',
           text1: 'Sem pedidos selecionados',
           text2: 'Por favor, selecione um pedido',
           visibilityTime: 2000,
         });
+        return;
       }
+
+      const result = await Promise.all(
+        pedidosSelecionados.map(async pedido => {
+          const pessoaId = await getByIdToSave(pedido.idPessoa);
+          return teste(pedido.id, pessoaId, usuario);
+        }),
+      );
+
+      if (!result) return;
+
+      setPedidosSelecionados([]);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Sucesso',
+        text2: 'Pedido enviado com sucesso',
+        visibilityTime: 2000,
+      });
     } catch (error) {
       console.error('Erro ao processar os pedidos:', error);
     } finally {
