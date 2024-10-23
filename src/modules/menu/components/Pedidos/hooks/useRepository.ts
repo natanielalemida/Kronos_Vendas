@@ -50,6 +50,8 @@ export default function UseRepository() {
   ) => {
     setLoading(true);
 
+    console.log({id});
+
     const serviceCliente = new ServiceEnviarSingleCliente(
       [],
       usuario,
@@ -60,13 +62,20 @@ export default function UseRepository() {
     if (!clienteOnContext?.Codigo && clienteOnContext) {
       const userSynced = await serviceCliente.iniciarSincronizacaoSingle(true);
 
+      console.log({userSynced});
+
       if (!userSynced) {
         return;
       }
+
+      await repositoy.updatePedidoIdCliente(id, userSynced.Codigo);
     }
 
     try {
       const data = await repositoy.getPedidoById(id);
+
+      console.log({data});
+
       const result = await ApiInstace.openUrl({
         method: 'post',
         endPoint: 'arc/operacao/prevenda',
@@ -90,6 +99,10 @@ export default function UseRepository() {
     }
   };
 
+  const clonePedido = async (id: number) => {
+    const pedido = await repositoy.clonePedidoById(id);
+  };
+
   return {
     getPedidos,
     pedidos,
@@ -98,5 +111,6 @@ export default function UseRepository() {
     setPedidos,
     teste,
     getPedidosNotSynced,
+    clonePedido,
   };
 }

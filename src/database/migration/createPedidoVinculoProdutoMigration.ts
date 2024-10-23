@@ -14,6 +14,7 @@ export const createPedidoVinculoProdutoTable = async () => {
         table.decimal('ValorOriginalProduto');
         table.string('UnidadeMedida');
         table.decimal('ValorVendaDesconto');
+        table.boolean('iSincronizado');
       });
       console.log('Table PEDIDO-VINCULO-PRODUTO created successfully.');
     } else {

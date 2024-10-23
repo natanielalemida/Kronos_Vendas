@@ -8,4 +8,5 @@ export const colors = {
   cancelButton: '#42100d',
   confirmButton: '#0c2f42',
   grayList: 'rgb(245, 245, 245)',
+  yellow: '#ffa500',
 };

@@ -11,6 +11,7 @@ export const createPedidoVinculoMeioPagamentoTable = async () => {
           table.integer('CodigoFormaPagamento').notNullable().index();
           table.integer('CodigoCondicao').notNullable().index();
           table.decimal('ValorRecebido').notNullable();
+          table.boolean('iSincronizado');
         },
       );
       console.log('Table PEDIDO-VINCULO-MEIOPAGAMENTO created successfully.');

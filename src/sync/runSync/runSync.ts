@@ -65,7 +65,7 @@ export default class runSync {
         progress: this.updateProgress(currentStep, totalSteps),
       });
 
-      await this.deleteRepository.deleteAll();
+      await this.deleteRepository.deleteAllWithCodigo();
 
       currentStep++;
       this.setProgress({

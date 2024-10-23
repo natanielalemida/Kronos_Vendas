@@ -172,7 +172,10 @@ export default function CriarOuEditarUsuario() {
                   : mascararCPF(form.CNPJCPF)
               }
               onChangeText={value =>
-                setForm(oldValue => ({...oldValue, CNPJCPF: value}))
+                setForm(oldValue => ({
+                  ...oldValue,
+                  CNPJCPF: value.replace(/\D/g, ''),
+                }))
               }
             />
             <CustomTextInput

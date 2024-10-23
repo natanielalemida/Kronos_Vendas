@@ -64,7 +64,7 @@ export default class PedidoRepository {
     try {
       for (const produto of produtos) {
         await trx('PedidoVinculoProduto')
-          .update(produto)
+          .update({...produto, iSincronizado: 1})
           .where({CodigoPedido: id})
           .andWhere({CodigoProduto: produto.CodigoProduto});
       }
@@ -84,7 +84,7 @@ export default class PedidoRepository {
     try {
       for (const meioPagamento of meioPagamentos) {
         await trx('PedidoVinculoMeioPagamento')
-          .update(meioPagamento)
+          .update({...meioPagamento, iSincronizado: 1})
           .where({CodigoPedido: id})
           .andWhere({CodigoFormaPagamento: meioPagamento.CodigoFormaPagamento})
           .andWhere({CodigoCondicao: meioPagamento.CodigoCondicao});

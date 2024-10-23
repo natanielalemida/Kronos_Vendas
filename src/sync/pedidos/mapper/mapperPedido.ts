@@ -28,6 +28,7 @@ export default class PedidoMapper {
           : null;
 
         return {
+          iSincronizado: 1,
           CodigoPedido: pedido.Codigo,
           CodigoProduto: produto.CodigoProduto,
           Quantidade: produto.Quantidade,
@@ -46,6 +47,7 @@ export default class PedidoMapper {
           CodigoFormaPagamento: pagamento.FormaPagamento.Codigo,
           CodigoCondicao: pagamento.CondicaoPagamento.Codigo,
           ValorRecebido: pagamento.ValorRecebido,
+          iSincronizado: 1,
         };
       }),
     };

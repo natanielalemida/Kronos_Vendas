@@ -1,7 +1,7 @@
 import {knexConfig} from '../../database/connection';
 
 export default class DeleteRepository {
-  public async deleteAll(): Promise<void> {
+  public async deleteAllWithCodigo(): Promise<void> {
     const tables = [
       'formaPagamento',
       'condicaoPagamento',
@@ -10,13 +10,30 @@ export default class DeleteRepository {
       'regiao',
       'categoria',
       'municipio',
-      'endereco',
       'contato',
       'pedido',
+    ];
+
+    const tablesSeleted = [
       'PedidoVinculoMeioPagamento',
       'PedidoVinculoProduto',
     ];
 
-    await Promise.all(tables.map(table => knexConfig(table).truncate()));
+    await Promise.all(
+      tables.map(table =>
+        knexConfig(table)
+          .whereNotNull('Codigo')
+          .orWhere('Codigo', '!=', 0)
+          .del(),
+      ),
+    );
+
+    await knexConfig('endereco').where('Codigo', '!=', 0).del();
+
+    await Promise.all(
+      tablesSeleted.map(table =>
+        knexConfig(table).where('iSincronizado', 1).del(),
+      ),
+    );
   }
 }

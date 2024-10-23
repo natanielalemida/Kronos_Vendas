@@ -16,8 +16,6 @@ import {useCliente} from '../../../Clientes/context/clientContext';
 import {colors} from '../../../../../styles';
 import {ShowIf} from '../../../../../components/showIf';
 import ViewShot from 'react-native-view-shot';
-import Share from 'react-native-share';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import UseRepository from '../../hooks/useRepository';
 import {getClienteToSave} from './hooks/getClienteToSave';
 import Loading from '../../../../../components/loading/Loading';
@@ -34,7 +32,7 @@ export default function ResumoPedido({navigation}) {
   const {params} = route;
   const {id, Codigo, goBack, idCliente} = params || {};
 
-  const {teste} = UseRepository();
+  const {teste, clonePedido} = UseRepository();
   const {getByIdToSave} = getClienteToSave();
 
   const viewRef = useRef(null);
@@ -76,7 +74,7 @@ export default function ResumoPedido({navigation}) {
       if (idCliente) {
         cliente = await getByIdToSave(idCliente);
       }
-      const result = await teste(id, cliente, usuario);
+      const result = await teste(id, cliente, usuario, idCliente);
       if (result) {
         Alert.alert('Sucesso', 'Pedido enviado com sucesso');
         setTimeout(() => {
@@ -101,6 +99,17 @@ export default function ResumoPedido({navigation}) {
     setClienteOnContext(data?.Pessoa);
     setProdutosSelecionados(data?.Itens);
     navigation.navigate('Novo Pedido', {id});
+  };
+
+  const handleClone = () => {
+    Alert.alert(
+      'Duplicar pedido',
+      'Você tem certeza que deseja Duplicar o pedido atual?',
+      [
+        {text: 'Cancelar', style: 'cancel'},
+        {text: 'OK', onPress: () => clonePedido(id)},
+      ],
+    );
   };
 
   const handleDelete = () => {
@@ -136,7 +145,7 @@ export default function ResumoPedido({navigation}) {
       {data?.Itens.map((produto, index) => (
         <View key={index} style={styles.productRow}>
           <View style={styles.productDetails}>
-            <Text style={{width: '84%', color: colors.black}}>
+            <Text style={{width: '80%', color: colors.black}}>
               {produto.Descricao}
             </Text>
             <Text style={{fontWeight: 'bold', color: colors.confirmButton}}>
@@ -297,6 +306,12 @@ export default function ResumoPedido({navigation}) {
             <Text style={styles.buttonText}>Enviar Pedido</Text>
           </TouchableOpacity>
         </ShowIf>
+
+        <TouchableOpacity
+          style={[styles.confirmButton, {backgroundColor: colors.yellow}]}
+          onPress={() => handleClone()}>
+          <Text style={styles.buttonText}>X2</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

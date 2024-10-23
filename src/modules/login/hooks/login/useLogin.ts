@@ -56,7 +56,7 @@ export function UseLogin() {
       setProgress,
     );
     await sincronizar.iniciarSincronizacao();
-
+    setProgress(undefined);
     // @ts-ignore
     navigation.navigate('Menu');
   };

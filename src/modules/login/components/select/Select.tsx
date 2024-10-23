@@ -57,7 +57,7 @@ export default function Select({
             style={styles.leftIcon}
           />
         )}
-        <Text style={{color: colors.black}}>{label}</Text>
+        <Text style={{color: colors.black, width: '80%'}}>{label}</Text>
         <ModalSelect
           isActive={modalVisible}
           closeModal={setModalVisible}

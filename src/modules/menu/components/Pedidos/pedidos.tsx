@@ -19,6 +19,7 @@ import {useNavigation} from '@react-navigation/native';
 import {CheckBox} from '@rneui/themed';
 import Toast from 'react-native-toast-message';
 import {HeaderProducts} from '../../../components/headers/HeaderProducts';
+import Tag from '../../../components/tag/tag';
 
 export default function Pedidos() {
   const navigation = useNavigation();
@@ -41,6 +42,12 @@ export default function Pedidos() {
   >([]);
 
   const filterIconRef = useRef<TouchableOpacity>(null);
+
+  const labels = {
+    0: {label: 'Pendente', color: '#f1c40f'},
+    1: {label: 'Aprovado', color: '#2ecc71'},
+    2: {label: 'Cancelada', color: '#e74c3c'},
+  };
 
   useEffect(() => {
     getPedidos(options);
@@ -78,6 +85,7 @@ export default function Pedidos() {
     navigation.navigate('resumoPedidoNavigation', {
       id: item.id,
       Codigo: item.Codigo,
+      idCliente: item.PessoaCodigo ? undefined : item.idPessoa,
     });
   };
 
@@ -146,13 +154,20 @@ export default function Pedidos() {
           <Text style={styles.black}>
             Emissão: {formatDate(item.DataEmissao)}
           </Text>
-          <View style={styles.neonContainer}>
-            <Text style={styles.neonText}>Sinc</Text>
-            <CheckBox
-              checked={!!item.Codigo}
-              containerStyle={styles.checkBoxContainer}
-              onPress={() => handleSelection(item)}
+          <View
+            style={{flexDirection: 'row', flex: 1, justifyContent: 'flex-end'}}>
+            <Tag
+              color={labels[item.Situacao].color}
+              label={labels[item.Situacao].label}
             />
+            <View style={styles.neonContainer}>
+              <Text style={styles.neonText}>Sinc</Text>
+              <CheckBox
+                checked={!!item.Codigo}
+                containerStyle={styles.checkBoxContainer}
+                onPress={() => handleSelection(item)}
+              />
+            </View>
           </View>
         </View>
       </TouchableOpacity>
@@ -247,11 +262,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   bottomRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   neonContainer: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
