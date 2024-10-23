@@ -44,7 +44,6 @@ export default function useExportPdf() {
 
   const PedidoPDF = async Pedido => {
     const pessoa = await fetchPessoa(Pedido.Pessoa.CNPJCPF);
-
     const calculateTotalBruto = Pedido?.Itens.reduce(
       (acc, item) => acc + item.Quantidade * item.ValorUnitario,
       0,

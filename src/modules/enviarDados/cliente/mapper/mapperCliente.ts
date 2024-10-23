@@ -50,7 +50,7 @@ export default class NovoCliente {
         NomeFantasia: pessoa.NomeFantasia,
         CNPJCPF: pessoa.CNPJCPF || '',
         IERG: pessoa.IERG || '',
-        TipoContribuinte: pessoa.TipoContribuinte || 9, // Mapeamento manual necessário
+        TipoContribuinte: pessoa.PessoaFJ === 'PJ' && pessoa.IERG ? 1 : 9, // Mapeamento manual necessário
         Observacao: pessoa.Observacao || '',
         Ativo: pessoa.Ativo || true,
         DataCadastro: pessoa.DataCadastro || new Date().toISOString(),

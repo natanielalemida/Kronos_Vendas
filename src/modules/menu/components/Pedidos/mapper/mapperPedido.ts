@@ -124,6 +124,7 @@ export default class mapPedido {
       Codigo: dados[0].CodigoPedidoTable ? dados[0].CodigoPedidoTable : 0,
       DataEmissao: new Date(dados[0].DataEmissao),
       ModuloDeVenda: 2,
+      Observacao: dados[0].Observacao,
       MeiosPagamentos: meiosPagamentosUnicos,
       Pessoa: {
         CNPJCPF: dados[0].CNPJCPF,
