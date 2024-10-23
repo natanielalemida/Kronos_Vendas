@@ -111,6 +111,9 @@ export default class NovoCliente {
         ? [...emails, ...celulars]
         : null;
 
+    console.log({Teste: pessoa});
+    console.log({teste02: pessoa.IERG});
+
     return {
       Codigo: pessoa.Codigo || 0,
       Categoria: pessoa.CategoriaCodigo || null,
@@ -133,7 +136,7 @@ export default class NovoCliente {
       RazaoSocial: pessoa.RazaoSocial || pessoa.NomeFantasia,
       CNPJCPF: pessoa.CNPJCPF || '',
       IERG: pessoa.IERG || '',
-      TipoContribuinte: pessoa.TipoContribuinte || 9, // Mapeamento manual necessário
+      TipoContribuinte: pessoa.CNPJCPF.length > 11 && pessoa.IERG ? 1 : 9, // Mapeamento manual necessário
       Observacao: pessoa.Observacao || '',
       Ativo: pessoa.Ativo || true,
       DataCadastro: pessoa.DataCadastro || new Date().toISOString(),
