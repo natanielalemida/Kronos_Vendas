@@ -464,7 +464,6 @@ export default class PedidoRepository {
       const {
         ModuloDeVenda,
         OperacaoTipo,
-        Situacao,
         TipoMovimentacaoCodigo,
         TipoMovimentacaoDescricao,
         DataOperacao,
@@ -482,7 +481,7 @@ export default class PedidoRepository {
         DataEmissao: new Date(),
         ModuloDeVenda,
         OperacaoTipo,
-        Situacao,
+        Situacao: 0,
         TipoMovimentacaoCodigo,
         TipoMovimentacaoDescricao,
         DataOperacao: new Date(),
