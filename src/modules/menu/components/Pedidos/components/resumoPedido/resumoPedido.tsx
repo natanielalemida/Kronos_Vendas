@@ -101,6 +101,12 @@ export default function ResumoPedido({navigation}) {
     navigation.navigate('Novo Pedido', {id});
   };
 
+  const handleEdit = () => {
+    setClienteOnContext(data?.Pessoa);
+    setProdutosSelecionados(data?.Itens);
+    navigation.navigate('Novo Pedido');
+  };
+
   const handleClone = () => {
     Alert.alert(
       'Duplicar pedido',
@@ -309,8 +315,8 @@ export default function ResumoPedido({navigation}) {
 
         <TouchableOpacity
           style={[styles.confirmButton, {backgroundColor: colors.yellow}]}
-          onPress={() => handleClone()}>
-          <Text style={styles.buttonText}>X2</Text>
+          onPress={() => handleEdit()}>
+          <Text style={styles.buttonText}>Duplicar</Text>
         </TouchableOpacity>
       </View>
     </View>

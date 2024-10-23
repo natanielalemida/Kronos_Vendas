@@ -21,10 +21,15 @@ export default function useFilter({
           ? product.CodigoDeBarras.toLowerCase()
           : '';
 
+        const nomeFantasia = product.NomeFantasia
+          ? String(product.NomeFantasia).toLowerCase()
+          : '';
+
         return (
           descricao.includes(lowercasedFilter) ||
           codigo.includes(lowercasedFilter) ||
-          codigoDeBarras.includes(lowercasedFilter)
+          codigoDeBarras.includes(lowercasedFilter) ||
+          nomeFantasia.includes(lowercasedFilter)
         );
       });
 

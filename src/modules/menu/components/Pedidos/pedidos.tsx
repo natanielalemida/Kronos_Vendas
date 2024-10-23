@@ -103,12 +103,10 @@ export default function Pedidos() {
           visibilityTime: 2000,
         });
       } else {
-        const data = await getPedidosNotSynced();
-        await Promise.all(data.map(async pedido => await teste(pedido.id)));
         Toast.show({
-          type: 'success',
-          text1: 'Sucesso',
-          text2: 'Pedido enviado com sucesso',
+          type: 'error',
+          text1: 'Sem pedidos selecionados',
+          text2: 'Por favor, selecione um pedido',
           visibilityTime: 2000,
         });
       }
