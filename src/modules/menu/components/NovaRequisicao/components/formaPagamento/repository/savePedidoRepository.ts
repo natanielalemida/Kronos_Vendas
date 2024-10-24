@@ -11,6 +11,7 @@ export default class SavePedidoRepository {
   }
 
   async saveFormaPagamento(formaPagamento) {
+    console.log(formaPagamento);
     try {
       const [id] = await knexConfig('PedidoVinculoMeioPagamento').insert(
         formaPagamento,
@@ -41,35 +42,15 @@ export default class SavePedidoRepository {
   async UpdateFormaPagamento(formaPagamentos, id) {
     const trx = await knexConfig.transaction();
 
+    await trx('PedidoVinculoMeioPagamento').where('CodigoPedido', id).del();
     try {
-      const formaPagamentosParaAtualizar = formaPagamentos.filter(
-        p => p.CodigoFormaPagamento,
-      );
-      const novasFormaPagamentos = [];
-
-      for (const formaPagamento of formaPagamentosParaAtualizar) {
+      for (const formaPagamento of formaPagamentos) {
         // Verifica se o item existe
-        const existingItem = await trx('PedidoVinculoMeioPagamento')
-          .where('CodigoPedido', id)
-          .first();
-
-        if (existingItem) {
-          // Se o item existir, atualiza
-          await trx('PedidoVinculoMeioPagamento')
-            .update(formaPagamento)
-            .where('CodigoPedido', id);
-        } else {
-          // Se o item não existir, adiciona um novo
-          novasFormaPagamentos.push({...formaPagamento, CodigoPedido: id});
-        }
+        await trx('PedidoVinculoMeioPagamento')
+          .insert(formaPagamento)
+          .where('CodigoPedido');
       }
 
-      // Executa a inserção em massa para novas formas de pagamento
-      if (novasFormaPagamentos.length > 0) {
-        await trx('PedidoVinculoMeioPagamento').insert(novasFormaPagamentos);
-      }
-
-      // Commit na transação
       await trx.commit();
     } catch (error) {
       // Rollback na transação em caso de erro
