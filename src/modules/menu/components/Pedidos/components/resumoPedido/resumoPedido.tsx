@@ -171,7 +171,12 @@ export default function ResumoPedido({navigation}) {
       {data?.Itens.map((produto, index) => (
         <View key={index} style={styles.productRow}>
           <View style={styles.productDetails}>
-            <Text style={{width: '80%', color: colors.black}}>
+            <Text
+              style={{
+                width: '80%',
+                color: colors.arcGreen,
+                fontWeight: 'bold',
+              }}>
               {produto.Descricao}
             </Text>
             <Text style={{fontWeight: 'bold', color: colors.confirmButton}}>
@@ -209,7 +214,8 @@ export default function ResumoPedido({navigation}) {
             <View style={styles.productInfoBlock}>
               <Text style={styles.colorBlack}>TOTAL</Text>
               <Text style={styles.colorBlack}>
-                R$ {(produto.ValorUnitario * produto.Quantidade).toFixed(2)}
+                R${' '}
+                {(produto.ValorVendaDesconto * produto.Quantidade).toFixed(2)}
               </Text>
             </View>
           </View>
@@ -378,6 +384,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   productRow: {
+    // borderBottomColor: 'black',
+    // borderBottomWidth: 1,
+    borderTopColor: 'black',
+    borderTopWidth: 1,
     justifyContent: 'space-between',
     marginBottom: 10,
   },

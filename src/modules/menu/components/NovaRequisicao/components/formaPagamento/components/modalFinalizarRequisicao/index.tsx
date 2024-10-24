@@ -35,20 +35,20 @@ export default function ModalFinalizarRequisicao({
       ValorTotal: parseFloat(valorTotal),
       Observacao,
     });
-    const newArray = ProdutosSelecionados.map(produto => {
-      // Calcula o valor do desconto
-      const valorDesconto = produto.ValorVenda * (parseFloat(desconto) / 100);
+    // const newArray = ProdutosSelecionados.map(produto => {
+    //   // Calcula o valor do desconto
+    //   const valorDesconto = produto.ValorVenda * (parseFloat(desconto) / 100);
 
-      // Aplica o desconto ao valor original
-      const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
+    //   // Aplica o desconto ao valor original
+    //   const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
 
-      return {
-        ...produto,
-        ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
-      };
-    });
+    //   return {
+    //     ...produto,
+    //     ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+    //   };
+    // });
 
-    setProdutosSelecionados(newArray);
+    // setProdutosSelecionados(newArray);
 
     setIsModalActive(false);
   };
@@ -78,6 +78,22 @@ export default function ModalFinalizarRequisicao({
     const taxa = porcentagemDesconto * totalBruto;
 
     setValorTotal((totalBruto - taxa).toFixed(2));
+
+    const newArray = ProdutosSelecionados.map(produto => {
+      // Calcula o valor do desconto
+      const valorDesconto =
+        produto.ValorVenda * (parseFloat(valor.toFixed(2)) / 100);
+
+      // Aplica o desconto ao valor original
+      const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
+
+      return {
+        ...produto,
+        ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+      };
+    });
+
+    setProdutosSelecionados(newArray);
   };
 
   const handleValorVenda = () => {
@@ -97,6 +113,22 @@ export default function ModalFinalizarRequisicao({
     if (valor < total - totalMaximoDesconto) {
       setValorTotal((totalSemDesconto - totalMaximoDesconto).toFixed(2));
       setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
+      const newArray = ProdutosSelecionados.map(produto => {
+        // Calcula o valor do desconto
+        const valorDesconto =
+          produto.ValorVenda *
+          (parseFloat(usuario?.DescontoMaximoVenda.toFixed(2)) / 100);
+
+        // Aplica o desconto ao valor original
+        const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
+
+        return {
+          ...produto,
+          ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+        };
+      });
+
+      setProdutosSelecionados(newArray);
     } else {
       setValorTotal(valor.toFixed(2));
 
@@ -105,6 +137,21 @@ export default function ModalFinalizarRequisicao({
         100
       ).toFixed(2);
       setDesconto(novoDesconto);
+      const newArray = ProdutosSelecionados.map(produto => {
+        // Calcula o valor do desconto
+        const valorDesconto =
+          produto.ValorVenda * (parseFloat(novoDesconto) / 100);
+
+        // Aplica o desconto ao valor original
+        const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
+
+        return {
+          ...produto,
+          ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+        };
+      });
+
+      setProdutosSelecionados(newArray);
     }
   };
 
