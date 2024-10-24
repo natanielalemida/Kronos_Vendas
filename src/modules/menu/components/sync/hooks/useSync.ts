@@ -14,7 +14,12 @@ export default function UseSync({setProgress}: UseSyncHookProps) {
   const clean = async () => {
     await newSync.iniciarSincronizacao();
   };
+
+  const limpar = async () => {
+    await newSync.limparDados();
+  };
   return {
+    limpar,
     clean,
   };
 }

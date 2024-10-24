@@ -119,4 +119,69 @@ export default class runSync {
       Alert.alert(`${error.name}`, `${error.message}`);
     }
   }
+
+  async limparDados() {
+    const totalSteps = 7;
+    let currentStep = 1;
+
+    try {
+      this.setProgress({
+        message: 'Apagando registros antigos...',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      await this.deleteRepository.deleteAll();
+
+      currentStep++;
+      this.setProgress({
+        message: 'sincronização de municípios...',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      await this.municipioSync.runSync();
+
+      currentStep++;
+      this.setProgress({
+        message: 'sincronização de produtos...',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      await this.produtosSync.runSync();
+
+      currentStep++;
+      this.setProgress({
+        message: 'sincronização de formas de pagamentos...',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      await this.formaPagamentoSync.runSync();
+
+      currentStep++;
+      this.setProgress({
+        message: 'sincronização de clientes...',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      await this.clienteSync.runSync();
+
+      currentStep++;
+      this.setProgress({
+        message: 'Sincronizando pedidos',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      await this.pedidoSync.runSync();
+
+      currentStep++;
+      this.setProgress({
+        message: 'Sincronização concluída!',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      this.setProgress(undefined);
+    } catch (er) {
+      const error = er as Error;
+      Alert.alert(`${error.name}`, `${error.message}`);
+    }
+  }
 }

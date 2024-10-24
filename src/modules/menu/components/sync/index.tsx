@@ -14,7 +14,7 @@ export default function Sincronizacao() {
   const navigation = useNavigation();
   const {isSyncing, setIsSyncing, usuario, organizationCode} = useCliente();
   const {progress, setProgress} = UseMessageSync();
-  const {clean} = UseSync({setProgress});
+  const {clean, limpar} = UseSync({setProgress});
   const {shareDatabaseFile} = useShareDatabase();
 
   const repository = new EnviarClientes(usuario as UsuarioDto, setProgress);
@@ -31,7 +31,7 @@ export default function Sincronizacao() {
   const handleSyncClear = async () => {
     animation.current?.play();
     setIsSyncing(true);
-    await clean();
+    await limpar();
     setIsSyncing(false);
     animation.current?.reset();
     navigation.navigate('Novo Pedido');

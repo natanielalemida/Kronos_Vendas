@@ -87,6 +87,8 @@ export default class SavePedidoRepository {
       );
       const novosProdutos = [];
 
+      await trx('PedidoVinculoProduto').where('CodigoPedido', id).del();
+
       for (const produto of produtosParaAtualizar) {
         // Verifica se o item existe
         const existingItem = await trx('PedidoVinculoProduto')

@@ -133,7 +133,7 @@ export default function ResumoPedido({navigation}) {
       'Você tem certeza que deseja Duplicar o pedido atual?',
       [
         {text: 'Cancelar', style: 'cancel'},
-        {text: 'OK', onPress: () => clonePedido(id)},
+        {text: 'OK', onPress: () => handleEdit()},
       ],
     );
   };
@@ -204,6 +204,12 @@ export default function ResumoPedido({navigation}) {
               <Text style={styles.colorBlack}>VLR UN</Text>
               <Text style={styles.colorBlack}>
                 R$ {produto.ValorUnitario.toFixed(2)}
+              </Text>
+            </View>
+            <View style={styles.productInfoBlock}>
+              <Text style={styles.colorBlack}>TOTAL</Text>
+              <Text style={styles.colorBlack}>
+                R$ {(produto.ValorUnitario * produto.Quantidade).toFixed(2)}
               </Text>
             </View>
           </View>
@@ -335,7 +341,7 @@ export default function ResumoPedido({navigation}) {
 
         <TouchableOpacity
           style={[styles.confirmButton, {backgroundColor: colors.yellow}]}
-          onPress={() => handleEdit()}>
+          onPress={() => handleClone()}>
           <Text style={styles.buttonText}>Duplicar</Text>
         </TouchableOpacity>
       </View>

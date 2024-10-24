@@ -36,4 +36,22 @@ export default class DeleteRepository {
       ),
     );
   }
+
+  public async deleteAll(): Promise<void> {
+    const tables = [
+      'formaPagamento',
+      'condicaoPagamento',
+      'produtos',
+      'pessoa',
+      'regiao',
+      'categoria',
+      'municipio',
+      'contato',
+      'pedido',
+      'PedidoVinculoProduto',
+      'PedidoVinculoMeioPagamento',
+    ];
+
+    await Promise.all(tables.map(table => knexConfig(table).del()));
+  }
 }

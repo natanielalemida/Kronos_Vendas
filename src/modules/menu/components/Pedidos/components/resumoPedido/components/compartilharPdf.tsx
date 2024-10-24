@@ -331,7 +331,9 @@ export default function useExportPdf() {
                                   <td>${(
                                     item.ValorUnitario - item.ValorVendaDesconto
                                   ).toFixed(2)}</td>
-                                  <td>${item.ValorVendaDesconto.toFixed(2)}</td>
+                                  <td>${(
+                                    item.ValorVendaDesconto * item.Quantidade
+                                  ).toFixed(2)}</td>
                               </tr>`;
                         })
                       }    
