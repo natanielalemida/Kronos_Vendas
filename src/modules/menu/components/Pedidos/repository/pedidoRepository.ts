@@ -185,6 +185,7 @@ export default class PedidoRepository {
           'pessoa.RazaoSocial',
           'pessoa.CNPJCPF as CNPJCPF',
           'pessoa.TipoPreco',
+          'pessoa.id as idPessoa',
         )
         .innerJoin('pessoa', function () {
           this.on(function () {

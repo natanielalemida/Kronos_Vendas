@@ -33,7 +33,7 @@ export default function ResumoPedido({navigation}) {
   const {id, Codigo, goBack, idCliente} = params || {};
 
   const {teste, clonePedido} = UseRepository();
-  const {getByIdToSave} = getClienteToSave();
+  const {getByIdToSave, getByCodeToSave} = getClienteToSave();
 
   const viewRef = useRef(null);
   const [data, setData] = useState<PedidoSearchDto>();
@@ -95,14 +95,34 @@ export default function ResumoPedido({navigation}) {
     navigation.navigate('Menu');
   };
 
-  const handleTeste = () => {
-    setClienteOnContext(data?.Pessoa);
+  const handleGetPessoa = async () => {
+    const cliente = data?.Pessoa.Codigo
+      ? await getByCodeToSave(data?.Pessoa.id)
+      : await getByIdToSave(data?.Pessoa.id);
+
+    const clintesNew = {
+      ...cliente,
+      Enderecos: [
+        {
+          Logradouro: cliente.Logradouro,
+          Numero: cliente.Numero,
+          Bairro: cliente.Bairro,
+        },
+      ],
+    };
+    return clintesNew;
+  };
+
+  const handleTeste = async () => {
+    const cliente = await handleGetPessoa();
+    setClienteOnContext(cliente);
     setProdutosSelecionados(data?.Itens);
     navigation.navigate('Novo Pedido', {id});
   };
 
-  const handleEdit = () => {
-    setClienteOnContext(data?.Pessoa);
+  const handleEdit = async () => {
+    const cliente = await handleGetPessoa();
+    setClienteOnContext(cliente);
     setProdutosSelecionados(data?.Itens);
     navigation.navigate('Novo Pedido');
   };

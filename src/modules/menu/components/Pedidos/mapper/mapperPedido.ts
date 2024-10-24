@@ -132,6 +132,7 @@ export default class mapPedido {
         CodigoPessoa: dados[0].CodigoPessoa,
         NomeFantasia: dados[0].NomeFantasia,
         TipoPreco: dados[0].TipoPreco,
+        id: dados[0].idPessoa,
       },
       Terminal: {
         Codigo: 1,
