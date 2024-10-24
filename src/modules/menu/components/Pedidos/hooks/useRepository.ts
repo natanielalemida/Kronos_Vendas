@@ -47,6 +47,8 @@ export default function UseRepository() {
     id: number,
     clienteOnContext: ClienteDto,
     usuario: UsuarioDto,
+    codigoEmpresa: number,
+    terminal: number,
   ) => {
     setLoading(true);
 
@@ -70,16 +72,14 @@ export default function UseRepository() {
     }
 
     try {
-      const data = await repositoy.getPedidoById(id);
-
-      console.log({data});
+      const data = await repositoy.getPedidoById(id, terminal);
 
       const result = await ApiInstace.openUrl({
         method: 'post',
         endPoint: 'arc/operacao/prevenda',
         data,
         headers: {
-          Empresa: 1,
+          Empresa: codigoEmpresa,
           Auth: usuario?.Hash,
         },
       });

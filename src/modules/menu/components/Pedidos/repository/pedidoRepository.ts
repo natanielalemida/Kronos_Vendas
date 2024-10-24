@@ -151,7 +151,10 @@ export default class PedidoRepository {
       .where('id', pedidoId);
   }
 
-  async getPedidoById(id: number): Promise<PedidoSearchDto | undefined> {
+  async getPedidoById(
+    id: number,
+    terminal: number,
+  ): Promise<PedidoSearchDto | undefined> {
     try {
       const data = await knexConfig('pedido')
         .select(
@@ -241,7 +244,7 @@ export default class PedidoRepository {
 
       if (!data.length) return undefined;
 
-      return this.mapper.mapearDados(data);
+      return this.mapper.mapearDados(data, terminal);
     } catch (error) {
       console.error(error);
     }
@@ -345,6 +348,7 @@ export default class PedidoRepository {
 
   async getPedidoByIdNotSynced(
     id: number,
+    terminal: number,
   ): Promise<PedidoSearchDto | undefined> {
     try {
       const data = await knexConfig('pedido')
@@ -425,7 +429,7 @@ export default class PedidoRepository {
 
       if (!data.length) return undefined;
 
-      return this.mapper.mapearDados(data);
+      return this.mapper.mapearDados(data, terminal);
     } catch (error) {
       console.error(error);
     }

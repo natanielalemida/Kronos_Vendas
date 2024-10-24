@@ -20,6 +20,7 @@ import UseRepository from '../../hooks/useRepository';
 import {getClienteToSave} from './hooks/getClienteToSave';
 import Loading from '../../../../../components/loading/Loading';
 import useExportPdf from './components/compartilharPdf';
+import {getTerminal} from '../../../../../../storage/empresaStorage';
 
 export default function ResumoPedido({navigation}) {
   const route = useRoute();
@@ -28,6 +29,7 @@ export default function ResumoPedido({navigation}) {
     setProdutosSelecionados,
     clienteOnContext,
     usuario,
+    empresa,
   } = useCliente();
   const {params} = route;
   const {id, Codigo, goBack, idCliente} = params || {};
@@ -43,8 +45,9 @@ export default function ResumoPedido({navigation}) {
   const {PedidoPDF} = useExportPdf();
 
   const handleGetPedido = async () => {
+    const terminal = await getTerminal();
     if (clienteOnContext?.Codigo) {
-      const result = await repository.getPedidoById(id);
+      const result = await repository.getPedidoById(id, terminal);
 
       setData({
         ...result,
@@ -55,7 +58,7 @@ export default function ResumoPedido({navigation}) {
       });
       return;
     } else {
-      const result = await repository.getPedidoById(id);
+      const result = await repository.getPedidoById(id, terminal);
 
       setData({
         ...result,
@@ -69,12 +72,19 @@ export default function ResumoPedido({navigation}) {
 
   const enviarPedido = async (id: number) => {
     try {
+      const terminal = await getTerminal();
       setIsLoading(true);
       let cliente = null;
       if (idCliente) {
         cliente = await getByIdToSave(idCliente);
       }
-      const result = await teste(id, cliente, usuario);
+      const result = await teste(
+        id,
+        cliente,
+        usuario,
+        empresa.Codigo,
+        terminal,
+      );
       if (result) {
         Alert.alert('Sucesso', 'Pedido enviado com sucesso');
         setTimeout(() => {

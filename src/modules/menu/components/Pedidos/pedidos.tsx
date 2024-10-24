@@ -22,11 +22,12 @@ import {HeaderProducts} from '../../../components/headers/HeaderProducts';
 import Tag from '../../../components/tag/tag';
 import {useCliente} from '../Clientes/context/clientContext';
 import {getClienteToSave} from './components/resumoPedido/hooks/getClienteToSave';
+import {getTerminal} from '../../../../storage/empresaStorage';
 
 export default function Pedidos() {
   const navigation = useNavigation();
   const {getPedidos, pedidos, isLoading, teste, setLoading} = UseRepository();
-  const {usuario} = useCliente();
+  const {usuario, empresa} = useCliente();
   const {getByIdToSave} = getClienteToSave();
   const [options, setOptions] = useState({syncds: true, notSyncd: true});
   const [textFilter, setTextFilter] = useState<string>('');
@@ -97,10 +98,12 @@ export default function Pedidos() {
         return;
       }
 
+      const terminal = await getTerminal();
+
       const result = await Promise.all(
         pedidosSelecionados.map(async pedido => {
           const pessoaId = await getByIdToSave(pedido.idPessoa);
-          return teste(pedido.id, pessoaId, usuario);
+          return teste(pedido.id, pessoaId, usuario, empresa.Codigo, terminal);
         }),
       );
 

@@ -27,7 +27,7 @@ function dividirValor(total: number, partes: number): number[] {
 }
 
 export default class mapPedido {
-  mapearDados(dados) {
+  mapearDados(dados, terminal) {
     const itensUnicos = dados.reduce((acc, item) => {
       const existente = acc.find(i => i.CodigoProduto === item.CodigoProduto);
       const valor = item.ValorVendaDesconto
@@ -135,7 +135,7 @@ export default class mapPedido {
         id: dados[0].idPessoa,
       },
       Terminal: {
-        Codigo: 1,
+        Codigo: terminal,
       },
       Itens: itensUnicos,
       Titulos: meiosPagamentosUnicos.flatMap(mp => mp.Titulos),

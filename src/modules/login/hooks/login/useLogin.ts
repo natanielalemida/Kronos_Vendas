@@ -3,11 +3,16 @@ import ApiInstace from '../../../../api/ApiInstace';
 import {MainResponse} from '../type';
 import {setAuth, setNomeUsuario} from '../../../../storage';
 import runSync from '../../../../sync/runSync/runSync';
-import {setEmpresa} from '../../../../storage/empresaStorage';
+import {
+  getTerminal,
+  setEmpresa,
+  setTerminal,
+} from '../../../../storage/empresaStorage';
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import {useCliente} from '../../../menu/components/Clientes/context/clientContext';
 import UseGetMunicipio from '../../../menu/components/Clientes/components/criarOuEditarUsuario/hooks/useGetMunicipio';
+import {SettingsRepository} from '../../components/selectHost/repository';
 
 export function UseLogin() {
   const [progress, setProgress] = useState<{}>();
@@ -22,6 +27,7 @@ export function UseLogin() {
     data: MainResponse,
     organizationCode: number,
     cpf: string,
+    terminal: number,
   ) => {
     const successfully = Array.isArray(data.Mensagens);
     if (!successfully) {
@@ -48,6 +54,7 @@ export function UseLogin() {
     await setAuth(JSON.stringify(data.Resultado.Usuario));
     setUsuario(data.Resultado.Usuario);
     await setEmpresa(JSON.stringify(organizationCode));
+    await setTerminal(JSON.stringify(terminal));
     setOrganizationCode(organizationCode);
 
     const sincronizar = new runSync(
@@ -68,6 +75,10 @@ export function UseLogin() {
   ) => {
     if (!cpf || !password || !organizationCode) return;
 
+    const repositorySettings = new SettingsRepository();
+
+    const {terminal} = await repositorySettings.get();
+
     setProgress({message: 'Conectando com servidor...'});
 
     const data = await ApiInstace.openUrl({
@@ -78,14 +89,14 @@ export function UseLogin() {
         Senha: password,
         Aplicacao: 6,
         codigoEmpresa: organizationCode,
-        NumeroTerminal: 1,
+        NumeroTerminal: terminal,
       },
       headers: undefined,
     });
 
     setProgress({message: 'Iniciando sincronização...'});
 
-    verify(data, organizationCode, cpf);
+    verify(data, organizationCode, cpf, terminal);
   };
 
   return {
