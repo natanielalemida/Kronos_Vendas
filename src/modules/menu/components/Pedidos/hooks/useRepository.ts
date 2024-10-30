@@ -29,7 +29,11 @@ export default function UseRepository() {
   };
 
   const repositoy = new PedidoRepository();
-  const getPedidos = async (options: {syncds: boolean; notSyncd: boolean}) => {
+  const getPedidos = async (options: {
+    syncds: boolean;
+    notSyncd: boolean;
+    clienteId?: number;
+  }) => {
     setLoading(true);
     const result = await repositoy.searchPedidoComPessoa(options);
     setPedidos(result);

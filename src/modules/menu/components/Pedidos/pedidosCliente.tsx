@@ -28,7 +28,7 @@ import {useCliente} from '../Clientes/context/clientContext';
 import {getClienteToSave} from './components/resumoPedido/hooks/getClienteToSave';
 import {getTerminal} from '../../../../storage/empresaStorage';
 
-export default function Pedidos() {
+export default function PedidosCliente() {
   const route = useRoute();
   const {params} = route;
   const {clienteId} = params || {};
@@ -57,20 +57,16 @@ export default function Pedidos() {
     2: {label: 'Cancelada', color: '#e74c3c'},
   };
 
-  useEffect(() => {
-    getPedidos(options);
-  }, [options]);
+  useEffect(() => {}, [options]);
 
   useFocusEffect(
     useCallback(() => {
-      console.log({clienteId});
-      setOptions(oldValue => ({...oldValue, clienteId}));
+      getPedidos({...options, clienteId});
       return () => {
         setFilteredPedidos([]);
         setPedidos([]);
-        navigation.setParams({clienteId: undefined});
       };
-    }, [clienteId]),
+    }, [clienteId, options]),
   );
 
   useFilter({
@@ -208,13 +204,9 @@ export default function Pedidos() {
         rightColor="white"
         leftSize={25}
         rightSize={25}
-        leftIcon={clienteId ? 'chevron-back-outline' : 'menu'}
+        leftIcon="chevron-back-outline"
         rightIcon="cloud-upload-outline"
-        onPressLeftIcon={
-          clienteId
-            ? () => navigation.goBack()
-            : () => navigation.toggleDrawer()
-        }
+        onPressLeftIcon={() => navigation.pop(1)}
         onPressRightIcon={enviarPedidos}
       />
       <View style={styles.container}>

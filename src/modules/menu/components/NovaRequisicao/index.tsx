@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import {colors} from '../../../styles';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useCliente} from '../Clientes/context/clientContext';
 import ModalDeleteOrEdit from './components/editProdutosOnList/compents/modalEditOrDelete';
@@ -93,9 +94,24 @@ export default function NovaRequisicao() {
             alignSelf: 'center',
             borderRadius: 15,
           }}>
-          <Text style={{color: colors.black, fontSize: 16, fontWeight: '800'}}>
-            Cliente
-          </Text>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text
+              style={{color: colors.black, fontSize: 16, fontWeight: '800'}}>
+              Cliente
+            </Text>
+            <ShowIf condition={!!clienteOnContext?.id}>
+              <FontAwesome
+                name="history"
+                size={25}
+                color={colors.black}
+                onPress={() =>
+                  navigation.navigate('Pedidos', {
+                    clienteId: clienteOnContext?.id,
+                  })
+                }
+              />
+            </ShowIf>
+          </View>
           <View
             style={{
               flexDirection: 'row',

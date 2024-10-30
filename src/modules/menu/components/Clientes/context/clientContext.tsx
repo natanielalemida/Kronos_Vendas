@@ -39,6 +39,8 @@ interface CounterContextType {
   clearAllContext: () => void;
   empresa;
   setEmpresa;
+  clienteId;
+  setClienteId;
 }
 
 const CounterContext = createContext<CounterContextType | undefined>(undefined);
@@ -119,6 +121,7 @@ export const ClienteProvider: React.FC<{children: ReactNode}> = ({
 
   const [finalizarVenda, setFinalizarVenda] = useState<FinalizarVenda>();
   const [valorPago, setValorPago] = useState<number>(0);
+  const [clienteId, setClienteId] = useState<number>(0);
   const [usuario, setUsuario] = useState<UsuarioDto>();
   const [organizationCode, setOrganizationCode] = useState<number>();
   const [isSyncing, setIsSyncing] = useState(false);
@@ -163,6 +166,8 @@ export const ClienteProvider: React.FC<{children: ReactNode}> = ({
         clearAllContext,
         setEmpresa,
         empresa,
+        clienteId,
+        setClienteId,
       }}>
       {children}
     </CounterContext.Provider>

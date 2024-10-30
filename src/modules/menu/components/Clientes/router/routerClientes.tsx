@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import {TouchableOpacity, View, StyleSheet} from 'react-native';
 import CriarOuEditarUsuario from '../components/criarOuEditarUsuario';
 import Endereco from '../components/criarOuEditarUsuario/endereco';
@@ -9,6 +10,8 @@ import {colors} from '../../../../styles';
 import UseSaveOrEdit from '../components/criarOuEditarUsuario/hooks/useSaveOrEdit';
 import {useCliente} from '../context/clientContext';
 import {useRoute} from '@react-navigation/native';
+import Pedidos from '../../Pedidos/pedidos';
+import PedidosCliente from '../../Pedidos/pedidosCliente';
 
 const Tab = createBottomTabNavigator();
 
@@ -102,6 +105,21 @@ export default function RouterCliente() {
         }}
         initialParams={{setClienteOnContextActive}}
       />
+
+      {!!form.id && (
+        <Tab.Screen
+          name="Histórico"
+          component={PedidosCliente}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Histórico',
+            tabBarIcon: ({color, size}) => (
+              <FontAwesome name="history" size={size} color={color} />
+            ),
+          }}
+          initialParams={{clienteId: form.id}}
+        />
+      )}
     </Tab.Navigator>
   );
 }

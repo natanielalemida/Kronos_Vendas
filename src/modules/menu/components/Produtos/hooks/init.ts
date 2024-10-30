@@ -6,9 +6,6 @@ export default function Init({handleGetProdutos, setOptions}: InitProps) {
   useFocusEffect(
     useCallback(() => {
       handleGetProdutos();
-      if (setOptions) {
-        setOptions({syncds: true, notSyncd: true});
-      }
       return () => {};
     }, []),
   );

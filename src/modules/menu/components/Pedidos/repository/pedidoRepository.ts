@@ -69,6 +69,7 @@ export default class PedidoRepository {
   async searchPedidoComPessoa(options: {
     syncds: boolean;
     notSyncd: boolean;
+    clienteId?: number;
   }): Promise<PedidoSearchDto[]> {
     const data = knexConfig('pedido')
       .select(
@@ -104,6 +105,10 @@ export default class PedidoRepository {
         });
       });
 
+    if (options.clienteId) {
+      data.where('pessoa.id', options.clienteId);
+    }
+
     if (options.notSyncd && !options.syncds) {
       const result = await data.andWhere('pedido.Codigo', null);
       return this.mapper.mapItems(result);
@@ -111,15 +116,15 @@ export default class PedidoRepository {
 
     if (!options.notSyncd && options.syncds) {
       const result = await data.whereNotNull('pedido.Codigo');
-      return this.mapper.mapItems(await data);
+      return this.mapper.mapItems(result);
     }
 
     if (!options.notSyncd && !options.syncds) {
       return [];
     }
 
-    const result = this.mapper.mapItems(await data);
-    return result;
+    const result = await data; // Execute the query
+    return this.mapper.mapItems(result);
   }
 
   async searchPedidoComPessoaNotSynbced(): Promise<PedidoSearchDto[]> {

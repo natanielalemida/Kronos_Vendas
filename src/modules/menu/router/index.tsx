@@ -121,9 +121,10 @@ export default function Menu() {
             drawerIcon: ({color, size}) => (
               <Icon name="cart-outline" color={color} size={size} />
             ),
-            headerShown: false, // Esconde a barra de navegação
+            headerShown: false,
           })}
         />
+
         <Drawer.Screen
           name="Produtos"
           component={Produto}
