@@ -11,6 +11,7 @@ import {ClienteProvider} from './src/modules/menu/components/Clientes/context/cl
 import ListAndSelectClientes from './src/modules/menu/components/NovaRequisicao/router/routerClientes';
 import {AutocompleteDropdownContextProvider} from 'react-native-autocomplete-dropdown';
 import ResumoPedido from './src/modules/menu/components/Pedidos/components/resumoPedido/resumoPedido';
+import PedidosCliente from './src/modules/menu/components/Pedidos/pedidosCliente';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,11 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="Settings"
               component={Settings}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="PedidosCliente"
+              component={PedidosCliente}
               options={{headerShown: false}}
             />
             <Stack.Group>

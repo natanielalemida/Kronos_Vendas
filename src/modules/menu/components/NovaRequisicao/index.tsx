@@ -105,7 +105,7 @@ export default function NovaRequisicao() {
                 size={25}
                 color={colors.black}
                 onPress={() =>
-                  navigation.navigate('Pedidos', {
+                  navigation.navigate('PedidosCliente', {
                     clienteId: clienteOnContext?.id,
                   })
                 }
