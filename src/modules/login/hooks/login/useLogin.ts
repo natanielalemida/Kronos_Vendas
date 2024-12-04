@@ -34,43 +34,89 @@ export function UseLogin() {
     password: string,
   ) => {
     const successfully = Array.isArray(data.Mensagens);
+  
     if (!successfully) {
-      //@ts-ignore
-      Alert.alert('Falha ao realizar login', `${data.mensagens[0].conteudo}`);
+      const errorMessage = data.mensagens?.[0]?.conteudo || "Erro desconhecido";
+      showAlert("Falha ao realizar login", errorMessage); // Utilizando função para alertas
       setProgress(undefined);
       return;
     }
+  
+    try {
+      const empresa = await ApiInstace.openUrl({
+        method: "get",
+        endPoint: `arc/empresa/${organizationCode}`,
+        headers: undefined,
+        data: undefined
+      });
+  
+      const successfullyEmpresa = Array.isArray(empresa.Mensagens);
+  
+      if (successfullyEmpresa) {
+        setEmpresaContext(empresa.Resultado);
+        await saveLoginRepository.saveEmpresa(JSON.stringify(empresa.Resultado), empresa.Resultado.Codigo)
+      }
+      await handleSaveLogin(data.Resultado, password);
+      await setNomeUsuario(cpf);
+      await setAuth(JSON.stringify(data.Resultado.Usuario));
+      setUsuario(data.Resultado.Usuario);
+      await setEmpresa(JSON.stringify(organizationCode));
+      await setTerminal(JSON.stringify(terminal));
+      setOrganizationCode(organizationCode);
+  
+      const sincronizar = new runSync(
+        data.Resultado.Usuario,
+        organizationCode,
+        setProgress,
+      );
+      await sincronizar.iniciarSincronizacao();
+      setProgress(undefined);
+      // @ts-ignore
+      navigation.navigate('Menu');
+      return
+    } catch (error) {
+      console.error("Erro durante o login:", error);
+      await handleEmpresaFallback()
+      await setNomeUsuario(cpf);
+      await setAuth(JSON.stringify(data.Resultado.Usuario));
+      setUsuario(data.Resultado.Usuario);
+      await setEmpresa(JSON.stringify(organizationCode));
+      await setTerminal(JSON.stringify(terminal));
+      setOrganizationCode(organizationCode);
 
-    const empresa = await ApiInstace.openUrl({
-      method: 'get',
-      endPoint: `arc/empresa/${organizationCode}`,
-      data: undefined,
-      headers: undefined,
-    });
-
-    const successfullyEmpresa = Array.isArray(empresa.Mensagens);
-
-    if (successfullyEmpresa) {
-      setEmpresaContext(empresa.Resultado);
+      setProgress(undefined);
+      // @ts-ignore
+      navigation.navigate('Menu');
     }
-    await handleSaveLogin(data.Resultado, password);
-    await setNomeUsuario(cpf);
-    await setAuth(JSON.stringify(data.Resultado.Usuario));
-    setUsuario(data.Resultado.Usuario);
-    await setEmpresa(JSON.stringify(organizationCode));
-    await setTerminal(JSON.stringify(terminal));
-    setOrganizationCode(organizationCode);
+    
 
-    const sincronizar = new runSync(
-      data.Resultado.Usuario,
-      organizationCode,
-      setProgress,
-    );
-    await sincronizar.iniciarSincronizacao();
-    setProgress(undefined);
-    // @ts-ignore
-    navigation.navigate('Menu');
   };
+  
+  // Função para exibir alertas
+  const showAlert = (title: string, message: string) => {
+    Alert.alert(title, message);
+  };
+  
+  // Função para tratar fallback de dados da empresa
+  const handleEmpresaFallback = async () => {
+    const result = await saveLoginRepository.getEmpresa()
+    if(!result) {
+      Alert.alert('Empresa offline não salva')
+      return
+    }
+    console.log(result)
+    setEmpresaContext(result);
+  };
+  
+  // Função para tratar erros de rede
+  const handleNetworkError = async (error: any) => {
+    if (error.message.includes("Network Error")) {
+    await handleEmpresaFallback();
+    } else {
+      showAlert("Erro inesperado", "Não foi possível concluir a operação.");
+    }
+  };
+  
 
   const handleLogin = async (
     cpf: string | undefined,
@@ -146,7 +192,7 @@ export function UseLogin() {
       };
     }
     return {
-      Resultado: user,
+      Resultado: {Usuario: user},
       Status: 1,
       Mensagens: [],
     };

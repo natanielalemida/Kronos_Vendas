@@ -46,3 +46,19 @@ export const createPrivilegiosMigration = async () => {
     console.error('Error creating table:', error);
   }
 };
+
+export const createEmpresaJson = async () => {
+  try {
+    if (!(await knexConfig.schema.hasTable('empresaLogin'))) {
+      await knexConfig.schema.createTable('empresaLogin', (table) => {
+        table.integer('empresaJson').unsigned().notNullable();
+        table.string('codigo_empresa').notNullable();
+      });
+      console.log('Table empresaLogin created successfully.');
+    } else {
+      console.log('Table empresaLogin already exists.');
+    }
+  } catch (error) {
+    console.error('Error creating table:', error);
+  }
+};

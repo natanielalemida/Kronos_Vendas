@@ -46,6 +46,7 @@ export default function Select({
 
   return (
     <TouchableOpacity
+    disabled={!data.length}
       style={[styles.inputContainer, {width: inputWidth}]}
       onPress={() => setModalVisible(!modalVisible)}>
       <View style={styles.leftIconContainer}>

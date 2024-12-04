@@ -21,6 +21,28 @@ export default class SaveLoginRepository {
         updated_at: null,
       });
     }
+
+    public async saveEmpresa(jsonEmpresa: string, codigoEmpresa: string): Promise<void> {
+      await this.deleteAllEmpresa();
+      await knexConfig('empresaLogin').insert({
+        empresaJson: jsonEmpresa,
+        codigo_empresa: codigoEmpresa,
+      });
+    }
+
+    public async getLastSync() {
+      const query = await knexConfig('usuarios').select('created_at').first()
+      if(!query) return undefined
+      return query.created_at
+    }
+
+    public async getEmpresa(): Promise<string | undefined> {
+     const query = await knexConfig('empresaLogin').select('empresaLogin.empresaJson').first();
+     if(!query) return undefined
+
+     return JSON.parse(query.empresaJson)
+
+    }
   
     public async getUser(cpf: string, password: string): Promise<UsuarioDto | undefined> {
       const query = await knexConfig('usuarios').select('*').where('login', cpf).andWhere('senha', password).first();
@@ -51,6 +73,9 @@ export default class SaveLoginRepository {
   
     public async deleteAllPrivilegios(): Promise<void> {
       await knexConfig('privilegios').del();
+    }
+    public async deleteAllEmpresa(): Promise<void> {
+      await knexConfig('empresaLogin').del();
     }
   }
   

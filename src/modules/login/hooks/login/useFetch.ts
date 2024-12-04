@@ -1,8 +1,9 @@
 import {useState} from 'react';
 import ApiInstace from '../../../../api/ApiInstace';
 import {useNavigation} from '@react-navigation/native';
+import { getOrganizacaoOffline } from '../../../../storage';
 
-export function useFetch() {
+export function useFetch(handleChangeOrganization) {
   const navigation = useNavigation();
   const [organizations, setData] = useState<[]>([]);
   const [isLoadingOrganization, setLoading] = useState(false);
@@ -27,6 +28,9 @@ export function useFetch() {
       setLoading(false);
     } catch (error) {
       console.error('Erro ao buscar organizações:', error);
+      const resultado = await getOrganizacaoOffline()
+      console.log({resultado})
+      await handleChangeOrganization(resultado)
       // Aqui você pode tratar o erro, exibir uma mensagem, etc.
       setLoading(false);
     } finally {

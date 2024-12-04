@@ -36,7 +36,7 @@ import {createPedidoVinculoMeioPagamentoTable} from '../../database/migration/cr
 import {createPedidoVinculoProdutoTable} from '../../database/migration/createPedidoVinculoProdutoMigration';
 import {getNomeUsuario} from '../../storage';
 import Loading from '../components/loading/Loading';
-import { createPrivilegiosMigration, createUsuariosMigration } from '../../database/migration/createLoginMigration';
+import { createEmpresaJson, createPrivilegiosMigration, createUsuariosMigration } from '../../database/migration/createLoginMigration';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -54,7 +54,7 @@ export default function Login({navigation}) {
     setOrganizationCode(value.Codigo || 0);
   };
 
-  const {organizations, isLoadingOrganization, getOrganizations} = useFetch();
+  const {organizations, isLoadingOrganization, getOrganizations} = useFetch(handleChangeOrganization);
   const {handleLogin, progress} = UseLogin();
 
   const handleSetLastUser = async () => {
@@ -91,6 +91,7 @@ export default function Login({navigation}) {
     createPedidoVinculoProdutoTable();
     createUsuariosMigration();
     createPrivilegiosMigration();
+    createEmpresaJson()
   }, []);
 
   // UseEffect para adicionar listeners ao teclado

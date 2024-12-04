@@ -19,3 +19,13 @@ export async function getAuth(): Promise<UsuarioDto> {
   const data = await AsyncStorage.getItem('auth');
   return JSON.parse(data as string);
 }
+
+export async function setOrganizacaoOffline(params: string) {
+  await AsyncStorage.removeItem('organizacaoOffline');
+  await AsyncStorage.setItem('organizacaoOffline', params);
+}
+
+export async function getOrganizacaoOffline(): Promise<UsuarioDto> {
+  const data = await AsyncStorage.getItem('organizacaoOffline');
+  return JSON.parse(data as string);
+}

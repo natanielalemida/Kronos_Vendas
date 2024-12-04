@@ -4,11 +4,13 @@ import {colors} from '../../../styles';
 import UseMessageSync from './hooks/useMessageSync';
 import UseSync from './hooks/useSync';
 import useShareDatabase from './hooks/useShare';
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useCliente} from '../Clientes/context/clientContext';
 import {useNavigation} from '@react-navigation/native';
 import EnviarClientes from '../../../enviarDados/cliente';
 import {UsuarioDto} from '../../../login/hooks/type';
+import Init from '../Produtos/hooks/init';
+import SaveLoginRepository from '../../../login/repository/saveLoginRepository';
 
 export default function Sincronizacao() {
   const navigation = useNavigation();
@@ -16,6 +18,8 @@ export default function Sincronizacao() {
   const {progress, setProgress} = UseMessageSync();
   const {clean, limpar} = UseSync({setProgress});
   const {shareDatabaseFile} = useShareDatabase();
+
+  const [ultimaSync, setUltimaSync] = useState(undefined)
 
   const repository = new EnviarClientes(usuario as UsuarioDto, setProgress);
 
@@ -37,6 +41,42 @@ export default function Sincronizacao() {
     navigation.navigate('Novo Pedido');
   };
 
+  function formatarData(data) {
+    const options = { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false, 
+    };
+  
+    const novaData = new Date(data);
+  
+    const dataFormatada = novaData.toLocaleString('pt-BR', options);
+    const [dataParte, horaParte] = dataFormatada.split(' ');
+  
+    const [dia, mes, ano] = dataParte.split('/');
+    const [hora, minuto] = horaParte.split(':');
+  
+    return `${dia}/${mes}/${ano} às ${hora}:${minuto}`;
+  }
+
+const getLastSyndec = async () => {
+  const repository = new SaveLoginRepository()
+  const dataUltima = await repository.getLastSync()
+
+
+  if(!dataUltima) {
+    setUltimaSync(undefined)
+    return
+  }
+  const dataFormatada = formatarData(dataUltima)
+  setUltimaSync(dataFormatada)
+}
+
+  Init({handleGetProdutos: getLastSyndec});
+
   return (
     <View style={styles.container}>
       <View style={styles.animationContainer}>
@@ -53,6 +93,8 @@ export default function Sincronizacao() {
           />
         )}
         {progress && <Text>{progress?.message}</Text>}
+        
+        <Text style={{color: 'black'}}>{`Ultima sincronização: ${ultimaSync ? ultimaSync : "Não informada"}`}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity

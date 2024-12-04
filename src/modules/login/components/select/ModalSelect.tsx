@@ -1,6 +1,7 @@
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {getEmpresa} from '../../../../storage/empresaStorage';
 import {useEffect} from 'react';
+import { setOrganizacaoOffline } from '../../../../storage';
 
 type ModalSelectProp = {
   data: {NomeFantasia: string; Codigo: number}[];
@@ -15,12 +16,13 @@ export default function ModalSelect({
   closeModal,
   onTextChange,
 }: ModalSelectProp) {
-  const handleOnChangeText = (value: {
+  const handleOnChangeText = async (value: {
     NomeFantasia: string;
     Codigo: number;
   }) => {
     onTextChange(value);
     closeModal(!isActive);
+    await setOrganizacaoOffline(JSON.stringify(value))
   };
 
   const defaultValue = async () => {
@@ -34,6 +36,7 @@ export default function ModalSelect({
     }
 
     onTextChange(index);
+    await setOrganizacaoOffline(JSON.stringify(index))
   };
 
   useEffect(() => {
