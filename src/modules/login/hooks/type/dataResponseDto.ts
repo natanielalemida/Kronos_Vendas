@@ -28,13 +28,13 @@ type ResultadoValidacaoLicenca = {
   DataValidadeDaLicenca: string | null;
 };
 
-type Resultado = {
+export type ResultadoLoginDto = {
   Usuario: UsuarioDto;
   ResultadoValidacaoLicenca: ResultadoValidacaoLicenca;
 };
 
 export type MainResponse = {
-  Resultado: Resultado;
+  Resultado: ResultadoLoginDto;
   Status: number;
   Mensagens: string[];
 };

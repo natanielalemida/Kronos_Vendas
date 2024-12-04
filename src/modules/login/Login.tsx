@@ -36,6 +36,7 @@ import {createPedidoVinculoMeioPagamentoTable} from '../../database/migration/cr
 import {createPedidoVinculoProdutoTable} from '../../database/migration/createPedidoVinculoProdutoMigration';
 import {getNomeUsuario} from '../../storage';
 import Loading from '../components/loading/Loading';
+import { createPrivilegiosMigration, createUsuariosMigration } from '../../database/migration/createLoginMigration';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -88,6 +89,8 @@ export default function Login({navigation}) {
     createPedidoTable();
     createPedidoVinculoMeioPagamentoTable();
     createPedidoVinculoProdutoTable();
+    createUsuariosMigration();
+    createPrivilegiosMigration();
   }, []);
 
   // UseEffect para adicionar listeners ao teclado
