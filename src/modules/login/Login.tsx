@@ -1,3 +1,4 @@
+import RNBiometrics from 'react-native-simple-biometrics';
 import {
   Image,
   Keyboard,
@@ -34,9 +35,13 @@ import {createContatoTable} from '../../database/migration/createContatoMigratio
 import {createPedidoTable} from '../../database/migration/createPedidoMigration';
 import {createPedidoVinculoMeioPagamentoTable} from '../../database/migration/createPedidoVinculoMeioPagamentoMigration';
 import {createPedidoVinculoProdutoTable} from '../../database/migration/createPedidoVinculoProdutoMigration';
-import {getNomeUsuario} from '../../storage';
+import {getLoginESenha} from '../../storage';
 import Loading from '../components/loading/Loading';
-import { createEmpresaJson, createPrivilegiosMigration, createUsuariosMigration } from '../../database/migration/createLoginMigration';
+import {
+  createEmpresaJson,
+  createPrivilegiosMigration,
+  createUsuariosMigration,
+} from '../../database/migration/createLoginMigration';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -44,7 +49,28 @@ export default function Login({navigation}) {
   const [organization, setOrganization] = useState<string>();
   const [organizationCode, setOrganizationCode] = useState<number>();
   const [showPassword, setShowPassword] = useState(true);
+  const [lastPassword, setLastPassword] = useState();
   const [ref, setRef] = useState('Usuário');
+
+  const makeLogin = async (cpfLogin, passwordLogin) => {
+    const can = await RNBiometrics.canAuthenticate();
+
+    if (can) {
+      try {
+        const result = await RNBiometrics.requestBioAuth(
+          'Autenticação Kronos vendas',
+          'Use a biometria ou informe senha',
+        );
+
+        if (result) {
+          await handleLogin(cpfLogin, passwordLogin, organizationCode);
+        }
+      } catch (error) {
+        // Code to handle authentication failure
+        // ...
+      }
+    }
+  };
 
   // Novo estado para controle da visibilidade do teclado
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -54,14 +80,22 @@ export default function Login({navigation}) {
     setOrganizationCode(value.Codigo || 0);
   };
 
-  const {organizations, isLoadingOrganization, getOrganizations} = useFetch(handleChangeOrganization);
+  const {organizations, isLoadingOrganization, getOrganizations} = useFetch(
+    handleChangeOrganization,
+  );
   const {handleLogin, progress} = UseLogin();
 
   const handleSetLastUser = async () => {
-    const nome = await getNomeUsuario();
+    const {login, senha} = await getLoginESenha();
 
-    if (!nome) return;
-    setCpf(nome);
+    if (login) {
+      setCpf(login);
+    }
+
+    if (senha) {
+      setLastPassword(senha);
+      await makeLogin(login, senha);
+    }
   };
 
   useFocusEffect(
@@ -74,7 +108,12 @@ export default function Login({navigation}) {
   );
 
   useEffect(() => {
-    handleSetLastUser();
+    if (organizationCode) {
+      handleSetLastUser();
+    }
+  }, [organizationCode]);
+
+  useEffect(() => {
     createSettingsTable();
     createProductsMigration();
     createFormaPagamentoTable();
@@ -91,7 +130,7 @@ export default function Login({navigation}) {
     createPedidoVinculoProdutoTable();
     createUsuariosMigration();
     createPrivilegiosMigration();
-    createEmpresaJson()
+    createEmpresaJson();
   }, []);
 
   // UseEffect para adicionar listeners ao teclado
@@ -185,19 +224,32 @@ export default function Login({navigation}) {
             onPress={() => handleLogin(cpf, password, organizationCode)}>
             <Text style={styles.buttonAuth}>ENTRAR</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            style={styles.magin}
+            style={styles.buttonSettingsContainer}
             onPress={() => navigation.navigate('Settings')}>
-            <View style={styles.buttonSettingsContainer}>
+            <Icon
+              style={styles.settingsIconPadding}
+              name="settings"
+              size={25}
+              color="black"
+            />
+            <Text style={styles.settingsText}>Configurações</Text>
+          </TouchableOpacity>
+
+          {lastPassword && (
+            <TouchableOpacity
+              style={{flexDirection: 'row'}}
+              onPress={() => makeLogin(cpf, lastPassword)}>
               <Icon
                 style={styles.settingsIconPadding}
-                name="settings"
+                name="finger-print"
                 size={25}
                 color="black"
               />
-              <Text style={styles.settingsText}>Configurações</Text>
-            </View>
-          </TouchableOpacity>
+              <Text style={{color: 'black'}}>Login com biometria</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ShowIf>
 

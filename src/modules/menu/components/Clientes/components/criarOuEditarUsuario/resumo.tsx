@@ -105,6 +105,15 @@ export default function Resumo() {
       }
     } catch (error) {
       const err = error as Error;
+      if (err.message === 'Network Error') {
+        Alert.alert(
+          'Sem conexão',
+          'Verifique sua conexão com a internet e tente novamente',
+        );
+
+        setProgress(undefined);
+        return;
+      }
       Alert.alert('Falha', err.message);
       setProgress(undefined);
       console.log(error);

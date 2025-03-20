@@ -128,7 +128,10 @@ export default function Pedidos() {
         }),
       );
 
-      if (!result) return;
+
+     const haveInvalid = result.find((value) => value === !value)
+
+      if (!haveInvalid) return;
 
       setPedidosSelecionados([]);
 

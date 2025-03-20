@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   },
   loginContainerInformations: {
     backgroundColor: 'white',
-    height: '35%',
+    height: '40%',
     width: '80%',
     alignItems: 'center',
     justifyContent: 'space-between',

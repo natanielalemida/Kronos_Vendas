@@ -94,6 +94,12 @@ export default function UseRepository() {
     } catch (error) {
       const err = error as Error;
       console.log(err.message);
+      if(err.message === 'Network Error') {
+        
+      Alert.alert('Sem conexão', 'Verifique sua conexão com a internet e tente novamente');
+      setLoading(false);
+        return
+      }
       Alert.alert('Erro', err.message);
       setLoading(false);
     } finally {

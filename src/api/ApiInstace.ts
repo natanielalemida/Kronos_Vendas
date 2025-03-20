@@ -11,19 +11,20 @@ class ApiService {
   private async createAxiosInstance(): Promise<AxiosInstance | null> {
     try {
       const isConnected = checkInternetConnection();
-
+  
       if (!isConnected) {
         Alert.alert('Sem conexão com a internet');
         return null;
       }
-
+  
       const data = await this.settingsRepository.get();
       if (!data) {
         return null;
       }
-
+  
       return axios.create({
         baseURL: `http://${data.host}/`,
+        timeout: 8000,
       });
     } catch (error) {
       console.error(error);

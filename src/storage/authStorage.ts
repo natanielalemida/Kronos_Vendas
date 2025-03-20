@@ -5,15 +5,19 @@ export async function setAuth(params: string) {
   await AsyncStorage.setItem('auth', params);
 }
 
-export async function setNomeUsuario(params: string) {
-  await AsyncStorage.removeItem('nomeUsuario');
-  await AsyncStorage.setItem('nomeUsuario', params);
+export async function setLoginESenha(login: string, senha: string) {
+  const userCredentials = { login, senha };
+
+  await AsyncStorage.removeItem('userCredentials');
+  await AsyncStorage.setItem('userCredentials', JSON.stringify(userCredentials));
 }
 
-export async function getNomeUsuario() {
-  const data = await AsyncStorage.getItem('nomeUsuario');
-  return data;
+// Função para obter login e senha juntos
+export async function getLoginESenha() {
+  const data = await AsyncStorage.getItem('userCredentials');
+  return data ? JSON.parse(data) : null;
 }
+
 
 export async function getAuth(): Promise<UsuarioDto> {
   const data = await AsyncStorage.getItem('auth');

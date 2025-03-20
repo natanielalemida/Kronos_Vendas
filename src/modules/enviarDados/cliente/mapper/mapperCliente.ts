@@ -111,9 +111,6 @@ export default class NovoCliente {
         ? [...emails, ...celulars]
         : null;
 
-    console.log({Teste: pessoa});
-    console.log({teste02: pessoa.IERG});
-
     return {
       Codigo: pessoa.Codigo || 0,
       Categoria: pessoa.CategoriaCodigo || null,

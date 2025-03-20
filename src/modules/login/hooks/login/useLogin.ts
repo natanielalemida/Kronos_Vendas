@@ -1,17 +1,15 @@
 import {Alert} from 'react-native';
 import ApiInstace from '../../../../api/ApiInstace';
 import {MainResponse, ResultadoLoginDto} from '../type';
-import {setAuth, setNomeUsuario} from '../../../../storage';
+import {setAuth, setLoginESenha} from '../../../../storage';
 import runSync from '../../../../sync/runSync/runSync';
 import {
-  getTerminal,
   setEmpresa,
   setTerminal,
 } from '../../../../storage/empresaStorage';
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import {useCliente} from '../../../menu/components/Clientes/context/clientContext';
-import UseGetMunicipio from '../../../menu/components/Clientes/components/criarOuEditarUsuario/hooks/useGetMunicipio';
 import {SettingsRepository} from '../../components/selectHost/repository';
 import SaveLoginRepository from '../../repository/saveLoginRepository';
 
@@ -57,7 +55,7 @@ export function UseLogin() {
         await saveLoginRepository.saveEmpresa(JSON.stringify(empresa.Resultado), empresa.Resultado.Codigo)
       }
       await handleSaveLogin(data.Resultado, password);
-      await setNomeUsuario(cpf);
+      await setLoginESenha(cpf, password);
       await setAuth(JSON.stringify(data.Resultado.Usuario));
       setUsuario(data.Resultado.Usuario);
       await setEmpresa(JSON.stringify(organizationCode));
@@ -77,7 +75,7 @@ export function UseLogin() {
     } catch (error) {
       console.error("Erro durante o login:", error);
       await handleEmpresaFallback()
-      await setNomeUsuario(cpf);
+      await setLoginESenha(cpf, password);
       await setAuth(JSON.stringify(data.Resultado.Usuario));
       setUsuario(data.Resultado.Usuario);
       await setEmpresa(JSON.stringify(organizationCode));
