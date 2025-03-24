@@ -2,6 +2,7 @@ import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {HeaderProps} from './type';
 import {ShowIf} from '../showIf';
+import { colors } from '../../styles';
 
 export function Header({
   label,
@@ -57,7 +58,7 @@ export function Header({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#00B08F',
+    backgroundColor: colors.arcGreen,
     alignItems: 'flex-end',
     flexDirection: 'row',
     minHeight: '11%',
@@ -67,8 +68,7 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     flexDirection: 'row',
-    alignItems: 'center', // Alinha os itens verticalmente no centro
-    justifyContent: 'space-between',
+    alignItems: 'center', // Alinha os it
     width: '65%',
     marginTop: 20,
   },

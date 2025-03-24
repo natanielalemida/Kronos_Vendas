@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import { colors } from '../styles';
 
 export const styles = StyleSheet.create({
   loginContainer: {
@@ -8,7 +9,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   loginContainerInformations: {
-    backgroundColor: 'white',
+    backgroundColor: colors.arcGreen400,
     height: '40%',
     width: '80%',
     alignItems: 'center',

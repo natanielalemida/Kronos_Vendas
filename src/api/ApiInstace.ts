@@ -23,8 +23,7 @@ class ApiService {
       }
   
       return axios.create({
-        baseURL: `http://${data.host}/`,
-        timeout: 8000,
+        baseURL: `http://${data.host}/`
       });
     } catch (error) {
       console.error(error);

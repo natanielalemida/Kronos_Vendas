@@ -21,7 +21,7 @@ export default class EnviarClientes {
   }
 
   private updateProgress(currentStep: number, totalSteps: number): number {
-    const progress = (currentStep / totalSteps) * 100;
+    const progress = 10
     return progress;
   }
 

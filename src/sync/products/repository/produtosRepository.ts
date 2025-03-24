@@ -12,6 +12,7 @@ export default class ProdutoRepository {
     // Cria a base da query
     const query = knexConfig('produtos')
       .select('*')
+      .leftJoin('produto_imagem', 'produto_imagem.CodigoProduto', 'produtos.Codigo')
       .limit(50)
       .orderBy('produtos.Descricao');
 
@@ -22,8 +23,39 @@ export default class ProdutoRepository {
       ]);
     }
 
+
     // Obtém os dados filtrados
     const data = await query;
+    
+    console.log({data})
+    
+    const result = data.reduce((acc, product) => {
+      console.log({product})
+      const existingProduct = acc.find(p => p.CodigoProduto === product.CodigoProduto);
+    
+      const image = {
+        path: product.Image,
+        isDefault: product.IsDefault === 1, 
+      };
+    
+      if (existingProduct) {
+        existingProduct.images.push(image);
+      } else {
+        acc.push({
+          Codigo: product.Codigo,
+          CodigoProduto: product.CodigoProduto,
+          Descricao: product.Descricao,
+          ValorVenda: product.ValorVenda,
+          CodigoDeBarras: product.CodigoDeBarras,
+          UnidadeMedida: product.UnidadeMedida,
+          ValorVendaAtacado: product.ValorVendaAtacado,
+          images: [image],
+        });
+      }
+    
+      return acc;
+    }, []);
+    
 
     // Obtém o total de registros sem filtro
     const totalResult = await knexConfig('produtos')
@@ -31,6 +63,6 @@ export default class ProdutoRepository {
       .first();
     const total = totalResult || 0;
 
-    return {data, total};
+    return {data: result, total};
   }
 }

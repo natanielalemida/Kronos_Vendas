@@ -7,9 +7,10 @@ export class SettingsRepository {
       host: settings.host,
       cod_loja: settings.cod_loja,
       terminal: settings.terminal,
+      idConecction: settings.id
     });
 
-    return await this.getById(id);
+    return await this.getById();
   }
 
   async updateSettings(settings: SaveSettingsDto) {
@@ -19,19 +20,18 @@ export class SettingsRepository {
           host: settings.host,
           cod_loja: settings.cod_loja,
           terminal: settings.terminal,
+          idConecction: settings.id,
         })
-        .where('id', settings.id);
 
-      return await this.getById(settings.id);
+      return await this.getById();
     } catch (error) {
       console.log(error);
     }
   }
 
-  async getById(id: number): Promise<SaveSettingsDto | undefined> {
+  async getById(): Promise<SaveSettingsDto | undefined> {
     const query = await knexConfig('settings')
       .select('*')
-      .where('id', id)
       .first();
 
     if (!query) return undefined;

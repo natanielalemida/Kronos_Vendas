@@ -12,6 +12,7 @@ import ListAndSelectClientes from './src/modules/menu/components/NovaRequisicao/
 import {AutocompleteDropdownContextProvider} from 'react-native-autocomplete-dropdown';
 import ResumoPedido from './src/modules/menu/components/Pedidos/components/resumoPedido/resumoPedido';
 import PedidosCliente from './src/modules/menu/components/Pedidos/pedidosCliente';
+import ConexaoAtual from './src/modules/login/ConexaoAtual';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,11 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="Settings"
               component={Settings}
+              options={{headerShown: false}}
+            />
+                        <Stack.Screen
+              name="Conexoes"
+              component={ConexaoAtual}
               options={{headerShown: false}}
             />
             <Stack.Screen

@@ -3,9 +3,9 @@ export type UseSettingsRepositoryProps = {
 };
 
 export type useSaveSettingsProps = {
-  host: string;
-  codStore: string;
-  terminal: string;
-  id: number;
+  host?: string;
+  codStore?: string;
+  terminal?: string;
+  id?: number;
   closeModal: () => void;
 };

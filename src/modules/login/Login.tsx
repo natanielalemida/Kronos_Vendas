@@ -42,6 +42,7 @@ import {
   createPrivilegiosMigration,
   createUsuariosMigration,
 } from '../../database/migration/createLoginMigration';
+import { createProductsImageMigration } from '../../database/migration/createProducImageMigration';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -128,6 +129,7 @@ export default function Login({navigation}) {
     createPedidoTable();
     createPedidoVinculoMeioPagamentoTable();
     createPedidoVinculoProdutoTable();
+    createProductsImageMigration();
     createUsuariosMigration();
     createPrivilegiosMigration();
     createEmpresaJson();
@@ -244,7 +246,7 @@ export default function Login({navigation}) {
               <Icon
                 style={styles.settingsIconPadding}
                 name="finger-print"
-                size={25}
+                size={18}
                 color="black"
               />
               <Text style={{color: 'black'}}>Login com biometria</Text>

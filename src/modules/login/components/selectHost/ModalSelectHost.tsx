@@ -7,29 +7,27 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {useState} from 'react';
 import {styles} from './styles';
-import {useSaveSettings, UseSettingsRepository} from './hooks';
+import { colors } from '../../../styles';
+import UseSetup from './hooks/useSetup';
+import UseSaveSettingsOnStorage from './hooks/useSaveSettingsOnStorage';
 
 type ModalSelectType = {
   isActive: boolean;
+  id?: number;
   closeModal: () => void;
 };
 
 export default function ModalSelectHost({
   isActive,
+  id,
   closeModal,
 }: ModalSelectType) {
-  const {host, codStore, terminal, id, setHost, setCodStore, setTerminal} =
-    UseSettingsRepository({isActive});
 
-  const {handleSave} = useSaveSettings({
-    host,
-    codStore,
-    terminal,
-    id,
-    closeModal,
-  });
+  const { saveOrUpdateSetting, getById } = UseSaveSettingsOnStorage({});
+
+  const {codStore, host, terminal, setCodLoja, setHost, setTerminal} = UseSetup({getById, id})
+
 
   return (
     <Modal
@@ -58,7 +56,7 @@ export default function ModalSelectHost({
               <Text style={styles.label}>Cod. Loja:</Text>
               <TextInput
                 value={codStore}
-                onChangeText={(value: string) => setCodStore(value)}
+                onChangeText={(value: string) => setCodLoja(value)}
                 keyboardType="numeric"
                 style={styles.inputStore}
               />
@@ -73,8 +71,13 @@ export default function ModalSelectHost({
               />
             </View>
             <TouchableOpacity
+              style={[styles.buttonContainer, {backgroundColor: colors.yellow}]}
+              onPress={() => saveOrUpdateSetting({codStore, host, terminal, id})}>
+              <Text style={styles.buttonLabel}>Testar Conexão</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={handleSave}>
+              onPress={() => saveOrUpdateSetting({codStore, host, terminal, id}, closeModal)}>
               <Text style={styles.buttonLabel}>Salvar</Text>
             </TouchableOpacity>
           </View>

@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, FlatList, Image} from 'react-native';
 import Search from '../../../components/search';
 import {useEffect, useState, useRef, useCallback} from 'react';
 import UseGetProdutos from './hooks/useGetProdutos';
@@ -38,14 +38,14 @@ export default function Produto() {
         styles.itemContainer,
         {backgroundColor: isEven(index) ? colors.grayList : colors.white},
       ]}
-      key={item.Codigo}>
+      key={item.Codigo}
+    >
       <View style={styles.itemTopRow}>
-        <Text
-          style={
-            styles.itemDescription
-          }>{`${item.Codigo} - ${item.Descricao}`}</Text>
+        <Text style={styles.itemDescription}>
+          {`${item.Codigo} - ${item.Descricao}`}
+        </Text>
       </View>
-
+  
       <View style={styles.itemBottomRow}>
         <View style={styles.itemDetailsLeft}>
           <Text style={{color: colors.black}}>{item.UnidadeMedida}</Text>
@@ -59,18 +59,30 @@ export default function Produto() {
             flexDirection: 'row',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-          }}>
-          <Text
-            style={{
-              color: 'black',
-              fontSize: 16,
-            }}>
+          }}
+        >
+          <Text style={{color: 'black', fontSize: 16}}>
             Valor R$ {item.ValorVenda.toFixed(2)}
           </Text>
           <Text style={{color: 'black', fontSize: 16}}>
             Atac: R$ {item.ValorVendaAtacado.toFixed(2)}
           </Text>
         </View>
+      </View>
+  
+      {/* Renderizando a imagem isDefault */}
+      <View>
+        {item.images && item.images.length > 0 && (
+          item.images.map((image, idx) =>
+            image.isDefault && (
+              <Image
+                key={idx}
+                source={{ uri: image.path }}
+                style={{ width: 100, height: 100, marginTop: 10 }}
+              />
+            )
+          )
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -87,7 +99,6 @@ export default function Produto() {
         <FlatList
           data={produtos}
           renderItem={renderItem}
-          keyExtractor={item => item.Codigo.toString()}
           keyboardShouldPersistTaps="always"
         />
       </View>

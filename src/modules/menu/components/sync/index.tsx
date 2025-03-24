@@ -88,7 +88,7 @@ const getLastSyndec = async () => {
         {progress && (
           <LottieView
             source={require('../../../../assets/sync/Animation - 1724681567926.json')}
-            progress={progress?.progress / 100}
+            progress={progress ? progress?.progress / 100 : 0}
             style={styles.lottieSmall}
           />
         )}

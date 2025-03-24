@@ -8,6 +8,7 @@ export const createSettingsTable = async () => {
         table.string('host', 50).notNullable();
         table.integer('cod_loja').notNullable().defaultTo(0);
         table.integer('terminal').notNullable().defaultTo(0);
+        table.integer('idConecction').notNullable().defaultTo(0);
       });
       console.log('Table SETTINGS created successfully.');
     } else {

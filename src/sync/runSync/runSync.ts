@@ -7,6 +7,7 @@ import SincronizarCliente from '../clientes/syncCliente';
 import SincronizarProdutos from '../products/syncProducts';
 import SincronizarMunicipios from '../municipio/syncMunicipio';
 import SincronizarPedidos from '../pedidos';
+import SincronizarImages from '../images/syncImagensProdutos';
 
 export default class runSync {
   private setProgress: Dispatch<SetStateAction<{}>>;
@@ -18,6 +19,7 @@ export default class runSync {
   private clienteSync: SincronizarCliente;
   private municipioSync: SincronizarMunicipios;
   private pedidoSync: SincronizarPedidos;
+  private imageSync: SincronizarImages;
 
   constructor(
     usuario: UsuarioDto,
@@ -48,6 +50,7 @@ export default class runSync {
       this.usuario,
       this.organizationCode,
     );
+    this.imageSync = new SincronizarImages(this.usuario, this.organizationCode)
   }
 
   private updateProgress(currentStep: number, totalSteps: number) {
@@ -108,6 +111,13 @@ export default class runSync {
       await this.pedidoSync.runSync();
 
       currentStep++;
+      this.setProgress({
+        message: 'Sincronizando imagens',
+        progress: this.updateProgress(currentStep, totalSteps),
+      });
+
+      await this.imageSync.runSync()
+
       this.setProgress({
         message: 'Sincronização concluída!',
         progress: this.updateProgress(currentStep, totalSteps),

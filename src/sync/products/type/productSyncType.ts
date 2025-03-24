@@ -14,6 +14,7 @@ export type ProdutoDto = {
   CodigoGrupo: number;
   CodigoSubGrupo: number | null;
   CodigoMarca: number | null;
+  images: {path: string, isDefault: boolean}[]
 };
 
 export type ProdutoBodyCreateQtAndObsDto = {

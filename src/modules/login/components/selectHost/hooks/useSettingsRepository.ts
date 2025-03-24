@@ -1,6 +1,7 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {UseSettingsRepositoryProps} from '../type';
 import {SettingsRepository} from '../repository';
+import { useFocusEffect } from '@react-navigation/native';
 
 export function UseSettingsRepository({isActive}: UseSettingsRepositoryProps) {
   const [host, setHost] = useState<string>('');
@@ -9,7 +10,8 @@ export function UseSettingsRepository({isActive}: UseSettingsRepositoryProps) {
   const [id, setId] = useState(0);
 
   const settingsRepository = new SettingsRepository();
-  const getSettings = async () => {
+  const getSettings = async (get?: boolean) => {
+    if(get) return;
     const result = await settingsRepository.get();
 
     if (!result) return;
@@ -19,6 +21,15 @@ export function UseSettingsRepository({isActive}: UseSettingsRepositoryProps) {
     setTerminal(String(result.terminal));
     setId(result.id);
   };
+
+      useFocusEffect(
+        useCallback(() => {
+          getSettings();
+          return () => {
+            // Limpeza aqui
+          };
+        }, []),
+      );
 
   useEffect(() => {
     getSettings();

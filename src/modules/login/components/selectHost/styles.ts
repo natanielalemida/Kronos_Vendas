@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import { colors } from '../../../styles';
 
 export const styles = StyleSheet.create({
   modalBackground: {
@@ -32,7 +33,7 @@ export const styles = StyleSheet.create({
     textAlign: 'left',
   },
   title: {
-    backgroundColor: '#00B08F',
+    backgroundColor: colors.arcGreen,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -72,9 +73,12 @@ export const styles = StyleSheet.create({
   },
   label: {marginRight: 10, color: 'black', fontSize: 18, fontWeight: 'bold'},
   buttonContainer: {
-    backgroundColor: '#00B08F',
+    width: '90%',
+    alignItems: 'center',
+    backgroundColor: colors.arcGreen,
     paddingVertical: 5,
     paddingHorizontal: 20,
+    marginVertical: 5,
     borderRadius: 15,
   },
   buttonLabel: {color: 'white', fontSize: 16},
