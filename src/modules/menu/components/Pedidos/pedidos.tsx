@@ -63,7 +63,6 @@ export default function Pedidos() {
 
   useFocusEffect(
     useCallback(() => {
-      console.log({clienteId});
       setOptions(oldValue => ({...oldValue, clienteId}));
       return () => {
         setFilteredPedidos([]);

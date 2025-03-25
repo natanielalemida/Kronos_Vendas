@@ -102,7 +102,6 @@ export function UseLogin() {
       Alert.alert('Empresa offline não salva')
       return
     }
-    console.log(result)
     setEmpresaContext(result);
   };
   
@@ -160,7 +159,6 @@ export function UseLogin() {
         // Login offline se houver problema de conexão
         console.warn("Sem conexão com a internet. Tentando login offline...");
         const data = await handleMakeLogin(cpf, password);
-        console.log({data})
          verify(data, organizationCode, cpf, terminal, password);
       } else {
         // Repassar outros erros, se necessário

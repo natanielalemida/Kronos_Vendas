@@ -10,8 +10,7 @@ export default class SavePedidoRepository {
     }
   }
 
-  async saveFormaPagamento(formaPagamento) {
-    console.log(formaPagamento);
+  async saveFormaPagamento(formaPagamento) {x
     try {
       const [id] = await knexConfig('PedidoVinculoMeioPagamento').insert(
         formaPagamento,

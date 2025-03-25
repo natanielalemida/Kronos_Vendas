@@ -29,7 +29,6 @@ export function useFetch(handleChangeOrganization) {
     } catch (error) {
       console.error('Erro ao buscar organizações:', error);
       const resultado = await getOrganizacaoOffline()
-      console.log({resultado})
       await handleChangeOrganization(resultado)
       // Aqui você pode tratar o erro, exibir uma mensagem, etc.
       setLoading(false);

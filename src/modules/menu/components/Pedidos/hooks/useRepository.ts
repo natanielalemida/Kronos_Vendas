@@ -56,8 +56,6 @@ export default function UseRepository() {
   ) => {
     setLoading(true);
 
-    console.log({id});
-
     const serviceCliente = new ServiceEnviarSingleCliente(
       [],
       usuario,

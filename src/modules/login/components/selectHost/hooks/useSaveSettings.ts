@@ -12,6 +12,7 @@ export function useSaveSettings({
   terminal,
   id,
   closeModal,
+  isModalActive
 }: useSaveSettingsProps) {
   const [idKronos, setIdKronos] = useState();
   const settingsService = new SettingsService();
@@ -23,24 +24,15 @@ export function useSaveSettings({
       const result = await settingsRepository.get();
   
       if (!result) return;
-      console.log(result.idConecction)
       setIdKronos(result.idConecction)
     };
   
   const handleSave = async ({host, codStore, terminal, id}) => {
-    console.log({host})
     if (!host || !codStore || !terminal) {
       Alert.alert(
         'Campos invalidos',
         'por favor, verifique os campos e tente novamente',
       );
-      return;
-    }
-
-    const result = await ApiInstace.openLocalUrl(host);
-
-    if (!result) {
-      Alert.alert('Falha', 'Não foi possivel conectar com o servidor');
       return;
     }
 
@@ -63,6 +55,8 @@ export function useSaveSettings({
         };
       }, []),
     );
+
+    useEffect(() => { getSettings();}, [isModalActive])
 
   return {
     handleSave,

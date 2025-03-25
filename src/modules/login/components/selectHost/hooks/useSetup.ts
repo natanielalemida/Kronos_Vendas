@@ -6,7 +6,6 @@ export default function UseSetup({getById, id}) {
   const [terminal, setTerminal] = useState('');
 
   const handleGet = async () => {
-    console.log({id})
     if (getById && id) {
       const resultado = await getById(id);
       setHost(resultado.host);

@@ -46,4 +46,9 @@ export class SettingsRepository {
 
     return query;
   }
+
+  async delete(): Promise<void> {
+    await knexConfig('settings').del();
+  }
+  
 }

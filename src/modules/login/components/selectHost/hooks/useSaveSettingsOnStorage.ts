@@ -6,6 +6,7 @@ type PropsModal = {
   host: string;
   terminal: string;
   codStore: string;
+  isEdditing: boolean;
 };
 
 type UseStorageProps = {
@@ -29,23 +30,17 @@ export default function UseSaveSettingsOnStorage({}) {
 
   const saveOrUpdateSetting = async (params: PropsModal, closeModal?: () => void) => {
     let storedConnections = await loadSettings();
-    
-    if (params.id) {
+
+    if (params.isEdditing) {
       storedConnections = storedConnections.map((conn: PropsModal) =>
         conn.id === params.id ? { ...conn, ...params } : conn
       );
     } else {
-      const newId = storedConnections.length ? storedConnections[storedConnections.length - 1].id! + 1 : 1;
-      storedConnections.push({ ...params, id: newId });
+      storedConnections.push({ ...params});
     }
     
     await AsyncStorage.setItem('listaDeConexoes', JSON.stringify(storedConnections));
     setConnections(storedConnections);
-
-    if(closeModal) {
-        console.log({aquio: 'teste'})
-        closeModal()
-    }
   };
 
   const getConnections = async () => {

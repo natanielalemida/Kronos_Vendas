@@ -6,11 +6,15 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import {styles} from './styles';
-import { colors } from '../../../styles';
+import {colors} from '../../../styles';
 import UseSetup from './hooks/useSetup';
 import UseSaveSettingsOnStorage from './hooks/useSaveSettingsOnStorage';
+import ApiInstace from '../../../../api/ApiInstace';
+import {useEffect, useState} from 'react';
+import {useSaveSettings} from './hooks';
 
 type ModalSelectType = {
   isActive: boolean;
@@ -24,21 +28,71 @@ export default function ModalSelectHost({
   closeModal,
 }: ModalSelectType) {
 
-  const { saveOrUpdateSetting, getById } = UseSaveSettingsOnStorage({});
 
-  const {codStore, host, terminal, setCodLoja, setHost, setTerminal} = UseSetup({getById, id})
+  const {saveOrUpdateSetting, getConnections, getById, connections} =
+    UseSaveSettingsOnStorage({});
 
+  const {codStore, host, terminal, setCodLoja, setHost, setTerminal} = UseSetup(
+    {getById, id},
+  );
+
+  const handleCleanModal = () => {
+    setCodLoja('')
+    setHost('')
+    setTerminal('')
+    setIsDisabled(true)
+    closeModal()
+  }
+
+  const {handleSave} = useSaveSettings({
+    closeModal: handleCleanModal,
+  });
+
+  const [isDisabled, setIsDisabled] = useState(true);
+
+  const saveOrEdit = async () => {
+    const newId = id ? id : Date.now()
+    const isEdditing = id ? true : false
+    await saveOrUpdateSetting({codStore, host, terminal, id: newId, isEdditing});
+    if (!id) {
+      handleSave({codStore, host, terminal, id: newId});
+      return;
+    }
+    handleSave({codStore, host, id, terminal});
+  };
+
+  const testarConexao = async () => {
+    if (!host || !terminal || !codStore) {
+      Alert.alert('Campos obrigatorios', 'Por favor, preencha todos os campos');
+      return;
+    }
+    const result = await ApiInstace.openLocalUrl(host);
+
+    if (!result) {
+      Alert.alert('Falha', 'Não foi possivel conectar com o servidor');
+      setIsDisabled(true);
+      return;
+    }
+
+    setIsDisabled(false);
+  };
+
+  useEffect(() => {
+    getConnections();
+  }, [isActive]);
+  
 
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={isActive}
-      onRequestClose={() => closeModal()}>
+      onRequestClose={() => handleCleanModal()}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{flex: 1}}>
         <TouchableOpacity
-          onPress={() => closeModal()}
+          onPress={() => handleCleanModal()}
           style={styles.modalBackground}>
           <View style={styles.modalContent}>
             <View style={styles.title}>
@@ -72,12 +126,20 @@ export default function ModalSelectHost({
             </View>
             <TouchableOpacity
               style={[styles.buttonContainer, {backgroundColor: colors.yellow}]}
-              onPress={() => saveOrUpdateSetting({codStore, host, terminal, id})}>
+              onPress={() => testarConexao()}>
               <Text style={styles.buttonLabel}>Testar Conexão</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() => saveOrUpdateSetting({codStore, host, terminal, id}, closeModal)}>
+              disabled={isDisabled}
+              style={[
+                styles.buttonContainer,
+                {
+                  backgroundColor: isDisabled
+                    ? colors.graySearch
+                    : colors.arcGreen,
+                },
+              ]}
+              onPress={() => saveOrEdit()}>
               <Text style={styles.buttonLabel}>Salvar</Text>
             </TouchableOpacity>
           </View>

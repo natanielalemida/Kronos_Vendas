@@ -195,7 +195,6 @@ export default class EnviarClienteRepository {
       .leftJoin('endereco', 'endereco.CodigoPessoa', 'pessoa.id')
       .first()
       .where('pessoa.Codigo', code);
-    console.log({result});
     if (!result) return result;
     return undefined;
   }

@@ -23,7 +23,8 @@ class ApiService {
       }
   
       return axios.create({
-        baseURL: `http://${data.host}/`
+        baseURL: `http://${data.host}/`,
+        timeout: 8000
       });
     } catch (error) {
       console.error(error);
@@ -44,6 +45,7 @@ class ApiService {
 
       return axios.create({
         baseURL: `http://${host}/`,
+        timeout: 8000
       });
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível configurar o Axios');

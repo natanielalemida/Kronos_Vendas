@@ -15,6 +15,7 @@ import {colors} from '../styles';
 import UseSaveSettingsOnStorage from './components/selectHost/hooks/useSaveSettingsOnStorage';
 import {CheckBox} from '@rneui/themed';
 import {useSaveSettings, UseSettingsRepository} from './components/selectHost/hooks';
+import { SettingsRepository } from './components/selectHost/repository';
 
 export default function ConexaoAtual() {
   const [isModalActive, setModalActive] = useState(false);
@@ -24,7 +25,17 @@ export default function ConexaoAtual() {
 
   const {handleSave, idKronos} = useSaveSettings({
     closeModal: () => setModalActive(false),
+    isModalActive
   });
+
+  const handleGet = async (item) => {
+    await handleSave({
+      codStore: item.codStore,
+      host: item.host,
+      id: item.id,
+      terminal: item.terminal,
+    })
+  }
 
   useEffect(() => {
     getConnections();
@@ -34,6 +45,14 @@ export default function ConexaoAtual() {
     setModalActive(false);
     setIdModal(undefined);
   };
+
+  const deleteAtual = async (id: number) => {
+    if(idKronos == id) {
+      const repository = new SettingsRepository()
+      await repository.delete();
+    }
+    await deleteSetting(id)
+  }
 
   const openEditModal = (id: number) => {
     setIdModal(id);
@@ -48,7 +67,7 @@ export default function ConexaoAtual() {
         {text: 'Cancelar', style: 'cancel'},
         {
           text: 'Excluir',
-          onPress: () => deleteSetting(id),
+          onPress: () => deleteAtual(id),
           style: 'destructive',
         },
       ],
@@ -77,12 +96,7 @@ export default function ConexaoAtual() {
             marginRight: -1,
           }}
           onPress={() =>
-            handleSave({
-              codStore: item.codStore,
-              host: item.host,
-              id: item.id,
-              terminal: item.terminal,
-            })
+            handleGet(item)
           }
         />
         <TouchableOpacity onPress={() => handleDelete(item.id, item.host)}>

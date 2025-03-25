@@ -27,10 +27,7 @@ export default class ProdutoRepository {
     // Obtém os dados filtrados
     const data = await query;
     
-    console.log({data})
-    
     const result = data.reduce((acc, product) => {
-      console.log({product})
       const existingProduct = acc.find(p => p.CodigoProduto === product.CodigoProduto);
     
       const image = {

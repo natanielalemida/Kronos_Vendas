@@ -484,7 +484,6 @@ export default class PedidoRepository {
         // Produtos e outros detalhes relacionados serão tratados depois
       } = pedidoOriginal;
 
-      console.log({CodigoPessoa});
 
       // 3. Criar um novo pedido com os dados clonados (exceto campos únicos como 'CodigoPedidoTable')
       const [novoPedidoId] = await knexConfig('pedido').insert({
@@ -516,8 +515,6 @@ export default class PedidoRepository {
           ValorVendaDesconto: produto.ValorVendaDesconto,
         }));
 
-        console.log({produtosClonados});
-
         await knexConfig('PedidoVinculoProduto').insert(produtosClonados);
       }
 
@@ -537,7 +534,6 @@ export default class PedidoRepository {
           },
         );
 
-        console.log({meiosPagamentoClonados});
 
         await knexConfig('PedidoVinculoMeioPagamento').insert(
           meiosPagamentoClonados,

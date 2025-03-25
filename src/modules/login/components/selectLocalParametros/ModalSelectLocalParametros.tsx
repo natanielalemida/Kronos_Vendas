@@ -38,7 +38,7 @@ export default function ModalSelectLocalParametros({ isActive, host, terminal, c
             <TouchableOpacity onPress={() => closeModal()} style={styles.modalBackground}>
                 <View style={styles.modalContent}>
                     <View style={styles.title}>
-                        <Text style={styles.modalTitle}>Configuraçôes de parametros locais</Text>
+                        <Text style={styles.modalTitle}>Configurações de parametros locais</Text>
                     </View>
                     <View style={styles.labelContainer}>
                         <Text style={styles.label}>parametro1:</Text>
