@@ -22,6 +22,8 @@ export default class ImageRepository {
     const batchSize = 10;
     const batches = [];
 
+    await knexConfig('produto_imagem').del();
+
     for (let i = 0; i < pedidos.length; i += batchSize) {
       const batch = pedidos.slice(i, i + batchSize);
       batches.push(batch);
@@ -33,6 +35,8 @@ export default class ImageRepository {
       }
     });
   }
+
+  
 
   async saveVinculoPagamentoBatch(pedidos: PedidoToSaveDto[]) {
     const batchSize = 10;

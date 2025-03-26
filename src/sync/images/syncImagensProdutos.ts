@@ -36,16 +36,16 @@ export default class SincronizarImages {
 
   async runSync() {
 
-    const data = await ApiInstace.openUrl({
-      data: undefined,
-      method: 'get',
-      endPoint: `/arc/produto/imagem/all`,
-      headers: {
-        Auth: this.usuario.Hash,
-        Empresa: this.organizationCode,
-      },
-    });
+    // const data = await ApiInstace.openUrl({
+    //   data: undefined,
+    //   method: 'get',
+    //   endPoint: `/arc/produto/imagem/all`,
+    //   headers: {
+    //     Auth: this.usuario.Hash,
+    //     Empresa: this.organizationCode,
+    //   },
+    // });
 
-    await this.verify(data);
+    // await this.verify(data);
   }
 }

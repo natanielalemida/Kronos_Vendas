@@ -9,57 +9,94 @@ export default class ProdutoRepository {
   async getProdutos(
     textFilter?: string,
   ): Promise<{data: ProdutoDto[]; total: number}> {
-    // Cria a base da query
-    const query = knexConfig('produtos')
-      .select('*')
-      .leftJoin('produto_imagem', 'produto_imagem.CodigoProduto', 'produtos.Codigo')
+    // Primeiro busca todos os produtos (independente de ter imagem)
+    const produtosQuery = knexConfig('produtos')
+      .select('produtos.*')
       .limit(50)
       .orderBy('produtos.Descricao');
-
+  
     // Adiciona o filtro se estiver presente
     if (textFilter && textFilter.length > 0) {
-      query.andWhereRaw('LOWER(produtos.Descricao) LIKE ?', [
+      produtosQuery.andWhereRaw('LOWER(produtos.Descricao) LIKE ?', [
         `%${textFilter.toLowerCase()}%`,
       ]);
     }
-
-
-    // Obtém os dados filtrados
-    const data = await query;
-    
-    const result = data.reduce((acc, product) => {
-      const existingProduct = acc.find(p => p.CodigoProduto === product.CodigoProduto);
-    
-      const image = {
-        path: product.Image,
-        isDefault: product.IsDefault === 1, 
+  
+    // Busca os produtos
+    const produtos = await produtosQuery;
+  
+    // Agora busca as imagens separadamente
+    const imagensQuery = knexConfig('produto_imagem')
+      .select('*')
+      .whereIn('CodigoProduto', produtos.map(p => p.Codigo));
+  
+    const imagens = await imagensQuery;
+  
+    // Combina os dados
+    const result = produtos.map(produto => {
+      const imagensDoProduto = imagens
+        .filter(img => img.CodigoProduto === produto.Codigo)
+        .map(img => ({
+          path: img.Image,
+          isDefault: img.IsDefault === 1,
+        }));
+  
+      return {
+        Codigo: produto.Codigo,
+        CodigoProduto: produto.Codigo,
+        Descricao: produto.Descricao,
+        ValorVenda: produto.ValorVenda,
+        CodigoDeBarras: produto.CodigoDeBarras,
+        UnidadeMedida: produto.UnidadeMedida,
+        ValorVendaAtacado: produto.ValorVendaAtacado,
+        Estoque: produto.Estoque || 0, // Adicionei estoque que estava faltando
+        images: imagensDoProduto, // Pode ser array vazio
       };
-    
-      if (existingProduct) {
-        existingProduct.images.push(image);
-      } else {
-        acc.push({
-          Codigo: product.Codigo,
-          CodigoProduto: product.CodigoProduto,
-          Descricao: product.Descricao,
-          ValorVenda: product.ValorVenda,
-          CodigoDeBarras: product.CodigoDeBarras,
-          UnidadeMedida: product.UnidadeMedida,
-          ValorVendaAtacado: product.ValorVendaAtacado,
-          images: [image],
-        });
+    });
+  
+    return {
+      data: result,
+      total: result.length,
+    };
+  }
+
+  async getById(codigoProduto: string): Promise<ProdutoDto | null> {
+    try {
+      // Busca o produto pelo código
+      const produto = await knexConfig('produtos')
+        .select('*')
+        .where('Codigo', codigoProduto)
+        .first();
+  
+      if (!produto) {
+        return null;
       }
-    
-      return acc;
-    }, []);
-    
-
-    // Obtém o total de registros sem filtro
-    const totalResult = await knexConfig('produtos')
-      .count('* as count')
-      .first();
-    const total = totalResult || 0;
-
-    return {data: result, total};
+  
+      // Busca as imagens do produto
+      const imagens = await knexConfig('produto_imagem')
+        .select('*')
+        .where('CodigoProduto', codigoProduto);
+  
+      // Formata o objeto de retorno
+      const produtoCompleto = {
+        Codigo: produto.Codigo,
+        Descricao: produto.Descricao,
+        ValorVenda: produto.ValorVenda,
+        CodigoDeBarras: produto.CodigoDeBarras,
+        UnidadeMedida: produto.UnidadeMedida,
+        ValorVendaAtacado: produto.ValorVendaAtacado,
+        VendeProdutoNoAtacado: produto.VendeProdutoNoAtacado === 1,
+        Estoque: produto.Estoque || 0,
+        images: imagens.map(img => ({
+          path: img.Image,
+          isDefault: img.IsDefault === 1,
+        })),
+      };
+  
+      return produtoCompleto;
+    } catch (error) {
+      console.error('Erro ao buscar produto por ID:', error);
+      throw error;
+    }
   }
 }

@@ -27,8 +27,13 @@ export default class ImageService {
   }
 
   async save(pedidos) {
-
-    await this.repository.saveVinculoProdutoBatch(pedidos);
+    const maps = pedidos.map((item) => {
+      return {
+        ...item,
+        IsDefault: item.IsDefault ? 1 : 0
+      }
+    })
+    await this.repository.saveVinculoProdutoBatch(maps);
 
   }
 }

@@ -1,4 +1,5 @@
 export type ProdutoDto = {
+  Estoque: number;
   Codigo: number;
   Referencia: string;
   Descricao: string;

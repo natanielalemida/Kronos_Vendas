@@ -7,6 +7,7 @@ export default function UseGetProdutos() {
 
   const [isLoading, setLoading] = useState(false);
   const [produtos, setProdutos] = useState<ProdutoDto[]>([]);
+  const [produto, setProduto] = useState<ProdutoDto>();
 
   const handleGetProdutos = async (textFilter?: string) => {
     setLoading(true);
@@ -15,10 +16,19 @@ export default function UseGetProdutos() {
     setLoading(false);
   };
 
+  const getProdutoById = async (codigoProduto: string) => {
+    setLoading(true);
+    const data = await produtoRepository.getById(codigoProduto);
+    setProduto(data);
+    setLoading(false);
+  };
+
   return {
     handleGetProdutos,
     setLoading,
     produtos,
     isLoading,
+    getProdutoById,
+    produto
   };
 }

@@ -15,7 +15,6 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../../styles';
 import NovaRequisicao from '../components/NovaRequisicao';
-import Produto from '../components/Produtos';
 import Clientes from '../components/Clientes';
 import {useCliente} from '../components/Clientes/context/clientContext';
 import Sincronizacao from '../components/sync';
@@ -24,6 +23,7 @@ import Pedidos from '../components/Pedidos/pedidos';
 import ModalFilterMenu from '../components/Pedidos/components/modalFilterMenu';
 import Exit from './exit';
 import {ShowIf} from '../../components/showIf';
+import ListaProdutosResumo from '../components/Produtos/router/routerProdutos';
 
 const Drawer = createDrawerNavigator();
 
@@ -127,7 +127,7 @@ export default function Menu() {
 
         <Drawer.Screen
           name="Produtos"
-          component={Produto}
+          component={ListaProdutosResumo}
           options={{
             drawerIcon: ({color, size}) => (
               <Icon name="pricetag-outline" color={color} size={size} />
