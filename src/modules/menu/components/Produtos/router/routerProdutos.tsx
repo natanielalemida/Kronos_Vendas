@@ -89,18 +89,6 @@ export default function ListaProdutosResumo() {
         component={Produto}
         options={{headerShown: false}}
       />
-
-      <Stack.Screen
-        name="ResumoPedido"
-        component={ProdutoCatalogo}
-        options={{
-            headerShown: false,
-          headerStyle: {
-            backgroundColor: colors.arcGreen,
-          },
-          headerTintColor: '#fff',
-        }}
-      />
     </Stack.Navigator>
   );
 }

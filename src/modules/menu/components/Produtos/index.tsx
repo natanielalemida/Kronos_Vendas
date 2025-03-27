@@ -1,150 +1,108 @@
-import React from 'react';
-import pako from 'pako';
-import base64 from 'base64-js';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Dimensions, ActivityIndicator } from 'react-native';
-import Search from '../../../components/search';
-import { useEffect, useState, useRef, useCallback } from 'react';
-import UseGetProdutos from './hooks/useGetProdutos';
-import { ProdutoDto } from '../../../../sync/products/type';
-import { colors } from '../../../styles';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React from 'react'
+import pako from 'pako'
+import base64 from 'base64-js'
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, Image, Dimensions, ActivityIndicator } from 'react-native'
+import Search from '../../../components/search'
+import { useEffect, useState, useRef, useCallback } from 'react'
+import UseGetProdutos from './hooks/useGetProdutos'
+import { ProdutoDto } from '../../../../sync/products/type'
+import { colors } from '../../../styles'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { HeaderProducts } from '../../../components/headers/HeaderProducts'
 
 export default function Produto() {
-  const navigation = useNavigation();
-  const { handleGetProdutos, produtos, isLoading } = UseGetProdutos();
-  const [textFilter, setTextFilter] = useState<string>('');
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const windowWidth = Dimensions.get('window').width;
-
-  // Definir número de colunas baseado na quantidade de produtos
-  const numColumns = produtos.length === 1 ? 1 : 2;
-  // Criar chave única para o FlatList baseada no número de colunas
-  const flatListKey = `flatlist_${numColumns}_${produtos.length}`;
+  const navigation = useNavigation()
+  const { handleGetProdutos, produtos, isLoading } = UseGetProdutos()
+  const [textFilter, setTextFilter] = useState<string>('')
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   const decodeGzipToBase64 = (gzipBase64: string) => {
     try {
-      const compressedData = base64.toByteArray(gzipBase64);
-      const decompressedData = pako.inflate(compressedData);
-      const base64String = base64.fromByteArray(decompressedData);
-      return `data:image/png;base64,${base64String}`;
+      const compressedData = base64.toByteArray(gzipBase64)
+      const decompressedData = pako.inflate(compressedData)
+      const base64String = base64.fromByteArray(decompressedData)
+      return `data:image/png;base64,${base64String}`
     } catch (error) {
-      console.error('Erro ao descompactar a imagem:', error);
-      return null;
+      console.error('Erro ao descompactar a imagem:', error)
+      return null
     }
-  };
+  }
 
   useFocusEffect(
     useCallback(() => {
-      setTextFilter('');
-      return () => {};
+      setTextFilter('')
+      return () => {}
     }, []),
-  );
+  )
 
   useEffect(() => {
     if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
+      clearTimeout(debounceRef.current)
     }
     debounceRef.current = setTimeout(() => {
-      handleGetProdutos(textFilter);
-    }, 500);
+      handleGetProdutos(textFilter)
+    }, 500)
 
-    return () => {};
-  }, [textFilter]);
+    return () => {}
+  }, [textFilter])
 
-  const renderItem = ({ item, index }: { item: ProdutoDto; index: number }) => {
-    const isSingleItem = numColumns === 1;
-    
+  const renderItem = ({ item }: { item: ProdutoDto }) => {
     return (
       <TouchableOpacity
-      onPress={() => navigation.navigate('ResumoPedido', { id: item.Codigo })}
-      style={[
-        styles.card,
-        isSingleItem && styles.singleCard
-      ]}
-    >
-        {/* Imagem do produto */}
-        {item.images?.some(img => img.isDefault) ? (
-          <View style={[
-            styles.imageContainer,
-            isSingleItem && styles.singleImageContainer
-          ]}>
-            <Image
-              source={{ uri: decodeGzipToBase64(item.images[0].path) }}
-              style={[
-                styles.productImage,
-                isSingleItem && styles.singleProductImage
-              ]}
-              resizeMode="contain"
-            />
-          </View>
-        ) : (
-          <View style={[
-            styles.imageContainer,
-            styles.noImageContainer,
-            isSingleItem && styles.singleImageContainer
-          ]}>
-            <Text style={styles.noImageText}>Sem imagem</Text>
-          </View>
-        )}
-        
-        {/* Informações do produto */}
-        <View style={[
-          styles.infoContainer,
-          isSingleItem && styles.singleInfoContainer
-        ]}>
-          <View style={styles.headerRow}>
-            <Text style={[
-              styles.productCode,
-              isSingleItem && styles.singleProductCode
-            ]}>{item.Codigo}</Text>
-            <View style={[styles.stockBadge, item.Estoque > 0 ? styles.inStock : styles.outOfStock]}>
-              <Text style={styles.stockText}>
-                {item.Estoque > 0 ? `${item.Estoque} un` : 'ESGOTADO'}
-              </Text>
+        onPress={() => navigation.navigate('ResumoPedido', { id: item.Codigo })}
+        style={styles.card}
+      >
+        <View style={styles.rowContainer}>
+          {item.images?.some(img => img.isDefault) ? (
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: decodeGzipToBase64(item.images[0].path) }}
+                style={styles.productImage}
+                resizeMode="contain"
+              />
             </View>
-          </View>
+          ) : (
+            <View style={[styles.imageContainer, styles.noImageContainer]}>
+              <Text style={styles.noImageText}>Sem imagem</Text>
+            </View>
+          )}
           
-          <Text style={[
-            styles.productDescription,
-            isSingleItem && styles.singleProductDescription
-          ]} numberOfLines={2}>
-            {item.Descricao}
-          </Text>
-          
-          <View style={styles.detailsRow}>
-            <Text style={[
-              styles.detailText,
-              isSingleItem && styles.singleDetailText
-            ]}>{item.UnidadeMedida}</Text>
-            <Text style={[
-              styles.barcodeText,
-              isSingleItem && styles.singleBarcodeText
-            ]}>EAN: {item.CodigoDeBarras}</Text>
-          </View>
-          
-          <View style={styles.priceContainer}>
-            <View style={styles.priceBox}>
-              <Text style={styles.priceLabel}>VAREJO</Text>
-              <Text style={[
-                styles.priceValue,
-                isSingleItem && styles.singlePriceValue
-              ]}>R$ {item.ValorVenda.toFixed(2)}</Text>
+          <View style={styles.infoContainer}>
+            <View style={styles.headerRow}>
+              <Text style={styles.productCode}>Codigo: {item.Codigo}</Text>
+              <View style={[styles.stockBadge, styles.inStock ]}>
+                <Text style={styles.stockText}>
+                  Estoque: {item.Estoque}
+                </Text>
+              </View>
             </View>
             
-            {item.ValorVendaAtacado > 0 && (
-              <View style={[styles.priceBox, styles.atacadoBox]}>
-                <Text style={styles.priceLabel}>ATACADO</Text>
-                <Text style={[
-                  styles.atacadoPriceValue,
-                  isSingleItem && styles.singleAtacadoPriceValue
-                ]}>R$ {item.ValorVendaAtacado.toFixed(2)}</Text>
+            <Text style={styles.productDescription} numberOfLines={2}>
+              {item.Descricao}
+            </Text>
+            
+            <View style={styles.detailsRow}>
+              <Text style={styles.detailText}>{item.UnidadeMedida}</Text>
+              <Text style={styles.barcodeText}>EAN: {item.CodigoDeBarras}</Text>
+            </View>
+            
+            <View style={styles.priceContainer}>
+              <View style={styles.priceBox}>
+                <Text style={styles.priceValue}>R$ {item.ValorVenda.toFixed(2)}</Text>
               </View>
-            )}
+              
+              {item.ValorVendaAtacado > 0 && (
+                <View style={[styles.priceBox, styles.atacadoBox]}>
+                  <Text style={styles.priceLabel}>ATACADO</Text>
+                  <Text style={styles.atacadoPriceValue}>R$ {item.ValorVendaAtacado.toFixed(2)}</Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
       </TouchableOpacity>
-    );
-  };
+    )
+  }
 
   if (isLoading && produtos.length === 0) {
     return (
@@ -152,20 +110,19 @@ export default function Produto() {
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Carregando produtos...</Text>
       </View>
-    );
+    )
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Search
+      <View style={{alignSelf: 'center'}}>
+      <Search
           placeholder="Pesquisar produtos..."
           value={textFilter}
           onChangeText={setTextFilter}
-          containerStyle={styles.searchContainer}
         />
-      </View>
       
+      </View>
       {isLoading ? (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -173,7 +130,6 @@ export default function Produto() {
       ) : null}
       
       <FlatList
-        key={flatListKey} // Chave única que força recriação quando numColumns muda
         data={produtos}
         renderItem={renderItem}
         keyExtractor={item => item.Codigo.toString()}
@@ -181,8 +137,6 @@ export default function Produto() {
           styles.listContent,
           isLoading && produtos.length > 0 ? styles.loadingOpacity : null
         ]}
-        numColumns={numColumns}
-        columnWrapperStyle={numColumns === 1 ? null : styles.columnWrapper}
         keyboardShouldPersistTaps="always"
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
@@ -192,26 +146,18 @@ export default function Produto() {
         }
       />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: colors.white,
     paddingHorizontal: 12,
   },
   header: {
     paddingVertical: 16,
     backgroundColor: colors.white,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: colors.black,
-    marginBottom: 12,
-    textAlign: 'center',
   },
   searchContainer: {
     marginHorizontal: 0,
@@ -222,12 +168,7 @@ const styles = StyleSheet.create({
   loadingOpacity: {
     opacity: 0.5,
   },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
   card: {
-    width: '48%',
     backgroundColor: colors.white,
     borderRadius: 10,
     shadowColor: '#000',
@@ -240,22 +181,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.grayLight,
   },
-  singleCard: {
-    width: '90%',
-    marginHorizontal: '5%',
-    marginBottom: 20,
+  rowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 10,
   },
   imageContainer: {
-    width: '100%',
-    height: 120,
-    backgroundColor: colors.grayLighter,
+    width: '40%',
+    height: '100%', 
     justifyContent: 'center',
+    marginRight: 10,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.grayLight,
-  },
-  singleImageContainer: {
-    height: 180,
+    overflow: 'hidden', 
   },
   noImageContainer: {
     justifyContent: 'center',
@@ -264,22 +201,16 @@ const styles = StyleSheet.create({
   },
   noImageText: {
     color: colors.gray,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
   },
   productImage: {
-    width: '85%',
-    height: '85%',
-  },
-  singleProductImage: {
-    width: '90%',
-    height: '90%',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover', 
   },
   infoContainer: {
-    padding: 10,
-  },
-  singleInfoContainer: {
-    padding: 16,
+    flex: 1,
   },
   headerRow: {
     flexDirection: 'row',
@@ -288,24 +219,15 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   productCode: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.grayDark,
   },
-  singleProductCode: {
-    fontSize: 16,
-  },
   productDescription: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
     color: colors.black,
     marginBottom: 8,
-    lineHeight: 18,
-  },
-  singleProductDescription: {
-    fontSize: 18,
-    height: 50,
-    lineHeight: 22,
   },
   detailsRow: {
     flexDirection: 'row',
@@ -313,20 +235,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   detailText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '500',
     color: colors.grayDark,
   },
-  singleDetailText: {
-    fontSize: 14,
-  },
   barcodeText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '500',
     color: colors.gray,
-  },
-  singleBarcodeText: {
-    fontSize: 13,
   },
   stockBadge: {
     borderRadius: 10,
@@ -340,7 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dangerLight,
   },
   stockText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
   },
   priceContainer: {
@@ -360,29 +276,23 @@ const styles = StyleSheet.create({
     marginRight: 0,
   },
   priceLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '800',
     color: colors.grayDark,
     marginBottom: 2,
     textAlign: 'center',
   },
   priceValue: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '800',
     color: colors.primary,
     textAlign: 'center',
   },
-  singlePriceValue: {
-    fontSize: 18,
-  },
   atacadoPriceValue: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '800',
     color: colors.success,
     textAlign: 'center',
-  },
-  singleAtacadoPriceValue: {
-    fontSize: 18,
   },
   loadingContainer: {
     flex: 1,
@@ -413,4 +323,4 @@ const styles = StyleSheet.create({
     color: colors.gray,
     textAlign: 'center',
   },
-});
+})

@@ -13,6 +13,7 @@ import {AutocompleteDropdownContextProvider} from 'react-native-autocomplete-dro
 import ResumoPedido from './src/modules/menu/components/Pedidos/components/resumoPedido/resumoPedido';
 import PedidosCliente from './src/modules/menu/components/Pedidos/pedidosCliente';
 import ConexaoAtual from './src/modules/login/ConexaoAtual';
+import ProdutoCatalogo from './src/modules/menu/components/Produtos/catalogo';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,14 @@ function App(): React.JSX.Element {
               component={ConexaoAtual}
               options={{headerShown: false}}
             />
+            
+                  <Stack.Screen
+                    name="ResumoPedido"
+                    component={ProdutoCatalogo}
+                    options={{
+                        headerShown: false,
+                    }}
+                  />
             <Stack.Screen
               name="PedidosCliente"
               component={PedidosCliente}
