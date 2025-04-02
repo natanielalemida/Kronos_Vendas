@@ -8,7 +8,6 @@ import {
   View,
   FlatList,
   Image,
-  Dimensions,
   ActivityIndicator,
 } from 'react-native';
 import {useEffect, useState, useRef, useCallback} from 'react';
@@ -17,7 +16,6 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import UseModal from './hooks/useModal';
 import ModalVenda from './components/modalVenda';
 import UseSetSelecteds from './hooks/useSetSelecteds';
-import {ShowIf} from '../../../../../components/showIf';
 import {useCliente} from '../../../Clientes/context/clientContext';
 import {colors} from '../../../../../styles';
 import Search from '../../../../../components/search';
@@ -39,12 +37,6 @@ export default function SelectProdutos() {
 
   const [textFilter, setTextFilter] = useState<string>('');
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const windowWidth = Dimensions.get('window').width;
-
-  // Definir número de colunas baseado na quantidade de produtos
-  const numColumns = produtos.length === 1 ? 1 : 2;
-  // Criar chave única para o FlatList baseada no número de colunas
-  const flatListKey = `flatlist_${numColumns}_${produtos.length}`;
 
   const decodeGzipToBase64 = (gzipBase64: string) => {
     try {
@@ -76,130 +68,64 @@ export default function SelectProdutos() {
     return () => {};
   }, [textFilter]);
 
-  const renderItem = ({item, index}: {item: ProdutoDto; index: number}) => {
-    const isSingleItem = numColumns === 1;
+  const renderItem = ({item}: {item: ProdutoDto}) => {
     const color = findIndex(item);
-    const backgroundColor =
-      color || (index % 2 === 0 ? colors.grayList : colors.white);
+    const backgroundColor = color || colors.white;
 
-    const renderProductCard = (
-      showAtacado: boolean,
-      isAtacadoSelectable: boolean,
-    ) => (
+    return (
       <TouchableOpacity
-        style={[
-          styles.card,
-          isSingleItem && styles.singleCard,
-          {backgroundColor},
-        ]}
-        onPress={() => handleOpenModal(item, showAtacado, isAtacadoSelectable)}>
-        {/* Container da imagem */}
-        {item.images?.some(img => img.isDefault) ? (
-          <View
-            style={[
-              styles.imageContainer,
-              isSingleItem && styles.singleImageContainer,
-            ]}>
-            <Image
-              source={{uri: decodeGzipToBase64(item.images[0].path)}}
-              style={[
-                styles.productImage,
-                isSingleItem && styles.singleProductImage,
-              ]}
-              resizeMode="contain"
-            />
-          </View>
-        ) : (
-          <View
-            style={[
-              styles.imageContainer,
-              styles.noImageContainer,
-              isSingleItem && styles.singleImageContainer,
-            ]}>
-            <Text style={styles.noImageText}>Sem imagem</Text>
-          </View>
-        )}
-
-        <View style={styles.infoContainer}>
-          <View style={styles.headerRow}>
-            <Text
-              style={[
-                styles.productCode,
-                isSingleItem && styles.singleProductCode,
-              ]}>
-              {item.Codigo}
-            </Text>
-            <View
-              style={[
-                styles.stockBadge,
-                item.Estoque > 0 ? styles.inStock : styles.outOfStock,
-              ]}>
-              <Text style={styles.stockText}>
-                {item.Estoque > 0 ? `Est. ${item.Estoque}` : 'ESGOTADO'}
-              </Text>
+        style={[styles.card, {backgroundColor}]}
+        onPress={() => handleOpenModal(item, false, true)}>
+        <View style={styles.rowContainer}>
+          {/* Container da imagem */}
+          {item.images?.some(img => img.isDefault) ? (
+            <View style={styles.imageContainer}>
+              <Image
+                source={{uri: decodeGzipToBase64(item.images[0].path)}}
+                style={styles.productImage}
+                resizeMode="contain"
+              />
             </View>
-          </View>
-
-          <Text
-            style={[
-              styles.productDescription,
-              isSingleItem && styles.singleProductDescription,
-            ]}
-            numberOfLines={2}>
-            {item.Descricao}
-          </Text>
-
-          <Text
-            style={[
-              styles.barcodeText,
-              isSingleItem && styles.singleBarcodeText,
-            ]}>
-            EAN: {item.CodigoDeBarras || 'N/A'}
-          </Text>
-
-          <View style={styles.priceContainer}>
-            {showAtacado ? (
-              <Text
-                style={[
-                  styles.atacadoPriceValue,
-                  isSingleItem && styles.singleAtacadoPriceValue,
-                ]}>
-                R$ {item.ValorVendaAtacado?.toFixed(2) || '0.00'}
-              </Text>
-            ) : (
-              <Text
-                style={[
-                  styles.priceValue,
-                  isSingleItem && styles.singlePriceValue,
-                ]}>
-                R$ {item.ValorVenda?.toFixed(2) || '0.00'}
-              </Text>
-            )}
-
-            {isAtacadoSelectable && item.VendeProdutoNoAtacado === 1 && (
-              <Text
-                style={[
-                  styles.atacadoPriceValue,
-                  isSingleItem && styles.singleAtacadoPriceValue,
-                ]}>
-                Atac: R$ {item.ValorVendaAtacado?.toFixed(2) || '0.00'}
-              </Text>
-            )}
+          ) : (
+            <View style={[styles.imageContainer, styles.noImageContainer]}>
+              <Text style={styles.noImageText}>Sem imagem</Text>
+            </View>
+          )}
+          
+          <View style={styles.infoContainer}>
+            <View style={styles.headerRow}>
+              <Text style={styles.productCode}>Codigo: {item.Codigo}</Text>
+              <View style={[styles.stockBadge, item.Estoque > 0 ? styles.inStock : styles.outOfStock]}>
+                <Text style={styles.stockText}>
+                  {item.Estoque > 0 ? `Estoque: ${item.Estoque}` : 'ESGOTADO'}
+                </Text>
+              </View>
+            </View>
+            
+            <Text style={styles.productDescription} numberOfLines={2}>
+              {item.Descricao}
+            </Text>
+            
+            <View style={styles.detailsRow}>
+              <Text style={styles.detailText}>{item.UnidadeMedida}</Text>
+              <Text style={styles.barcodeText}>EAN: {item.CodigoDeBarras}</Text>
+            </View>
+            
+            <View style={styles.priceContainer}>
+              <View style={styles.priceBox}>
+                <Text style={styles.priceValue}>R$ {item.ValorVenda.toFixed(2)}</Text>
+              </View>
+              
+              {item.ValorVendaAtacado > 0 && (
+                <View style={[styles.priceBox, styles.atacadoBox]}>
+                  <Text style={styles.priceLabel}>ATACADO</Text>
+                  <Text style={styles.atacadoPriceValue}>R$ {item.ValorVendaAtacado.toFixed(2)}</Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
       </TouchableOpacity>
-    );
-
-    return (
-      <>
-        {clienteOnContext?.TipoPreco === null && renderProductCard(false, true)}
-
-        {Number(clienteOnContext?.TipoPreco) === 1 &&
-          renderProductCard(false, false)}
-        {Number(clienteOnContext?.TipoPreco) === 2 &&
-          Number(item.VendeProdutoNoAtacado) === 1 &&
-          renderProductCard(true, false)}
-      </>
     );
   };
 
@@ -214,11 +140,14 @@ export default function SelectProdutos() {
 
   return (
     <View style={styles.container}>
-      <Search
-        placeholder="Pesquisar produtos..."
-        value={textFilter}
-        onChangeText={setTextFilter}
-      />
+      <View style={{alignSelf: 'center'}}>
+        <Search
+          placeholder="Pesquisar produtos..."
+          value={textFilter}
+          onChangeText={setTextFilter}
+        />
+      </View>
+      
       <ModalVenda
         isActive={isActive}
         setIsActive={setIsActive}
@@ -233,18 +162,15 @@ export default function SelectProdutos() {
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : null}
-
+      
       <FlatList
-        key={flatListKey}
         data={produtos}
         renderItem={renderItem}
         keyExtractor={item => item.Codigo.toString()}
         contentContainerStyle={[
           styles.listContent,
-          isLoading && produtos.length > 0 ? styles.loadingOpacity : null,
+          isLoading && produtos.length > 0 ? styles.loadingOpacity : null
         ]}
-        numColumns={numColumns}
-        columnWrapperStyle={numColumns === 1 ? null : styles.columnWrapper}
         keyboardShouldPersistTaps="always"
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
@@ -260,45 +186,28 @@ export default function SelectProdutos() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: colors.white,
-    padding: 10,
+    paddingHorizontal: 12,
   },
   header: {
     paddingVertical: 16,
     backgroundColor: colors.white,
-    width: '100%',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.black,
-    marginBottom: 12,
-    textAlign: 'center',
   },
   searchContainer: {
     marginHorizontal: 0,
-    width: '100%',
   },
   listContent: {
     paddingBottom: 20,
   },
   loadingOpacity: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-
-  // Card styles
   card: {
-    width: '48%',
     backgroundColor: colors.white,
-    borderRadius: 8,
+    borderRadius: 10,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
     overflow: 'hidden',
@@ -306,22 +215,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.grayLight,
   },
-  singleCard: {
-    width: '90%',
-    marginHorizontal: '5%',
+  rowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 10,
   },
-  // Image styles
   imageContainer: {
-    width: '100%',
-    height: 120,
-    backgroundColor: colors.grayLighter,
+    width: '40%',
+    height: '100%', 
     justifyContent: 'center',
+    marginRight: 10,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.grayLight,
-  },
-  singleImageContainer: {
-    height: 150,
+    overflow: 'hidden', 
   },
   noImageContainer: {
     justifyContent: 'center',
@@ -330,86 +235,53 @@ const styles = StyleSheet.create({
   },
   noImageText: {
     color: colors.gray,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
   },
   productImage: {
-    width: '80%',
-    height: '80%',
-  },
-  singleProductImage: {
-    width: '85%',
-    height: '85%',
-  },
-
-  // Info container
-  infoContainer: {
-    padding: 12,
-  },
-  singleInfoContainer: {
-    padding: 14,
-  },
-
-  // Header row (code + stock)
-  headerRow: {
     width: '100%',
+    height: '100%',
+    resizeMode: 'cover', 
+  },
+  infoContainer: {
+    flex: 1,
+  },
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   productCode: {
     fontSize: 14,
     fontWeight: '600',
     color: colors.grayDark,
   },
-  singleProductCode: {
-    fontSize: 15,
-  },
-
-  // Product description
   productDescription: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.black,
     marginBottom: 8,
-    lineHeight: 20,
   },
-  singleProductDescription: {
-    fontSize: 17,
-    lineHeight: 22,
-  },
-
-  // Barcode/Details
   detailsRow: {
-    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
   detailText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: colors.grayDark,
   },
-  singleDetailText: {
-    fontSize: 15,
-  },
   barcodeText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
     color: colors.gray,
-    marginBottom: 8,
   },
-  singleBarcodeText: {
-    fontSize: 15,
-  },
-
-  // Stock badge
   stockBadge: {
-    borderRadius: 4,
+    borderRadius: 10,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 3,
   },
   inStock: {
     backgroundColor: colors.successLight,
@@ -418,16 +290,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dangerLight,
   },
   stockText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
   },
-  singleStockText: {
-    fontSize: 15,
-  },
-
-  // Price styles
   priceContainer: {
-    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
   },
   priceBox: {
     flex: 1,
@@ -441,32 +310,24 @@ const styles = StyleSheet.create({
     marginRight: 0,
   },
   priceLabel: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '800',
     color: colors.grayDark,
     marginBottom: 2,
     textAlign: 'center',
   },
   priceValue: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.primary,
     textAlign: 'center',
   },
-  singlePriceValue: {
-    fontSize: 18,
-  },
   atacadoPriceValue: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.success,
     textAlign: 'center',
   },
-  singleAtacadoPriceValue: {
-    fontSize: 18,
-  },
-
-  // Loading states
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -485,8 +346,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
     zIndex: 10,
   },
-
-  // Empty state
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',

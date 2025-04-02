@@ -2,7 +2,8 @@ import {Alert} from 'react-native';
 import ApiInstace from '../../api/ApiInstace';
 import {UsuarioDto} from '../../modules/login/hooks/type';
 import ImageService from './service/syncImageService';
-import { PedidoResponse } from '../pedidos/type';
+import {PedidoResponse} from '../pedidos/type';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class SincronizarImages {
   private usuario: UsuarioDto;
@@ -16,6 +17,7 @@ export default class SincronizarImages {
   }
 
   private async verify(data: PedidoResponse) {
+    await AsyncStorage.setItem('syncImages', JSON.stringify(false));
     const successfully = Array.isArray(data.Mensagens);
 
     if (!successfully) {
@@ -35,17 +37,16 @@ export default class SincronizarImages {
   }
 
   async runSync() {
+    const data = await ApiInstace.openUrl({
+      data: undefined,
+      method: 'get',
+      endPoint: `/arc/produto/imagem/all`,
+      headers: {
+        Auth: this.usuario.Hash,
+        Empresa: this.organizationCode,
+      },
+    });
 
-    // const data = await ApiInstace.openUrl({
-    //   data: undefined,
-    //   method: 'get',
-    //   endPoint: `/arc/produto/imagem/all`,
-    //   headers: {
-    //     Auth: this.usuario.Hash,
-    //     Empresa: this.organizationCode,
-    //   },
-    // });
-
-    // await this.verify(data);
+    await this.verify(data);
   }
 }

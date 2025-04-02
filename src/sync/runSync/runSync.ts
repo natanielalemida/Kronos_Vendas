@@ -8,6 +8,7 @@ import SincronizarProdutos from '../products/syncProducts';
 import SincronizarMunicipios from '../municipio/syncMunicipio';
 import SincronizarPedidos from '../pedidos';
 import SincronizarImages from '../images/syncImagensProdutos';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class runSync {
   private setProgress: Dispatch<SetStateAction<{}>>;
@@ -51,7 +52,17 @@ export default class runSync {
       this.organizationCode,
     );
     this.imageSync = new SincronizarImages(this.usuario, this.organizationCode)
+
   }
+
+  private async load () {
+    try {
+      const value = await AsyncStorage.getItem('syncImages');
+  return value
+    } catch (error) {
+      console.error('Erro ao carregar a configuração:', error);
+    }
+  } 
 
   private updateProgress(currentStep: number, totalSteps: number) {
     const progress = (currentStep / totalSteps) * 100;
@@ -116,7 +127,10 @@ export default class runSync {
         progress: this.updateProgress(currentStep, totalSteps),
       });
 
-      await this.imageSync.runSync()
+      if(await this.load()) {
+        await this.imageSync.runSync()
+      }
+      
 
       this.setProgress({
         message: 'Sincronização concluída!',
