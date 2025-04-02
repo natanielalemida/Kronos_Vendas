@@ -55,14 +55,14 @@ export default class runSync {
 
   }
 
-  private async load () {
-    try {
-      const value = await AsyncStorage.getItem('syncImages');
-  return value
-    } catch (error) {
-      console.error('Erro ao carregar a configuração:', error);
-    }
-  } 
+  // private async load () {
+  //   try {
+  //     const value = await AsyncStorage.getItem('syncImages');
+  // return value
+  //   } catch (error) {
+  //     console.error('Erro ao carregar a configuração:', error);
+  //   }
+  // } 
 
   private updateProgress(currentStep: number, totalSteps: number) {
     const progress = (currentStep / totalSteps) * 100;
@@ -127,9 +127,9 @@ export default class runSync {
         progress: this.updateProgress(currentStep, totalSteps),
       });
 
-      if(await this.load()) {
-        await this.imageSync.runSync()
-      }
+      // if(await this.load()) {
+      //   await this.imageSync.runSync()
+      // }
       
 
       this.setProgress({

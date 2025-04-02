@@ -64,7 +64,7 @@ export default function Configuracoes() {
           value={isEnabled}
         />
       </View>
-      <View style={{flexDirection: 'row'}}>
+      {/* <View style={{flexDirection: 'row'}}>
         <Text style={styles.text}>Sincronizar imagens de produtos</Text>
         <Switch
           trackColor={{false: '#767577', true: colors.arcGreen}}
@@ -72,7 +72,7 @@ export default function Configuracoes() {
           onValueChange={handleSyncChange}
           value={syncImages}
         />
-      </View>
+      </View> */}
     </View>
   );
 }

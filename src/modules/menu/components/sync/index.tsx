@@ -16,7 +16,7 @@ export default function Sincronizacao() {
   const navigation = useNavigation();
   const {isSyncing, setIsSyncing, usuario, organizationCode} = useCliente();
   const {progress, setProgress} = UseMessageSync();
-  const {clean, limpar} = UseSync({setProgress});
+  const {clean, limpar, sincronizarImagens} = UseSync({setProgress});
   const {shareDatabaseFile} = useShareDatabase();
 
   const [ultimaSync, setUltimaSync] = useState(undefined)
@@ -36,6 +36,23 @@ export default function Sincronizacao() {
     animation.current?.play();
     setIsSyncing(true);
     await limpar();
+    setIsSyncing(false);
+    animation.current?.reset();
+    navigation.navigate('Novo Pedido');
+  };
+
+  const handleSyncImages = async () => {
+    setProgress({
+      message: 'Sincronizando imagens...',
+      progress: 0.2,
+    });
+    animation.current?.play();
+    setIsSyncing(true);
+    await sincronizarImagens();
+    setProgress({
+      message: 'Sincronizando imagens...',
+      progress: 1,
+    });
     setIsSyncing(false);
     animation.current?.reset();
     navigation.navigate('Novo Pedido');
@@ -97,6 +114,12 @@ const getLastSyndec = async () => {
         <Text style={{color: 'black'}}>{`Ultima sincronização: ${ultimaSync ? ultimaSync : "Não informada"}`}</Text>
       </View>
       <View style={styles.buttonContainer}>
+      <TouchableOpacity
+          style={styles.syncButton}
+          onPress={handleSyncImages}
+          disabled={isSyncing}>
+          <Text style={styles.buttonText}>Sincronizar imagens de produtos</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.syncButton}
           onPress={handleSync}

@@ -48,10 +48,10 @@ export default function BottomModal({ isActive, closeModal }) {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.labelContainer}>
+          {/* <View style={styles.labelContainer}>
             <Text style={styles.label}>Sincronizar imagens de produtos</Text>
             <Switch value={syncImages} onValueChange={handleSyncChange} />
-          </View>
+          </View> */}
         </View>
       </TouchableOpacity>
     </Modal>

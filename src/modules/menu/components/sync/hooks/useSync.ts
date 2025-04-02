@@ -1,3 +1,4 @@
+import SincronizarImages from '../../../../../sync/images/syncImagensProdutos';
 import runSync from '../../../../../sync/runSync/runSync';
 import {UsuarioDto} from '../../../../login/hooks/type';
 import {useCliente} from '../../Clientes/context/clientContext';
@@ -11,6 +12,10 @@ export default function UseSync({setProgress}: UseSyncHookProps) {
     organizationCode as number,
     setProgress,
   );
+
+  const images = new SincronizarImages(    usuario as UsuarioDto,
+    organizationCode as number,)
+
   const clean = async () => {
     await newSync.iniciarSincronizacao();
   };
@@ -18,8 +23,13 @@ export default function UseSync({setProgress}: UseSyncHookProps) {
   const limpar = async () => {
     await newSync.limparDados();
   };
+
+  const sincronizarImagens = async () => {
+    await images.runSync();
+  };
   return {
     limpar,
     clean,
+    sincronizarImagens
   };
 }
