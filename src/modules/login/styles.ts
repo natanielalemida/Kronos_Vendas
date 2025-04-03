@@ -8,6 +8,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  settingsIconTop: {
+    position: 'absolute',
+    top: 35,
+    right: 25,
+    zIndex: 1,
+  },
   loginContainerInformations: {
     backgroundColor: colors.arcGreen400,
     height: '40%',

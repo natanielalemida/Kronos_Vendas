@@ -44,6 +44,7 @@ import {
 } from '../../database/migration/createLoginMigration';
 import { createProductsImageMigration } from '../../database/migration/createProducImageMigration';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { colors } from '../styles';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -111,8 +112,6 @@ export default function Login({navigation}) {
     }
   };
 
-
-
   useFocusEffect(
     useCallback(() => {
       getOrganizations();
@@ -176,6 +175,11 @@ export default function Login({navigation}) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.loginContainer}>
       <StatusBar translucent backgroundColor={'transparent'} />
+      <TouchableOpacity
+        style={styles.settingsIconTop}
+        onPress={() => navigation.navigate('Settings')}>
+        <Icon name="settings" size={25} color={colors.arcGreen400} />
+      </TouchableOpacity>
       <View style={styles.loginLabelContainer}>
         <Image source={KronosIcon} style={styles.loginImage} />
         <Text style={styles.KronosFood}>Kronos Vendas</Text>
@@ -240,18 +244,6 @@ export default function Login({navigation}) {
             style={styles.buttonLabelAuthContainer}
             onPress={() => handleLogin(cpf, password, organizationCode)}>
             <Text style={styles.buttonAuth}>ENTRAR</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.buttonSettingsContainer}
-            onPress={() => navigation.navigate('Settings')}>
-            <Icon
-              style={styles.settingsIconPadding}
-              name="settings"
-              size={25}
-              color="black"
-            />
-            <Text style={styles.settingsText}>Configurações</Text>
           </TouchableOpacity>
 
           {lastPassword && !usaBiometria && (
