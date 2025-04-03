@@ -43,6 +43,7 @@ import {
   createUsuariosMigration,
 } from '../../database/migration/createLoginMigration';
 import { createProductsImageMigration } from '../../database/migration/createProducImageMigration';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -52,6 +53,7 @@ export default function Login({navigation}) {
   const [showPassword, setShowPassword] = useState(true);
   const [lastPassword, setLastPassword] = useState();
   const [ref, setRef] = useState('Usuário');
+  const [usaBiometria, setUsaBiometria] = useState(false);
 
   const makeLogin = async (cpfLogin, passwordLogin) => {
     const can = await RNBiometrics.canAuthenticate();
@@ -98,10 +100,23 @@ export default function Login({navigation}) {
       await makeLogin(login, senha);
     }
   };
+  const loadSyncStatus = async () => {
+    try {
+      const value = await AsyncStorage.getItem('usaBiometria');
+      if (value !== null) {
+        setUsaBiometria(JSON.parse(value));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar a configuração:', error);
+    }
+  };
+
+
 
   useFocusEffect(
     useCallback(() => {
       getOrganizations();
+      loadSyncStatus()
       return () => {
         // Limpeza aqui
       };
@@ -239,7 +254,7 @@ export default function Login({navigation}) {
             <Text style={styles.settingsText}>Configurações</Text>
           </TouchableOpacity>
 
-          {lastPassword && (
+          {lastPassword && !usaBiometria && (
             <TouchableOpacity
               style={{flexDirection: 'row'}}
               onPress={() => makeLogin(cpf, lastPassword)}>

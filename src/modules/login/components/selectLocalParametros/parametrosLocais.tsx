@@ -9,7 +9,7 @@ export default function BottomModal({ isActive, closeModal }) {
 
   const loadSyncStatus = async () => {
     try {
-      const value = await AsyncStorage.getItem('syncImages');
+      const value = await AsyncStorage.getItem('usaBiometria');
       if (value !== null) {
         setSyncImages(JSON.parse(value));
       }
@@ -20,7 +20,7 @@ export default function BottomModal({ isActive, closeModal }) {
 
   const saveSyncStatus = async (status) => {
     try {
-      await AsyncStorage.setItem('syncImages', JSON.stringify(status));
+      await AsyncStorage.setItem('usaBiometria', JSON.stringify(status));
     } catch (error) {
       console.error('Erro ao salvar a configuração:', error);
     }
@@ -48,10 +48,13 @@ export default function BottomModal({ isActive, closeModal }) {
             </TouchableOpacity>
           </View>
 
-          {/* <View style={styles.labelContainer}>
-            <Text style={styles.label}>Sincronizar imagens de produtos</Text>
-            <Switch value={syncImages} onValueChange={handleSyncChange} />
-          </View> */}
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Usar Biometria para login</Text>
+            <Switch
+              value={!syncImages}
+              onValueChange={() => handleSyncChange(!syncImages)}
+            />
+          </View>
         </View>
       </TouchableOpacity>
     </Modal>

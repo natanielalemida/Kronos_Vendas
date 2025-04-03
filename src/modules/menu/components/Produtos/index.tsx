@@ -35,16 +35,19 @@ export default function Produto() {
     }, []),
   )
 
-  useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current)
-    }
-    debounceRef.current = setTimeout(() => {
-      handleGetProdutos(textFilter)
-    }, 500)
 
-    return () => {}
-  }, [textFilter])
+  useFocusEffect(
+    useCallback(() => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+      debounceRef.current = setTimeout(() => {
+        handleGetProdutos(textFilter)
+      }, 500)
+  
+      return () => {}
+    }, [textFilter]),
+    );
 
   const renderItem = ({ item }: { item: ProdutoDto }) => {
     return (
