@@ -18,15 +18,15 @@ export default function Produto() {
 
   const decodeGzipToBase64 = (gzipBase64: string) => {
     try {
-      const compressedData = base64.toByteArray(gzipBase64)
-      const decompressedData = pako.inflate(compressedData)
-      const base64String = base64.fromByteArray(decompressedData)
-      return `data:image/png;base64,${base64String}`
+      const compressedData = base64.toByteArray(gzipBase64);
+      const decompressedData = pako.inflate(compressedData);
+      const base64String = base64.fromByteArray(decompressedData);
+      return `data:image/png;base64,${base64String}`; // Removido o ; extra
     } catch (error) {
-      console.error('Erro ao descompactar a imagem:', error)
-      return null
+      console.error('Erro ao descompactar a imagem:', error);
+      return null;
     }
-  }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -53,18 +53,14 @@ export default function Produto() {
         style={styles.card}
       >
         <View style={styles.rowContainer}>
-          {item.images?.some(img => img.isDefault) ? (
-            <View style={styles.imageContainer}>
-              <Image
-                source={{ uri: decodeGzipToBase64(item.images[0].path) }}
-                style={styles.productImage}
-                resizeMode="contain"
-              />
-            </View>
-          ) : (
-            <View style={[styles.imageContainer, styles.noImageContainer]}>
-              <Text style={styles.noImageText}>Sem imagem</Text>
-            </View>
+          {item.images?.some(img => img.isDefault) && (
+                        <View style={styles.imageContainer}>
+                        <Image
+                          source={{ uri: decodeGzipToBase64(item.images[0].path) }}
+                          style={styles.productImage}
+                          resizeMode="contain"
+                        />
+                      </View>
           )}
           
           <View style={styles.infoContainer}>

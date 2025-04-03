@@ -29,17 +29,17 @@ const ProdutoCatalogo = () => {
   const scrollRef = useRef<ScrollView>(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const decodeGzipToBase64 = (gzipBase64: string) => {
-    try {
-      const compressedData = base64.toByteArray(gzipBase64);
-      const decompressedData = pako.inflate(compressedData);
-      const base64String = base64.fromByteArray(decompressedData);
-      return `data:image/png;base64,${base64String};`
-    } catch (error) {
-      console.error('Erro ao descompactar a imagem:', error);
-      return null;
-    }
-  };
+    const decodeGzipToBase64 = (gzipBase64: string) => {
+      try {
+        const compressedData = base64.toByteArray(gzipBase64);
+        const decompressedData = pako.inflate(compressedData);
+        const base64String = base64.fromByteArray(decompressedData);
+        return `data:image/png;base64,${base64String}`; // Removido o ; extra
+      } catch (error) {
+        console.error('Erro ao descompactar a imagem:', error);
+        return null;
+      }
+    };
 
   const handleScroll = (event: any) => {
     const contentOffset = event.nativeEvent.contentOffset.x;
@@ -89,7 +89,7 @@ const ProdutoCatalogo = () => {
   const hasImages = produto.images && produto.images.length > 0;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <HeaderProducts
         label="Catálogo"
         leftColor="white"
@@ -228,7 +228,7 @@ const ProdutoCatalogo = () => {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

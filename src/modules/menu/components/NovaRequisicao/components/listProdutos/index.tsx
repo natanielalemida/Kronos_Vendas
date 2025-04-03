@@ -43,7 +43,7 @@ export default function SelectProdutos() {
       const compressedData = base64.toByteArray(gzipBase64);
       const decompressedData = pako.inflate(compressedData);
       const base64String = base64.fromByteArray(decompressedData);
-      return `data:image/png;base64,${base64String}`;
+      return `data:image/png;base64,${base64String}`; // Removido o ; extra
     } catch (error) {
       console.error('Erro ao descompactar a imagem:', error);
       return null;
@@ -78,7 +78,7 @@ export default function SelectProdutos() {
         onPress={() => handleOpenModal(item, false, true)}>
         <View style={styles.rowContainer}>
           {/* Container da imagem */}
-          {item.images?.some(img => img.isDefault) ? (
+          {item.images?.some(img => img.isDefault) && (
             <View style={styles.imageContainer}>
               <Image
                 source={{uri: decodeGzipToBase64(item.images[0].path)}}
@@ -86,12 +86,7 @@ export default function SelectProdutos() {
                 resizeMode="contain"
               />
             </View>
-          ) : (
-            <View style={[styles.imageContainer, styles.noImageContainer]}>
-              <Text style={styles.noImageText}>Sem imagem</Text>
-            </View>
           )}
-          
           <View style={styles.infoContainer}>
             <View style={styles.headerRow}>
               <Text style={styles.productCode}>Codigo: {item.Codigo}</Text>
