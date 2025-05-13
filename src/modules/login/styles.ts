@@ -1,5 +1,7 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { colors } from '../styles';
+
+const { width, height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   loginContainer: {
@@ -10,30 +12,33 @@ export const styles = StyleSheet.create({
   },
   settingsIconTop: {
     position: 'absolute',
-    top: 50,
-    right: 25,
+    top: height * 0.06, // equivalente a 50
+    right: width * 0.06, // equivalente a 25
     zIndex: 1,
   },
   loginContainerInformations: {
     backgroundColor: colors.arcGreen400,
-    height: '40%',
-    width: '80%',
+    height: height * 0.37,
+    width: width * 0.8,
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 15,
-    paddingVertical: 15,
-    marginVertical: 1,
+    borderRadius: width * 0.04,
+    paddingVertical: height * 0.02,
+    marginVertical: height * 0.005,
   },
   loginLabelContainer: {
     alignItems: 'center',
     justifyContent: 'flex-end',
-    height: '50%',
+    height: '50%', // mantém proporcional ao pai
   },
-  loginImage: {width: 160, height: 160},
+  loginImage: {
+    width: width * 0.42, // 160 de 375
+    height: width * 0.42, // proporcional
+  },
   KronosFood: {
-    fontSize: 35,
+    fontSize: width * 0.093, // 35 de 375
     fontWeight: 'bold',
-    paddingVertical: 15,
+    paddingVertical: height * 0.018,
     fontFamily: 'Segoe UI',
     color: '#051f1e',
   },
@@ -44,29 +49,38 @@ export const styles = StyleSheet.create({
   },
   buttonLabelAuthContainer: {
     backgroundColor: '#051f1e',
-    width: '80%',
-    height: '30%',
-    borderRadius: 25,
+    width: width * 0.7,
+    height: height * 0.04,
+    borderRadius: width * 0.07,
+    marginBottom: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonAuth: {fontSize: 15, fontWeight: 'bold', color: 'white'},
-  magin: {marginBottom: 10},
+  buttonAuth: {
+    fontSize: width * 0.04,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  magin: {
+    marginBottom: height * 0.012,
+  },
   buttonSettingsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  settingsIconPadding: {paddingHorizontal: 15},
+  settingsIconPadding: {
+    paddingHorizontal: width * 0.04,
+  },
   settingsText: {
-    fontSize: 20,
+    fontSize: width * 0.053,
     fontWeight: 'bold',
     color: '#051f1e',
   },
   arcSolution: {
-    fontSize: 14,
+    fontSize: width * 0.037,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 15,
+    marginBottom: height * 0.018,
   },
 });

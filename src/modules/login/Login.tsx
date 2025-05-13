@@ -1,5 +1,6 @@
 import RNBiometrics from 'react-native-simple-biometrics';
 import {
+  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -45,6 +46,8 @@ import {
 import { createProductsImageMigration } from '../../database/migration/createProducImageMigration';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../styles';
+
+const { width, height } = Dimensions.get('window');
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -197,7 +200,7 @@ export default function Login({navigation}) {
         condition={!progress}
         style={[
           styles.loginContainerInformations,
-          isKeyboardVisible && {height: '50%'},
+          isKeyboardVisible && {height: height * 0.33},
         ]}>
         <Select
           leftIcon="business"

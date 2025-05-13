@@ -99,7 +99,7 @@ export default function ListAndSelectClientes() {
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}>
-              <Icon name="arrow-back" size={24} color="#fff" />
+              <Icon name="arrow-back" size={24} style={{padding: 10}} color="#fff" />
             </TouchableOpacity>
           ),
         })}

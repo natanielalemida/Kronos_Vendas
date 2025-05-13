@@ -1,23 +1,27 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingLeft: 5,
-    height: '18%',
-    paddingRight: 15,
-    borderRadius: 8,
+    paddingLeft: width * 0.013, // 5 de 375
+    height: height * 0.07,
+    paddingRight: 15, // 15 de 375
+    borderRadius: 8, // 8 de 375
     borderWidth: 1,
     borderColor: 'black',
-    marginVertical: 5,
+    marginVertical: height * 0.006, // 5 de 812
   },
   leftIconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 50,
-    width: '80%',
+    height: height * 0.06, // 50 de 812
+    width: width * 0.4,
   },
-  leftIcon: {paddingHorizontal: 10},
+  leftIcon: {
+    paddingHorizontal: width * 0.027, // 10 de 375
+  },
 });

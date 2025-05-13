@@ -139,7 +139,7 @@ export default function Menu() {
           component={Clientes}
           options={({navigation}) => ({
             drawerIcon: ({color, size}) => (
-              <Icon name="person-outline" color={color} style={{padding: 10}} size={size} />
+              <Icon name="person-outline" color={color} size={size} />
             ),
             headerRight: () => (
               <TouchableOpacity
@@ -173,10 +173,9 @@ export default function Menu() {
           component={Exit}
           options={({navigation}) => ({
             drawerIcon: ({color, size}) => (
-              <Icon name="exit-outline" color={color} size={size} />
+              <Icon name="exit-outline" color={color} style={{paddingBottom: 1}} size={size} />
             ),
-            drawerLabel: 'Sair',
-            drawerStyle: {marginBottom: 20}, // Adiciona margem inferior
+            drawerLabel: 'Sair', // Adiciona margem inferior
           })}
         />
       </Drawer.Navigator>
