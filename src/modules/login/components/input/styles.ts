@@ -9,8 +9,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: width * 0.013, // 5 de 375
     height: height * 0.07,
-    paddingRight: 15, // 15 de 375
-    borderRadius: 8, // 8 de 375
+    paddingRight: width * 0.04, // 15 de 375
+    borderRadius: width * 0.021, // 8 de 375
     borderWidth: 1,
     borderColor: 'black',
     marginVertical: height * 0.006, // 5 de 812
