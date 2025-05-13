@@ -81,7 +81,7 @@ export default function Menu() {
               disabled={isSyncing}
               style={{marginLeft: 16}}
               onPress={() => navigation.toggleDrawer()}>
-              <Icon name="menu" size={24} color={colors.white} />
+              <Icon name="menu" size={24} style={{padding: 10}} color={colors.white} />
             </TouchableOpacity>
           ),
         })}
@@ -139,7 +139,7 @@ export default function Menu() {
           component={Clientes}
           options={({navigation}) => ({
             drawerIcon: ({color, size}) => (
-              <Icon name="person-outline" color={color} size={size} />
+              <Icon name="person-outline" color={color} style={{padding: 10}} size={size} />
             ),
             headerRight: () => (
               <TouchableOpacity
@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   headerButton: {
+    padding: 10,
     marginRight: 16, // Espaçamento entre o ícone e a borda direita
   },
 });

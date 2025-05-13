@@ -198,7 +198,8 @@ export default function ModalVenda({
                       setQuantidade(value => Math.max(value - 1, 1))
                     }
                     name="remove-circle-sharp"
-                    size={25}
+                    size={30}
+                    style={{padding: 15}}
                     color={colors.cancelButton}
                   />
                   <TextInput
@@ -210,7 +211,8 @@ export default function ModalVenda({
                   <Icon
                     name="add-circle-sharp"
                     onPress={() => setQuantidade(value => Number(value) + 1)}
-                    size={25}
+                    size={30}
+                    style={{padding: 15}}
                     color={colors.arcGreen}
                   />
                 </View>
