@@ -11,7 +11,7 @@ export function useFetch(handleChangeOrganization) {
   const getOrganizations = async () => {
     try {
       setLoading(true);
-      const data = await ApiInstace.openUrl({
+      const data = await ApiInstace.openUrlTimer({
         method: 'get',
         endPoint: 'arc/empresa/resumo',
         data: undefined,

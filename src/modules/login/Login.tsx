@@ -1,5 +1,6 @@
 import RNBiometrics from 'react-native-simple-biometrics';
 import {
+  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -42,9 +43,11 @@ import {
   createPrivilegiosMigration,
   createUsuariosMigration,
 } from '../../database/migration/createLoginMigration';
-import { createProductsImageMigration } from '../../database/migration/createProducImageMigration';
+import {createProductsImageMigration} from '../../database/migration/createProducImageMigration';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colors } from '../styles';
+import {colors} from '../styles';
+
+const {width, height} = Dimensions.get('window');
 
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
@@ -115,7 +118,7 @@ export default function Login({navigation}) {
   useFocusEffect(
     useCallback(() => {
       getOrganizations();
-      loadSyncStatus()
+      loadSyncStatus();
       return () => {
         // Limpeza aqui
       };
@@ -170,6 +173,23 @@ export default function Login({navigation}) {
     };
   }, []);
 
+  const loginLabelHeight =
+    isKeyboardVisible && lastPassword && usaBiometria
+      ? height * 0.2
+      : undefined;
+
+  const infoContainerHeight =
+    isKeyboardVisible && lastPassword && usaBiometria
+      ? height * 0.40
+      : isKeyboardVisible
+      ? height * 0.40
+      : lastPassword && usaBiometria
+      ? height * 0.4
+      : undefined;
+
+  const buttonAuthHeight =
+    lastPassword && usaBiometria ? height * 0.045 : undefined;
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -180,7 +200,11 @@ export default function Login({navigation}) {
         onPress={() => navigation.navigate('Settings')}>
         <Icon name="settings" size={25} color={colors.arcGreen400} />
       </TouchableOpacity>
-      <View style={styles.loginLabelContainer}>
+      <View
+        style={[
+          styles.loginLabelContainer,
+          loginLabelHeight && {height: loginLabelHeight},
+        ]}>
         <Image source={KronosIcon} style={styles.loginImage} />
         <Text style={styles.KronosFood}>Kronos Vendas</Text>
       </View>
@@ -197,7 +221,7 @@ export default function Login({navigation}) {
         condition={!progress}
         style={[
           styles.loginContainerInformations,
-          isKeyboardVisible && {height: '50%'},
+          infoContainerHeight && {height: infoContainerHeight},
         ]}>
         <Select
           leftIcon="business"
@@ -241,22 +265,34 @@ export default function Login({navigation}) {
 
         <View style={styles.buttonsLabel}>
           <TouchableOpacity
-            style={styles.buttonLabelAuthContainer}
+            style={[
+              styles.buttonLabelAuthContainer,
+              buttonAuthHeight && {height: buttonAuthHeight},
+            ]}
             onPress={() => handleLogin(cpf, password, organizationCode)}>
             <Text style={styles.buttonAuth}>ENTRAR</Text>
           </TouchableOpacity>
 
           {lastPassword && !usaBiometria && (
             <TouchableOpacity
-              style={{flexDirection: 'row'}}
-              onPress={() => makeLogin(cpf, lastPassword)}>
+              style={{
+                flexDirection: 'row',
+                backgroundColor: '#4a6463',
+                width: width * 0.63,
+                height: height * 0.043,
+                borderRadius: 25,
+                elevation: 4,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={handleSetLastUser}>
               <Icon
                 style={styles.settingsIconPadding}
                 name="finger-print"
                 size={18}
-                color="black"
+                color="white"
               />
-              <Text style={{color: 'black'}}>Login com biometria</Text>
+              <Text style={{color: 'white'}}>Login com biometria</Text>
             </TouchableOpacity>
           )}
         </View>

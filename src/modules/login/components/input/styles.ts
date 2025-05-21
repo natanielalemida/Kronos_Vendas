@@ -1,4 +1,6 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
+
+const {height} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   inputContainer: {
@@ -6,18 +8,21 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingLeft: 5,
-    height: '18%',
+    height: height * 0.07,
     paddingRight: 15,
-    borderRadius: 8,
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: 'black',
     marginVertical: 5,
+    width: '100%',
   },
   leftIconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 50,
-    width: '80%',
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    height: height * 0.07,
+    width: '90%'
   },
-  leftIcon: {paddingHorizontal: 10},
+  leftIcon: {
+    paddingHorizontal: 10
+  },
 });

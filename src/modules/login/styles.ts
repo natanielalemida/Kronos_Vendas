@@ -1,5 +1,7 @@
-import {StyleSheet} from 'react-native';
+import { Dimensions, StyleSheet} from 'react-native';
 import { colors } from '../styles';
+
+const {width, height} = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
   loginContainer: {
@@ -8,15 +10,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  settingsIconTop: {
-    position: 'absolute',
-    top: 35,
-    right: 25,
-    zIndex: 1,
-  },
   loginContainerInformations: {
-    backgroundColor: colors.arcGreen400,
-    height: '40%',
+    backgroundColor: colors.menuPrimary,
+    height: height * 0.4,
     width: '80%',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -27,9 +23,9 @@ export const styles = StyleSheet.create({
   loginLabelContainer: {
     alignItems: 'center',
     justifyContent: 'flex-end',
-    height: '50%',
+    height: '40%',
   },
-  loginImage: {width: 160, height: 160},
+  loginImage: {width: 120, height: 120},
   KronosFood: {
     fontSize: 35,
     fontWeight: 'bold',
@@ -40,12 +36,13 @@ export const styles = StyleSheet.create({
   buttonsLabel: {
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'space-evenly',
   },
   buttonLabelAuthContainer: {
     backgroundColor: '#051f1e',
-    width: '80%',
-    height: '30%',
+    elevation: 4,
+    marginVertical: 13,
+    width: '88%',
+    height: '25%',
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
@@ -57,7 +54,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  settingsIconPadding: {paddingHorizontal: 15},
+  settingsIconTop: {
+    position: 'absolute',
+    top: 60,
+    right: 25,
+    zIndex: 1,
+  },
+  settingsIconPadding: {paddingRight: 10},
   settingsText: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -67,6 +70,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 15,
+    marginBottom: 25,
   },
 });

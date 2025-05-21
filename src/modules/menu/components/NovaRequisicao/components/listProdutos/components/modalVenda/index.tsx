@@ -68,29 +68,41 @@ export default function ModalVenda({
   });
 
   const handleValorVenda = () => {
-    const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+  const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
+  if (total === undefined) return;
 
-    if (!valorVenda) {
-      setDesconto('0.00');
-      setValorVenda(total?.toFixed(2));
-      return;
-    }
+  if (!valorVenda || isNaN(parseFloat(valorVenda))) {
+    setDesconto('0.00');
+    setValorVenda(total.toFixed(2));
+    return;
+  }
 
-    const maxDesconto = usuario?.DescontoMaximoVenda / 100 || 0;
-    const descontoMaximo = total * maxDesconto;
-    const valorNumerico = parseFloat(valorVenda.replace(/[^0-9.]/g, ''));
+  const valorNumerico = parseFloat(valorVenda.replace(/[^0-9.]/g, ''));
+  
+  // Se o valor for inválido (zero ou negativo), redefina para o valor original
+  if (valorNumerico <= 0) {
+    setDesconto('0.00');
+    setValorVenda(total.toFixed(2));
+    return;
+  }
 
-    if (valorNumerico > total) {
-      const descontoCalculado = ((total - valorNumerico) / total) * 100;
-      setDesconto(descontoCalculado.toFixed(2));
-    } else if (valorNumerico < total - descontoMaximo) {
-      setValorVenda((total - descontoMaximo).toFixed(2));
-      setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
-    } else {
-      const descontoCalculado = ((total - valorNumerico) / total) * 100;
-      setDesconto(descontoCalculado.toFixed(2));
-    }
-  };
+  const maxDesconto = usuario?.DescontoMaximoVenda / 100 || 0;
+  const descontoMaximo = total * maxDesconto;
+
+  if (valorNumerico > total) {
+    // Valor aumentado - zerar desconto
+    setDesconto('0.00');
+    setValorVenda(valorNumerico.toFixed(2));
+  } else if (valorNumerico < total - descontoMaximo) {
+    // Aplicar desconto máximo permitido
+    setValorVenda((total - descontoMaximo).toFixed(2));
+    setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
+  } else {
+    // Calcular desconto normal
+    const descontoCalculado = ((total - valorNumerico) / total) * 100;
+    setDesconto(descontoCalculado.toFixed(2));
+  }
+};
 
   const handleDesconto = () => {
     const total = isAtacado ? produto?.ValorVendaAtacado : produto?.ValorVenda;
