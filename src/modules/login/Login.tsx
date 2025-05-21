@@ -49,6 +49,8 @@ import {colors} from '../styles';
 
 const {width, height} = Dimensions.get('window');
 
+const { width, height } = Dimensions.get('window');
+
 export default function Login({navigation}) {
   const [cpf, setCpf] = useState<string>();
   const [password, setPassword] = useState<string>();
@@ -221,7 +223,7 @@ export default function Login({navigation}) {
         condition={!progress}
         style={[
           styles.loginContainerInformations,
-          infoContainerHeight && {height: infoContainerHeight},
+          isKeyboardVisible && {height: height * 0.33},
         ]}>
         <Select
           leftIcon="business"

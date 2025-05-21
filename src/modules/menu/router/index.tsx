@@ -81,7 +81,7 @@ export default function Menu() {
               disabled={isSyncing}
               style={{marginLeft: 16}}
               onPress={() => navigation.toggleDrawer()}>
-              <Icon name="menu" size={24} color={colors.white} />
+              <Icon name="menu" size={24} style={{padding: 10}} color={colors.white} />
             </TouchableOpacity>
           ),
         })}
@@ -173,10 +173,9 @@ export default function Menu() {
           component={Exit}
           options={({navigation}) => ({
             drawerIcon: ({color, size}) => (
-              <Icon name="exit-outline" color={color} size={size} />
+              <Icon name="exit-outline" color={color} style={{paddingBottom: 1}} size={size} />
             ),
-            drawerLabel: 'Sair',
-            drawerStyle: {marginBottom: 20}, // Adiciona margem inferior
+            drawerLabel: 'Sair', // Adiciona margem inferior
           })}
         />
       </Drawer.Navigator>
@@ -211,6 +210,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   headerButton: {
+    padding: 10,
     marginRight: 16, // Espaçamento entre o ícone e a borda direita
   },
 });

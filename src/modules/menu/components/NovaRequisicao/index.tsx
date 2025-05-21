@@ -318,6 +318,7 @@ const style = StyleSheet.create({
     alignItems: 'flex-end',
   },
   iconContainer: {
+    padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },

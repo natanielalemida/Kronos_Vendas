@@ -31,7 +31,7 @@ export default function ListAndSelectClientes() {
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.headerButton}>
-              <Icon name="arrow-back-outline" size={24} color={colors.white} />
+              <Icon name="arrow-back-outline" size={24} style={{padding: 10}} color={colors.white} />
             </TouchableOpacity>
           ),
           headerRight: () => (
@@ -42,7 +42,7 @@ export default function ListAndSelectClientes() {
                 })
               }
               style={styles.headerButton}>
-              <Icon name="add-outline" size={24} color={colors.white} />
+              <Icon name="add-outline" size={24} style={{padding: 10}} color={colors.white} />
             </TouchableOpacity>
           ),
         }}
@@ -60,7 +60,7 @@ export default function ListAndSelectClientes() {
             <TouchableOpacity
               style={styles.headerButton}
               onPress={() => navigation.navigate('Menu')}>
-              <Icon name="checkmark-sharp" size={24} color={colors.white} />
+              <Icon name="checkmark-sharp" size={24} style={{padding: 10, marginBottom: 10,}} color={colors.white} />
             </TouchableOpacity>
           ),
         }}
@@ -99,7 +99,7 @@ export default function ListAndSelectClientes() {
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}>
-              <Icon name="arrow-back" size={24} color="#fff" />
+              <Icon name="arrow-back" size={24} style={{padding: 10}} color="#fff" />
             </TouchableOpacity>
           ),
         })}
