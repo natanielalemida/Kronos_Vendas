@@ -28,6 +28,8 @@ export default function ModalFinalizarRequisicao({
     usuario,
   } = useCliente();
 
+  console.log({ProdutosSelecionados})
+
   const handleMountBoyd = () => {
     setFinalizarVenda({
       ValorBruto: parseFloat(calcularTotal()),
@@ -132,11 +134,11 @@ export default function ModalFinalizarRequisicao({
     } else {
       setValorTotal(valor.toFixed(2));
 
-      const novoDesconto = (
-        ((totalSemDesconto - valor) / totalSemDesconto) *
-        100
-      ).toFixed(2);
-      setDesconto(novoDesconto);
+let novoDesconto = ((totalSemDesconto - valor) / totalSemDesconto) * 100;
+if (novoDesconto < 0) novoDesconto = 0;
+setDesconto(Math.round(novoDesconto * 100) / 100);
+
+
       const newArray = ProdutosSelecionados.map(produto => {
         // Calcula o valor do desconto
         const valorDesconto =
@@ -168,6 +170,17 @@ export default function ModalFinalizarRequisicao({
     }, 0).toFixed(2);
   };
 
+  const calcularTotalSemDescontoExibir = () => {
+  const total = ProdutosSelecionados.reduce((acc, item) => {
+    const valorUnitario =
+      item.TaxaDesconto === '0.00' ? item.ValorVendaDesconto : item.ValorVenda;
+
+    return acc + item.Quantidade * valorUnitario;
+  }, 0);
+
+  return (Math.round(total * 100) / 100).toFixed(2);
+};
+
   const porcentagemDesconto = () => {
     const totalBruto = calcularTotalSemDesconto();
 
@@ -177,7 +190,8 @@ export default function ModalFinalizarRequisicao({
       );
     }, 0);
 
-    return (descontoInicial / Number(totalBruto)) * 100;
+    const porcentagem = (descontoInicial / Number(totalBruto)) * 100;
+    return porcentagem < 0 ? 0 : porcentagem;
   };
 
   useEffect(() => {
@@ -214,8 +228,8 @@ export default function ModalFinalizarRequisicao({
             <View style={styles.modalHeader}>
               <View style={styles.centeredContent}>
                 <Text style={styles.labelText}>Valor Bruto:</Text>
-                <Text style={styles.valueText}>
-                  R$ {calcularTotalSemDesconto()}
+                <Text style={styles.valueText}> 
+                  R$ {calcularTotalSemDescontoExibir()}
                 </Text>
               </View>
               <View style={styles.divider} />

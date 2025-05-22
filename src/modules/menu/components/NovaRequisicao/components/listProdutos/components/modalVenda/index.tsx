@@ -141,7 +141,7 @@ export default function ModalVenda({
         <KeyboardAvoidingView behavior="padding" style={styles.modalContent}>
           <Text style={styles.modalTitle}>{selectedProduto?.Descricao}</Text>
           <View style={styles.modalHeader}>
-            <ShowIf condition={canSetAtacado}>
+            <ShowIf condition={canSetAtacado && produto?.VendeProdutoNoAtacado}>
               <View
                 style={{
                   flexDirection: 'row',

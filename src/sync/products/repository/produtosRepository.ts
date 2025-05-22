@@ -46,6 +46,7 @@ export default class ProdutoRepository {
         CodigoProduto: produto.Codigo,
         Descricao: produto.Descricao,
         ValorVenda: produto.ValorVenda,
+        VendeProdutoNoAtacado: produto.VendeProdutoNoAtacado,
         CodigoDeBarras: produto.CodigoDeBarras,
         UnidadeMedida: produto.UnidadeMedida,
         ValorVendaAtacado: produto.ValorVendaAtacado,
