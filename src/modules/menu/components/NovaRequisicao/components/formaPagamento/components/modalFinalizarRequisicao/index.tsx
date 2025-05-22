@@ -134,9 +134,11 @@ export default function ModalFinalizarRequisicao({
     } else {
       setValorTotal(valor.toFixed(2));
 
-let novoDesconto = ((totalSemDesconto - valor) / totalSemDesconto) * 100;
-if (novoDesconto < 0) novoDesconto = 0;
-setDesconto(Math.round(novoDesconto * 100) / 100);
+      const novoDesconto = (
+        ((totalSemDesconto - valor) / totalSemDesconto) *
+        100
+      ).toFixed(2);
+      setDesconto(novoDesconto);
 
 
       const newArray = ProdutosSelecionados.map(produto => {
