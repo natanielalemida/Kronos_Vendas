@@ -49,6 +49,11 @@ export default function useExportPdf() {
       0,
     ).toFixed(2);
 
+        const calculateTotalBrutoText = Pedido?.Itens.reduce(
+    (acc, item) => acc + item.Quantidade * item.ValorVendaDesconto,
+    0,
+  ).toFixed(2);
+
     const calculateTotalLiquido = Pedido?.MeiosPagamentos.reduce(
       (acc, item) => acc + item.ValorRecebido,
       0,
@@ -327,12 +332,14 @@ export default function useExportPdf() {
                                   <td></td>
                                   <td>${item.UnidadeMedida}</td>
                                   <td>${item.Quantidade}</td>
-                                  <td>${item.ValorUnitario.toFixed(2)}</td>
+                                  <td>${item.ValorVendaDesconto.toFixed(2)}</td>
                                   <td>${(
                                     (item.ValorUnitario -
                                       item.ValorVendaDesconto) *
-                                    item.Quantidade
-                                  ).toFixed(2)}</td>
+                                    item.Quantidade > 0 ? (item.ValorUnitario -
+                                      item.ValorVendaDesconto) *
+                                    item.Quantidade.toFixed(2) : '0.00'
+                                  )}</td>
                                   <td>${(
                                     item.ValorVendaDesconto * item.Quantidade
                                   ).toFixed(2)}</td>
@@ -347,7 +354,7 @@ export default function useExportPdf() {
                                   Total Bruto:
                               </p>
                               <p>
-                                  ${calculateTotalBruto}
+                                  ${calculateTotalBrutoText}
                               </p>
                           </div>
                           <div class="spaceBetweenTable">
@@ -358,7 +365,10 @@ export default function useExportPdf() {
                                   ${(
                                     Number(calculateTotalBruto) -
                                     Number(calculateTotalLiquido)
-                                  ).toFixed(2)}
+                                  ) > 0 ? (
+                                    Number(calculateTotalBruto) -
+                                    Number(calculateTotalLiquido)
+                                  ).toFixed(2) : '0.00'}
                               </p>
                           </div>
                           <div class="spaceBetweenTable">

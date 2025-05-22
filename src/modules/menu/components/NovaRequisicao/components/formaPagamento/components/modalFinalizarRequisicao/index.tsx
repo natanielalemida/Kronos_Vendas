@@ -67,7 +67,7 @@ export default function ModalFinalizarRequisicao({
 
     const total = parseFloat(calcularTotal());
     // Cálculo do desconto mínimo
-    const totalBruto = parseFloat(calcularTotalSemDesconto());
+    const totalBruto = parseFloat(valorTotal);
     const descontoMinimo = ((totalBruto - total) / totalBruto) * 100;
 
     if (valor > usuario.DescontoMaximoVenda) {
@@ -84,10 +84,10 @@ export default function ModalFinalizarRequisicao({
     const newArray = ProdutosSelecionados.map(produto => {
       // Calcula o valor do desconto
       const valorDesconto =
-        produto.ValorVenda * (parseFloat(valor.toFixed(2)) / 100);
+        produto.ValorVendaDesconto * (parseFloat(valor.toFixed(2)) / 100);
 
       // Aplica o desconto ao valor original
-      const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
+      const novoValorVendaDesconto = produto.ValorVendaDesconto - valorDesconto;
 
       return {
         ...produto,

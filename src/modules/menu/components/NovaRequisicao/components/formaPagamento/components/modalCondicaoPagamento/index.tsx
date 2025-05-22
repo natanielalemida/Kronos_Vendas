@@ -52,10 +52,14 @@ export default function ModalCondicaoPagamento({
   } = useCliente();
 
   const calcularTotal = () => {
-    return ProdutosSelecionados.reduce(
-      (acc, item) => acc + item.Quantidade * item.ValorVenda,
-      0,
-    ).toFixed(2);
+  const total = ProdutosSelecionados.reduce((acc, item) => {
+    const valorUnitario =
+      item.TaxaDesconto === '0.00' ? item.ValorVendaDesconto : item.ValorVenda;
+
+    return acc + item.Quantidade * valorUnitario;
+  }, 0);
+
+  return (Math.round(total * 100) / 100).toFixed(2);
   };
 
   const handleConfirmPayment = () => {

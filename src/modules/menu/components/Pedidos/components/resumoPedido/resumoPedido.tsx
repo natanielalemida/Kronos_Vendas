@@ -190,26 +190,29 @@ export default function ResumoPedido({navigation}) {
               {produto.Descricao}
             </Text>
             <Text style={{fontWeight: 'bold', color: colors.confirmButton}}>
-              R$ {produto.ValorUnitario.toFixed(2)}
+              R$ {produto.ValorVendaDesconto.toFixed(2)}
             </Text>
           </View>
           <View style={styles.productInfo}>
             <View style={styles.productInfoBlock}>
               <Text style={styles.colorBlack}>DESC</Text>
-              <Text style={styles.colorBlack}>
-                {produto.ValorVendaDesconto !== produto.ValorUnitario
-                  ? (
-                      (produto.ValorUnitario - produto.ValorVendaDesconto) *
-                      produto.Quantidade
-                    ).toFixed(2)
-                  : '0.00'}
-                {produto.ValorVendaDesconto !== produto.ValorUnitario
-                  ? ` (${calcularPorcentagemDesconto(
-                      produto.ValorUnitario,
-                      produto.ValorVendaDesconto,
-                    )}%)`
-                  : ''}
-              </Text>
+{(() => {
+  const descontoUnitario =
+    produto.ValorUnitario - produto.ValorVendaDesconto;
+  const descontoTotal = Math.max(descontoUnitario * produto.Quantidade, 0);
+  const percentual =
+    produto.ValorUnitario > 0
+      ? Math.max((descontoUnitario / produto.ValorUnitario) * 100, 0)
+      : 0;
+
+  return (
+    <Text style={styles.colorBlack}>
+      R$ {descontoTotal.toFixed(2)}
+      {descontoTotal > 0 ? ` (${percentual.toFixed(2)}%)` : ''}
+    </Text>
+  );
+})()}
+
             </View>
             <View style={styles.productInfoBlock}>
               <Text style={styles.colorBlack}>QTD</Text>
@@ -218,7 +221,7 @@ export default function ResumoPedido({navigation}) {
             <View style={styles.productInfoBlock}>
               <Text style={styles.colorBlack}>VLR UN</Text>
               <Text style={styles.colorBlack}>
-                R$ {produto.ValorUnitario.toFixed(2)}
+                R$ {produto.ValorVendaDesconto.toFixed(2)}
               </Text>
             </View>
             <View style={styles.productInfoBlock}>
@@ -252,6 +255,11 @@ export default function ResumoPedido({navigation}) {
 
   const calculateTotalBruto = data?.Itens.reduce(
     (acc, item) => acc + item.Quantidade * item.ValorUnitario,
+    0,
+  ).toFixed(2);
+
+    const calculateTotalBrutoText = data?.Itens.reduce(
+    (acc, item) => acc + item.Quantidade * item.ValorVendaDesconto,
     0,
   ).toFixed(2);
 
@@ -309,27 +317,25 @@ export default function ResumoPedido({navigation}) {
             <View style={styles.totalInfo}>
               <Text style={styles.colorBlack}>Total Bruto</Text>
               <Text style={{fontWeight: 'bold', color: colors.black}}>
-                R$ {calculateTotalBruto}
+                R$ {calculateTotalBrutoText}
               </Text>
             </View>
 
-            <View style={styles.totalInfo}>
-              <Text style={styles.colorBlack}>Desconto:</Text>
-              <Text style={{fontWeight: 'bold', color: colors.black}}>
-                R$
-                {(
-                  Number(calculateTotalBruto) - Number(calculateTotalLiquido)
-                ).toFixed(2)}
-                (
-                {(
-                  ((Number(calculateTotalBruto) -
-                    Number(calculateTotalLiquido)) /
-                    Number(calculateTotalBruto)) *
-                  100
-                ).toFixed(2)}
-                %)
-              </Text>
-            </View>
+<View style={styles.totalInfo}>
+  <Text style={styles.colorBlack}>Desconto:</Text>
+  {(() => {
+    const bruto = Number(calculateTotalBruto);
+    const liquido = Number(calculateTotalLiquido);
+    const desconto = Math.max(bruto - liquido, 0);
+    const percentual = bruto > 0 ? (desconto / bruto) * 100 : 0;
+    return (
+      <Text style={{fontWeight: 'bold', color: colors.black}}>
+        R$ {desconto.toFixed(2)} ({percentual.toFixed(2)}%)
+      </Text>
+    );
+  })()}
+</View>
+
 
             <View style={styles.totalInfo}>
               <Text style={styles.colorBlack}>Total Líquido</Text>
