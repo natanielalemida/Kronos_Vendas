@@ -231,7 +231,7 @@ export default function ModalFinalizarRequisicao({
               <View style={styles.centeredContent}>
                 <Text style={styles.labelText}>Valor Bruto:</Text>
                 <Text style={styles.valueText}> 
-                  R$ {calcularTotalSemDescontoExibir()}
+                  R$ {calcularTotalSemDesconto()}
                 </Text>
               </View>
               <View style={styles.divider} />
