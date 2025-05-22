@@ -184,12 +184,12 @@ export default function NovaRequisicao() {
             </ShowIf>
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text style={{color: colors.black}}>Enderecos:</Text>
+            <Text style={{color: colors.black}}>Endereços:</Text>
             {clienteOnContext?.Enderecos &&
               clienteOnContext?.Enderecos.length > 0 &&
               clienteOnContext?.Enderecos.map(endereco => {
                 return (
-                  <Text style={{color: colors.black}}>
+                  <Text style={{color: colors.black, width: '80%', textAlign: 'right'}} numberOfLines={2} ellipsizeMode='tail'>
                     {endereco.Logradouro} - {endereco.Numero} -{' '}
                     {endereco.Bairro}
                   </Text>
