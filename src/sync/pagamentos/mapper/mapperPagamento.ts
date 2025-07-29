@@ -17,7 +17,7 @@ export default class MapperPagamento {
       Identificador: formaPagamento.Identificador,
       EmissaoCupomFiscalObrigatoria:
         formaPagamento.EmissaoCupomFiscalObrigatoria,
-      UtilizaCreditoDevolucao: formaPagamento.UtilizaCreditoDevolucao,
+      UtilizaCreditoDevolucao: formaPagamento.UtilizaCreditoDevolucao ? formaPagamento.UtilizaCreditoDevolucao : false,
       SolicitarDadosOperadoraBandeiraCartao:
         formaPagamento.SolicitarDadosOperadoraBandeiraCartao,
       IsPrazo: formaPagamento.IsPrazo,
