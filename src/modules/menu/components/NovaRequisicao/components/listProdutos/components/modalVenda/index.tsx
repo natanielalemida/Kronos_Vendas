@@ -95,9 +95,11 @@ export default function ModalVenda({
 
       // ✅ Atualiza o valor do produto para o novo valor aumentado
       if (isAtacado) {
-        produto.ValorVendaAtacado = valorNumerico;
+        selectedProduto!.ValorVendaAtacado = valorNumerico
+        produto!.ValorVendaAtacado = valorNumerico;
       } else {
-        produto.ValorVenda = valorNumerico;
+        selectedProduto!.ValorVenda = valorNumerico
+        produto!.ValorVenda = valorNumerico;
       }
     } else if (valorNumerico < total - descontoMaximo) {
       setValorVenda((total - descontoMaximo).toFixed(2));
@@ -266,9 +268,28 @@ export default function ModalVenda({
                 <TouchableOpacity
                   style={styles.confirmButton}
                   onPress={() => {
+
+                    const valorTotal = parseFloat(valorVenda)
+
+                   
+
                     const valorProduto = isAtacado
                       ? selectedProduto?.ValorVendaAtacado.toFixed(2)
                       : selectedProduto?.ValorVenda.toFixed(2);
+
+                       if(valorTotal > parseFloat(valorProduto ?? '0')) {
+                                            addQuantidadeAndObsToProduct(
+                      selectedProduto as ProdutoDto,
+                      quantidade,
+                      observacao,
+                      valorVenda,
+                      valorTotal,
+                      desconto,
+                    );
+                    return
+                       }
+
+
 
                     addQuantidadeAndObsToProduct(
                       selectedProduto as ProdutoDto,

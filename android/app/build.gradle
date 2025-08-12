@@ -79,8 +79,8 @@ android {
         applicationId "com.kronos_vendas"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName "1.1.7"
+        versionCode 25
+        versionName "1.2.0"
     }
     signingConfigs {
         release {

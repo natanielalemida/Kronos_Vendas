@@ -53,7 +53,7 @@ export default function ModalCondicaoPagamento({
 
   const calcularTotal = () => {
     return ProdutosSelecionados.reduce(
-      (acc, item) => acc + item.Quantidade * item.ValorVenda,
+      (acc, item) => acc + item.Quantidade * item.ValorVendaDesconto,
       0,
     ).toFixed(2);
   };
