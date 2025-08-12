@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   },
   settingsIconTop: {
     position: 'absolute',
-    top: height * 0.06, // equivalente a 50
+    top: height * 0.08, // equivalente a 50
     right: width * 0.06, // equivalente a 25
     zIndex: 1,
   },

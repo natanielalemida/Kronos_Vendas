@@ -298,7 +298,7 @@ export default function Login({navigation}) {
         </View>
       </ShowIf>
 
-      <Text style={styles.arcSolution}>Arc Solutions - 2024</Text>
+      <Text style={styles.arcSolution}>Arc Solution - {new Date().getFullYear()}</Text>
     </KeyboardAvoidingView>
   );
 }
