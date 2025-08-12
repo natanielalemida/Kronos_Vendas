@@ -71,8 +71,11 @@ export default function ModalCondicaoPagamento({
     const valorTotalMenosValorPago = valorTotal - valorPago;
     const valorTotalPago = valorPagamento.replace(/[^0-9.]+/g, '');
 
-    const valorNumber = parseFloat(valorTotalPago);
+    const valorNumberTest = parseFloat(valorTotalPago);
 
+    const valorNumber = valorNumberTest > valorTotalMenosValorPago ? valorTotalMenosValorPago : valorNumberTest;
+
+    
     setFormaPagameto((prevValue = []) => {
       // Encontra o índice da forma de pagamento que tem o mesmo id
       const existingFormaPagamentoIndex = prevValue.findIndex(

@@ -37,21 +37,6 @@ export default function ModalFinalizarRequisicao({
       ValorTotal: parseFloat(valorTotal),
       Observacao,
     });
-    // const newArray = ProdutosSelecionados.map(produto => {
-    //   // Calcula o valor do desconto
-    //   const valorDesconto = produto.ValorVenda * (parseFloat(desconto) / 100);
-
-    //   // Aplica o desconto ao valor original
-    //   const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
-
-    //   return {
-    //     ...produto,
-    //     ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
-    //   };
-    // });
-
-    // setProdutosSelecionados(newArray);
-
     setIsModalActive(false);
   };
 
@@ -82,16 +67,14 @@ export default function ModalFinalizarRequisicao({
     setValorTotal((totalBruto - taxa).toFixed(2));
 
     const newArray = ProdutosSelecionados.map(produto => {
-      // Calcula o valor do desconto
       const valorDesconto =
         produto.ValorVenda * (parseFloat(valor.toFixed(2)) / 100);
 
-      // Aplica o desconto ao valor original
       const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
 
       return {
         ...produto,
-        ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+        ValorVendaDesconto: novoValorVendaDesconto,
       };
     });
 
@@ -116,17 +99,15 @@ export default function ModalFinalizarRequisicao({
       setValorTotal((totalSemDesconto - totalMaximoDesconto).toFixed(2));
       setDesconto(usuario?.DescontoMaximoVenda.toFixed(2));
       const newArray = ProdutosSelecionados.map(produto => {
-        // Calcula o valor do desconto
         const valorDesconto =
           produto.ValorVenda *
           (parseFloat(usuario?.DescontoMaximoVenda.toFixed(2)) / 100);
 
-        // Aplica o desconto ao valor original
         const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
 
         return {
           ...produto,
-          ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+          ValorVendaDesconto: novoValorVendaDesconto,
         };
       });
 
@@ -140,18 +121,15 @@ export default function ModalFinalizarRequisicao({
       ).toFixed(2);
       setDesconto(novoDesconto);
 
-
       const newArray = ProdutosSelecionados.map(produto => {
-        // Calcula o valor do desconto
         const valorDesconto =
           produto.ValorVenda * (parseFloat(novoDesconto) / 100);
 
-        // Aplica o desconto ao valor original
         const novoValorVendaDesconto = produto.ValorVenda - valorDesconto;
 
         return {
           ...produto,
-          ValorVendaDesconto: novoValorVendaDesconto, // Atualiza o valor com o desconto aplicado
+          ValorVendaDesconto: novoValorVendaDesconto,
         };
       });
 
@@ -173,15 +151,15 @@ export default function ModalFinalizarRequisicao({
   };
 
   const calcularTotalSemDescontoExibir = () => {
-  const total = ProdutosSelecionados.reduce((acc, item) => {
-    const valorUnitario =
-      item.TaxaDesconto === '0.00' ? item.ValorVendaDesconto : item.ValorVenda;
+    const total = ProdutosSelecionados.reduce((acc, item) => {
+      const valorUnitario =
+        item.TaxaDesconto === '0.00' ? item.ValorVendaDesconto : item.ValorVenda;
 
-    return acc + item.Quantidade * valorUnitario;
-  }, 0);
+      return acc + item.Quantidade * valorUnitario;
+    }, 0);
 
-  return (Math.round(total * 100) / 100).toFixed(2);
-};
+    return (Math.round(total * 100) / 100).toFixed(2);
+  };
 
   const porcentagemDesconto = () => {
     const totalBruto = calcularTotalSemDesconto();
@@ -240,15 +218,23 @@ export default function ModalFinalizarRequisicao({
             <View style={styles.modalHeader}>
               <View style={styles.centeredContent}>
                 <Text style={styles.labelText}>Desconto:</Text>
-                <TextInput
-                  style={styles.valueText}
-                  value={desconto}
-                  onChangeText={setDesconto}
-                  onEndEditing={handleDescontoChange}
-                />
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <TextInput
+                    style={[styles.valueText, {width: 50}]}
+                    value={desconto}
+                    onChangeText={setDesconto}
+                    onEndEditing={handleDescontoChange}
+                    keyboardType="numeric"
+                  />
+                  <Text style={[styles.valueText, {paddingHorizontal: 5}]}>%</Text>
+                  <Text style={styles.descontoReaisText}>
+                    (R$ {(Number(calcularTotalSemDesconto()) * Number(desconto) / 100).toFixed(2)})
+                  </Text>
+                </View>
               </View>
               <View style={styles.divider} />
             </View>
+            
             <View style={styles.modalHeader}>
               <View style={styles.centeredContent}>
                 <Text style={styles.labelTextInput}>Valor Total:</Text>
@@ -386,6 +372,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
     fontWeight: '500',
+  },
+  descontoReaisText: {
+    fontSize: 14,
+    color: 'gray',
   },
   labelTextInput: {
     color: colors.black,

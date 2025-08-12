@@ -79,6 +79,10 @@ export default function Pedidos() {
   });
 
   const handleSelection = (item: PedidoSearchDto) => {
+    if (!!item.Codigo) {
+      return;
+    }
+
     const index = pedidosSelecionados.findIndex(
       pedido => pedido.id === item.id,
     );
@@ -127,8 +131,7 @@ export default function Pedidos() {
         }),
       );
 
-
-     const haveInvalid = result.find((value) => value === !value)
+      const haveInvalid = result.find(value => value === !value);
 
       if (!haveInvalid) return;
 

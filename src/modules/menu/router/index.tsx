@@ -25,6 +25,9 @@ import Exit from './exit';
 import {ShowIf} from '../../components/showIf';
 import ListaProdutosResumo from '../components/Produtos/router/routerProdutos';
 
+// pega versão do package.json
+import {version} from '../../../../package.json';
+
 const Drawer = createDrawerNavigator();
 
 function CustomDrawerContent(props) {
@@ -35,6 +38,8 @@ function CustomDrawerContent(props) {
       contentContainerStyle={{paddingTop: 0, paddingBottom: 35}}>
       <View style={styles.userBar}>
         <View>
+          
+        <Text style={styles.versionText}>Versão {version}</Text>
           <Text style={styles.userTextPhoto}>{usuario?.Login}</Text>
           <Text style={styles.userText}>Kronos vendas</Text>
         </View>
@@ -55,6 +60,7 @@ function CustomDrawerContent(props) {
           />
         </View>
       </View>
+
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
   );
@@ -124,7 +130,6 @@ export default function Menu() {
             headerShown: false,
           })}
         />
-
         <Drawer.Screen
           name="Produtos"
           component={ListaProdutosResumo}
@@ -175,7 +180,7 @@ export default function Menu() {
             drawerIcon: ({color, size}) => (
               <Icon name="exit-outline" color={color} style={{paddingBottom: 1}} size={size} />
             ),
-            drawerLabel: 'Sair', // Adiciona margem inferior
+            drawerLabel: 'Sair',
           })}
         />
       </Drawer.Navigator>
@@ -196,21 +201,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    backgroundColor: colors.arcGreen, // Cor de fundo azul
+    backgroundColor: colors.arcGreen,
     padding: 16,
     minHeight: '14%',
   },
   userText: {
-    color: colors.white, // Cor do texto branca
+    color: colors.white,
     fontWeight: 'bold',
   },
   userTextPhoto: {
-    color: colors.white, // Cor do texto branca
+    color: colors.white,
     fontWeight: 'bold',
     fontSize: 16,
   },
   headerButton: {
     padding: 10,
-    marginRight: 16, // Espaçamento entre o ícone e a borda direita
+    marginRight: 16,
+  },
+  versionContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  versionText: {
+    color: colors.white,
+    fontSize: 12,
+    opacity: 0.7,
   },
 });

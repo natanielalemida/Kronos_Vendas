@@ -76,6 +76,10 @@ export default function PedidosCliente() {
   });
 
   const handleSelection = (item: PedidoSearchDto) => {
+    if (!!item.Codigo) {
+      return;
+    }
+
     const index = pedidosSelecionados.findIndex(
       pedido => pedido.id === item.id,
     );
