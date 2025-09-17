@@ -14,3 +14,9 @@ export type MunicipioResultado = {
   Status: number;
   Mensagens: string[];
 };
+
+export type MunicipioVersionDTO = {
+  Codigo: number;
+  Versão: number;
+  TipoRecurso: number;
+}

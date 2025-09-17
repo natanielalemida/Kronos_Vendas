@@ -46,6 +46,7 @@ import {
 import {createProductsImageMigration} from '../../database/migration/createProducImageMigration';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../styles';
+import { createMunicipioVersaoMigrations } from '../../database/migration/createMunicipioVersaoMigration';
 
 const {width, height} = Dimensions.get('window');
 
@@ -150,6 +151,7 @@ export default function Login({navigation}) {
     createUsuariosMigration();
     createPrivilegiosMigration();
     createEmpresaJson();
+    createMunicipioVersaoMigrations()
   }, []);
 
   // UseEffect para adicionar listeners ao teclado

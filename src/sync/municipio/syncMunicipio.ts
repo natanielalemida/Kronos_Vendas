@@ -3,6 +3,7 @@ import ApiInstace from '../../api/ApiInstace';
 import {UsuarioDto} from '../../modules/login/hooks/type';
 import MunicipioService from './service/municipioService';
 import {MunicipioDto, MunicipioResultado} from './type/municipioType';
+import VersaoMunicipioRepository from './repository/versaoMunicipioRepository';
 
 export default class SincronizarMunicipios {
   private usuario: UsuarioDto;
@@ -34,16 +35,55 @@ export default class SincronizarMunicipios {
   }
 
   async runSync() {
-    const data = await ApiInstace.openUrl({
+    const municipioVersao = new VersaoMunicipioRepository();
+    const MunicipioVersion = await ApiInstace.openUrl({
       data: undefined,
       method: 'get',
-      endPoint: 'arc/endereco/municipio',
+      endPoint: 'arc/atualizacao/recurso/tipo?tipo=7',
       headers: {
         Auth: this.usuario.Hash,
         Empresa: this.organizationCode,
       },
     });
 
-    await this.verify(data);
+    if (MunicipioVersion.Status === 1) {
+      const versaoMunicipioSinc = MunicipioVersion.Resultado.Versao;
+      const versaoAtual = await municipioVersao.getAll();
+
+      if (!versaoAtual) {
+        await municipioVersao.save(MunicipioVersion.Resultado);
+                const data = await ApiInstace.openUrl({
+          data: undefined,
+          method: 'get',
+          endPoint: 'arc/endereco/municipio',
+          headers: {
+            Auth: this.usuario.Hash,
+            Empresa: this.organizationCode,
+          },
+        });
+
+        await this.verify(data);
+        return
+      }
+
+      if (Number(versaoMunicipioSinc) > Number(versaoAtual)) {
+        await municipioVersao.save(MunicipioVersion.Resultado);
+
+        const data = await ApiInstace.openUrl({
+          data: undefined,
+          method: 'get',
+          endPoint: 'arc/endereco/municipio',
+          headers: {
+            Auth: this.usuario.Hash,
+            Empresa: this.organizationCode,
+          },
+        });
+
+        await this.verify(data);
+      } else {
+        console.log('caiu aqui')
+        // nao fazer nada
+      }
+    }
   }
 }
