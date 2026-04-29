@@ -1,9 +1,10 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
 
 export const createFormaPagamentoTable = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('formaPagamento'))) {
-      await knexConfig.schema.createTable('formaPagamento', table => {
+      await knexConfig.schema.createTable('formaPagamento', (table: Knex.TableBuilder) => {
         table.increments('id').primary();
         table.integer('Codigo').notNullable();
         table.string('Descricao').notNullable();

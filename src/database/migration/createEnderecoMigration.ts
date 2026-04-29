@@ -1,9 +1,10 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
 
 export const createEnderecoTable = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('endereco'))) {
-      await knexConfig.schema.createTable('endereco', table => {
+      await knexConfig.schema.createTable('endereco', (table: Knex.TableBuilder) => {
         table.increments('id').primary();
         table.integer('Codigo').nullable().defaultTo(0).index();
         table.integer('CodigoPessoa').nullable().index();

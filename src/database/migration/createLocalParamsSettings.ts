@@ -1,9 +1,10 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
 
 export const createLocalParamsSettings = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('parametrosLocais'))) {
-      await knexConfig.schema.createTable('parametrosLocais', table => {
+      await knexConfig.schema.createTable('parametrosLocais', (table: Knex.TableBuilder) => {
         table.increments('id').primary().index();
         table.string('Descricao').nullable();
         table.string('Valor').nullable();

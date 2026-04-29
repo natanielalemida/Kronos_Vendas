@@ -1,21 +1,20 @@
+import React from 'react';
 import {ActivityIndicator, Modal, View} from 'react-native';
-import {LoadingPropsType} from './type';
+import {LoadingModalProps} from '@/shared/types';
+import {colors} from '@/modules/styles';
+import {loadingStyles} from './loading.styles';
 
-export default function Loading({isModalLoadingActive}: LoadingPropsType) {
+export function Loading({isModalLoadingActive}: LoadingModalProps) {
   return (
     <Modal
       statusBarTranslucent
       transparent={true}
       visible={isModalLoadingActive}>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <ActivityIndicator size="large" color="#00ff00" />
+      <View style={loadingStyles.overlay}>
+        <ActivityIndicator size="large" color={colors.arcGreenNeon} />
       </View>
     </Modal>
   );
 }
+
+export default Loading;

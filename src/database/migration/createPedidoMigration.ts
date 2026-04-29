@@ -1,9 +1,10 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
 
 export const createPedidoTable = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('pedido'))) {
-      await knexConfig.schema.createTable('pedido', table => {
+      await knexConfig.schema.createTable('pedido', (table: Knex.TableBuilder) => {
         table.increments('id').primary();
         table.integer('Codigo').nullable().index();
         table.date('DataEmissao').notNullable();

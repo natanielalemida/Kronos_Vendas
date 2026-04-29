@@ -1,158 +1,68 @@
-import axios, {AxiosInstance} from 'axios';
-import {SettingsRepository} from '../modules/login/components/selectHost/repository';
-import {Alert} from 'react-native';
 import {OpenUrlFirstTimeProps} from './type';
-import {checkInternetConnection} from './checkConnection';
-import {useCliente} from '../modules/menu/components/Clientes/context/clientContext';
+import {ApiClientService} from '@/services/api/services/api-client.service';
 
 class ApiService {
-  private settingsRepository = new SettingsRepository();
+  private readonly apiClientService = new ApiClientService();
 
-  private async createAxiosInstance(): Promise<AxiosInstance | null> {
-    try {
-      const isConnected = checkInternetConnection();
-  
-      if (!isConnected) {
-        Alert.alert('Sem conexão com a internet');
-        return null;
-      }
-  
-      const data = await this.settingsRepository.get();
-      if (!data) {
-        return null;
-      }
-  
-      return axios.create({
-        baseURL: `http://${data.host}/`,
-        timeout: 800000
-      });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
-
-  private async createAxiosInstanceTimer(): Promise<AxiosInstance | null> {
-    try {
-      const isConnected = checkInternetConnection();
-  
-      if (!isConnected) {
-        Alert.alert('Sem conexão com a internet');
-        return null;
-      }
-  
-      const data = await this.settingsRepository.get();
-      if (!data) {
-        return null;
-      }
-  
-      return axios.create({
-        baseURL: `http://${data.host}/`,
-        timeout: 8000
-      });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
-
-  private async createAxiosInstanceLocalHost(
+  public async openLocalUrl<TResponse = unknown>(
     host: string,
-  ): Promise<AxiosInstance | null> {
+  ): Promise<TResponse | undefined> {
     try {
-      const isConnected = checkInternetConnection();
-
-      if (!isConnected) {
-        Alert.alert('Sem conexão com a internet');
-        return null;
-      }
-
-      return axios.create({
-        baseURL: `http://${host}/`,
-        timeout: 8000
-      });
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível configurar o Axios');
-      console.error(error);
-      return null;
-    }
-  }
-
-  public async openLocalUrl(host: string): Promise<any> {
-    const axiosInstance = await this.createAxiosInstanceLocalHost(host);
-    if (!axiosInstance) {
-      return undefined;
-    }
-
-    try {
-      const response = await axiosInstance({
-        url: 'arc/empresa/resumo',
-        method: 'GET',
-      });
-      return response.data;
+      return (await this.apiClientService.validateConnection(host)) as
+        | TResponse
+        | undefined;
     } catch (error) {
       console.error(error);
       return undefined;
     }
   }
 
-  public async openUrl(props: OpenUrlFirstTimeProps): Promise<any> {
-    const axiosInstance = await this.createAxiosInstance();
-    if (!axiosInstance) {
-      return;
-    }
-
+  public async openUrl<TResponse = unknown, TBody = unknown>(
+    props: OpenUrlFirstTimeProps<TBody>,
+  ): Promise<TResponse | undefined> {
     try {
-      const response = await axiosInstance({
-        method: props.method,
-        url: props.endPoint,
-        data: props.data,
+      return await this.apiClientService.request<TResponse, TBody>({
+        body: props.data,
+        endpoint: props.endPoint ?? '',
         headers: props.headers,
+        method: props.method,
       });
-      return response.data;
     } catch (error) {
       console.error(error);
-      throw error; // Re-throwing to let the caller handle the error if needed
-    }
-  }
-  public async openUrlResult(props: OpenUrlFirstTimeProps): Promise<any> {
-    const axiosInstance = await this.createAxiosInstance();
-    if (!axiosInstance) {
-      return;
-    }
-
-    try {
-      const response = await axiosInstance({
-        method: props.method,
-        url: props.endPoint,
-        data: props.data,
-        headers: props.headers,
-      });
-      return response;
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível realizar a requisição');
-      console.error(error);
-      throw error; // Re-throwing to let the caller handle the error if needed
+      throw error;
     }
   }
 
-    public async openUrlTimer(props: OpenUrlFirstTimeProps): Promise<any> {
-    const axiosInstance = await this.createAxiosInstanceTimer();
-    if (!axiosInstance) {
-      return;
-    }
-
+  public async openUrlResult<TResponse = unknown, TBody = unknown>(
+    props: OpenUrlFirstTimeProps<TBody>,
+  ) {
     try {
-      const response = await axiosInstance({
-        method: props.method,
-        url: props.endPoint,
-        data: props.data,
+      return await this.apiClientService.requestResponse<TResponse, TBody>({
+        body: props.data,
+        endpoint: props.endPoint ?? '',
         headers: props.headers,
+        method: props.method,
       });
-      return response.data;
     } catch (error) {
       console.error(error);
-      throw error; // Re-throwing to let the caller handle the error if needed
+      throw error;
+    }
+  }
+
+  public async openUrlTimer<TResponse = unknown, TBody = unknown>(
+    props: OpenUrlFirstTimeProps<TBody>,
+  ): Promise<TResponse | undefined> {
+    try {
+      return await this.apiClientService.request<TResponse, TBody>({
+        body: props.data,
+        endpoint: props.endPoint ?? '',
+        headers: props.headers,
+        method: props.method,
+        timeout: this.apiClientService.getShortTimeout(),
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   }
 }

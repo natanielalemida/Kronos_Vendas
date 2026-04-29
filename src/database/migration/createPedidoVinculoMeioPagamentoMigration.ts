@@ -1,3 +1,4 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
 
 export const createPedidoVinculoMeioPagamentoTable = async () => {
@@ -5,7 +6,7 @@ export const createPedidoVinculoMeioPagamentoTable = async () => {
     if (!(await knexConfig.schema.hasTable('PedidoVinculoMeioPagamento'))) {
       await knexConfig.schema.createTable(
         'PedidoVinculoMeioPagamento',
-        table => {
+        (table: Knex.TableBuilder) => {
           table.increments('id').primary();
           table.integer('CodigoPedido').notNullable().index();
           table.integer('CodigoFormaPagamento').notNullable().index();

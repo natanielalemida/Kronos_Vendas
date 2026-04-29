@@ -1,16 +1,21 @@
 import React, {forwardRef} from 'react';
-import {TextInput, StyleSheet, TextInputProps} from 'react-native';
+import {TextInput} from 'react-native';
 import {colors} from '../../styles';
-
-interface CustomTextInputProps extends TextInputProps {
-  width?: string | number;
-}
+import {
+  customTextInputStyles,
+  getCustomTextInputWidthStyle,
+} from './customTextInput.styles';
+import {CustomTextInputProps} from './customTextInput.types';
 
 const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
-  ({width = '100%', ...props}, ref) => {
+  ({width = '100%', style, ...props}, ref) => {
     return (
       <TextInput
-        style={{width}}
+        style={[
+          customTextInputStyles.input,
+          getCustomTextInputWidthStyle(width),
+          style,
+        ]}
         {...props}
         ref={ref}
         placeholderTextColor={colors.black}
@@ -18,5 +23,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
     );
   },
 );
+
+CustomTextInput.displayName = 'CustomTextInput';
 
 export default CustomTextInput;

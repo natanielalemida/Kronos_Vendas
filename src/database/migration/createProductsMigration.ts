@@ -1,9 +1,10 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
 
 export const createProductsMigration = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('produtos'))) {
-      await knexConfig.schema.createTable('produtos', table => {
+      await knexConfig.schema.createTable('produtos', (table: Knex.TableBuilder) => {
         table.increments('id').primary();
         table.integer('Codigo').notNullable().index();
         table.string('Referencia').notNullable().defaultTo('');

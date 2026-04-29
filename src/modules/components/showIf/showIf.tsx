@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, ViewStyle} from 'react-native';
+import {View} from 'react-native';
 import {ShowIfProps} from './type';
 
 export function ShowIf({condition, children, style}: ShowIfProps) {

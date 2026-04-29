@@ -1,79 +1,187 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🚀 Kronos Vendas
 
-# Getting Started
+Refatoração completa do app **Kronos Vendas** saindo de **React Native CLI** para uma base moderna com **Expo**, **EAS Build** e **EAS Update**.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+Este repositório está em transição. O app legado ainda existe, mas a arquitetura nova já começou a ser formalizada para que a migração aconteça com menos risco, mais previsibilidade e menos retrabalho.
 
-## Step 1: Start the Metro Server
+## 📌 Objetivos da refatoração
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+- Migrar o bootstrap do app para **Expo**
+- Adotar **EAS Update** com controle explícito de runtime
+- Reorganizar o projeto por **domínio de negócio**
+- Padronizar a base para trabalho assistido por IA
+- Reduzir acoplamento entre tela, regra de negócio e integração
+- Remover arquivos gerados, código morto e dependências desnecessárias
+- Criar uma documentação forte o suficiente para guiar a refatoração inteira
 
-To start Metro, run the following command from the _root_ of your React Native project:
+## 🧭 Status atual
 
-```bash
-# using npm
-npm start
+- O projeto original ainda roda como **React Native CLI**
+- A migração para Expo foi **iniciada estruturalmente**
+- O `App.tsx` foi simplificado e a composição principal foi movida para `src/app`
+- Foi criada uma base de documentação para IA, arquitetura e plano de migração
+- Foi adicionada uma configuração inicial de **Expo + EAS Update**
+- Um artefato gerado (`android/app/src/main/assets/index.android.bundle`) foi removido do versionamento
 
-# OR using Yarn
-yarn start
+## 🏗️ Arquitetura alvo
+
+Baseada no documento [kronos-vendas-frontend-architecture.html](/Users/natan/Downloads/kronos-vendas-frontend-architecture.html), a arquitetura alvo do projeto passa a seguir estes princípios:
+
+- **Expo** como base do runtime, build, plugins e assets
+- **EAS Build** para binários
+- **EAS Update** para OTA
+- **Feature-first architecture**
+- **TanStack Query** para estado remoto
+- **Zustand** para estado local/global
+- **React Hook Form + Zod** para formulários
+- **Design system centralizado**
+- **Inglês no código**, português apenas no contrato com a API
+
+## 🗂️ Estrutura desejada
+
+```text
+src/
+├── app/
+│   ├── navigation/
+│   └── providers/
+├── modules/
+│   ├── auth/
+│   ├── customers/
+│   ├── orders/
+│   ├── products/
+│   ├── reports/
+│   └── settings/
+├── shared/
+│   ├── config/
+│   ├── theme/
+│   ├── ui/
+│   ├── lib/
+│   ├── hooks/
+│   ├── types/
+│   └── utils/
+└── services/
 ```
 
-## Step 2: Start your Application
+## 🧱 O que já foi criado nesta fase
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+- `src/app/AppRoot.tsx`
+- `src/app/providers/AppProviders.tsx`
+- `src/app/navigation/AppRootNavigator.tsx`
+- `src/app/navigation/AppVersionBadge.tsx`
+- `src/shared/config/appVersion.ts`
+- `src/shared/theme/*`
+- `app.config.ts`
+- `AGENTS.md`
+- `docs/refactor/expo-migration-roadmap.md`
 
-r### For Android
+## 🤖 Regras para IA
 
-```bash
-# using npm
-npm run android
+O arquivo [AGENTS.md](/Users/natan/Documents/Kronos_Vendas/AGENTS.md) é a fonte principal para orientar IA durante a refatoração.
 
-# OR using Yarn
-yarn android
-```
+Resumo rápido:
 
-### For iOS
+- código em inglês
+- UI em `.tsx` com foco em renderização
+- regra de negócio fora da tela
+- `styles.ts` para estilos por tela
+- domínio isolado por módulo
+- nada de API direta em componente visual
+- nada de inventar token visual na feature
+- toda limpeza precisa ser rastreável
 
-```bash
-# using npm
-npm run ios
+## 📚 Documentos importantes
 
-# OR using Yarn
-yarn ios
-```
+- Arquitetura base: [kronos-vendas-frontend-architecture.html](/Users/natan/Downloads/kronos-vendas-frontend-architecture.html)
+- Guia para IA: [AGENTS.md](/Users/natan/Documents/Kronos_Vendas/AGENTS.md)
+- Roadmap de migração: [docs/refactor/expo-migration-roadmap.md](/Users/natan/Documents/Kronos_Vendas/docs/refactor/expo-migration-roadmap.md)
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+## 🔄 Estratégia de migração
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+### 1. Foundation
 
-## Step 3: Modifying your App
+- centralizar bootstrap
+- criar providers
+- criar tema/tokens
+- preparar Expo config
+- preparar EAS config
 
-Now that you have successfully run the app, let's modify it.
+### 2. Infra
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+- introduzir TanStack Query
+- introduzir Zustand
+- mapear libs nativas atuais para equivalentes Expo ou Dev Build
+- definir persistência offline e banco local
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+### 3. Refatoração por domínio
 
-## Congratulations! :tada:
+- `login` → `auth`
+- `Clientes` → `customers`
+- `Pedidos` + `NovaRequisicao` → `orders`
+- `Produtos` → `products`
+- `Configuracoes` → `settings`
+- `sync` → `sync/offline`
 
-You've successfully run and modified your React Native App. :partying_face:
+### 4. Limpeza
 
-### Now what?
+- remover arquivos gerados
+- remover bundles commitados
+- eliminar dependências não usadas
+- remover duplicações
+- remover nomenclatura em português do frontend
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+## 📦 Expo + OTA
 
-# Troubleshooting
+A configuração inicial de Expo foi centralizada em [app.config.ts](/Users/natan/Documents/Kronos_Vendas/app.config.ts).
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+Direção adotada nesta fase:
 
-# Learn More
+- `runtimeVersion` com política `fingerprint`
+- `updates.enabled = true`
+- `fallbackToCacheTimeout = 0`
+- suporte a canais `development`, `preview` e `production`
 
-To learn more about React Native, take a look at the following resources:
+Motivo: durante a migração teremos alterações frequentes em runtime nativo e queremos reduzir o risco de publicar OTA incompatível com builds antigos.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 🧪 Como vamos validar a migração
+
+- lint por fatia migrada
+- teste manual por domínio
+- smoke test de navegação
+- validação de sync/offline
+- validação de geração/compartilhamento de PDF
+- validação de autenticação e biometria
+- validação de build de desenvolvimento e build preview
+
+## 🧹 Limpeza já identificada
+
+- remover bundle Android gerado do repositório
+- revisar `android/` e `ios/` quando o projeto passar a usar prebuild/dev build
+- revisar dependências nativas antigas
+- mapear arquivos e componentes duplicados
+
+## ⚠️ Pontos de atenção da migração
+
+- o app atual usa várias libs com dependência nativa
+- algumas delas podem permanecer via **Expo Dev Build**
+- outras devem migrar para equivalentes Expo
+- a camada de banco local e sync offline precisa ser migrada com cuidado
+- a troca de runtime não deve acontecer misturando cleanup grande com refactor funcional no mesmo passo
+
+## 🛠️ Próximos passos recomendados
+
+1. Instalar e alinhar a base Expo no `package.json`
+2. Introduzir `expo-router` ou consolidar `React Navigation` dentro de `src/app/navigation`
+3. Adicionar TanStack Query e Zustand
+4. Mapear todas as libs nativas para `keep`, `replace`, `remove`
+5. Migrar primeiro o domínio `auth`
+6. Migrar depois `orders`, que hoje concentra boa parte da complexidade
+
+## 💚 Meta desta refatoração
+
+Chegar a uma base em que:
+
+- a arquitetura fique previsível
+- o código fique mais fácil de manter
+- a IA consiga atuar sem bagunçar o projeto
+- atualizações OTA possam ser feitas com segurança
+- o time consiga evoluir o app sem depender de remendos locais

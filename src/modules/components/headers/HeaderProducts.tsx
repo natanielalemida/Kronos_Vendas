@@ -1,22 +1,8 @@
+import React from 'react';
+import {Ionicons} from '@expo/vector-icons';
 import {Text, TouchableOpacity, View} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {colors} from '../../styles';
-
-type HeaderProps = {
-  label: string;
-  leftIcon?: string;
-  leftColor?: string;
-  leftSize?: number;
-  rightColor?: string;
-  rightIcon?: string;
-  rightSize?: number;
-  rightColor2?: string;
-  rightIcon2?: string;
-  rightSize2?: number;
-  onPressLeftIcon?: () => void;
-  onPressRightIcon?: () => void;
-  onPressRightIcon2?: () => void;
-};
+import {headerProductsStyles} from './HeaderProducts.styles';
+import {HeaderProductsProps} from './HeaderProducts.types';
 
 export function HeaderProducts({
   label,
@@ -32,68 +18,38 @@ export function HeaderProducts({
   onPressLeftIcon,
   onPressRightIcon,
   onPressRightIcon2,
-}: HeaderProps) {
+}: HeaderProductsProps) {
   return (
-    <View
-      style={{
-        backgroundColor: colors.arcGreen,
-        alignItems: 'flex-end',
-        flexDirection: 'row',
-        height: '11%',
-        justifyContent: 'space-between',
-        paddingTop: 25,
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        width: '100%',
-      }}>
+    <View style={headerProductsStyles.container}>
       {leftIcon && (
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
+        <View style={headerProductsStyles.leftContainer}>
           <TouchableOpacity
             onPress={onPressLeftIcon}
-            style={{paddingRight: 15, paddingTop: 1}}>
-            <Icon
-              name={leftIcon}
-              size={leftSize}
-              color={leftColor}
-              onPress={onPressLeftIcon}
-            />
+            style={headerProductsStyles.leftButton}>
+            <Ionicons name={leftIcon} size={leftSize} color={leftColor} />
           </TouchableOpacity>
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 18,
-              fontWeight: '500',
-            }}>
-            {label}
-          </Text>
+          <Text style={headerProductsStyles.label}>{label}</Text>
         </View>
       )}
-      <View style={{justifyContent: 'flex-end', flexDirection: 'row'}}>
+      <View style={headerProductsStyles.rightContainer}>
         {rightIcon2 && (
           <TouchableOpacity onPress={onPressRightIcon2}>
-            <Icon
-              onPress={onPressRightIcon2}
+            <Ionicons
               name={rightIcon2}
               color={rightColor2}
               size={rightSize2}
-              style={{marginTop: 5, paddingRight: 15}}
+              style={headerProductsStyles.rightIcon}
             />
           </TouchableOpacity>
         )}
 
         {rightIcon && (
           <TouchableOpacity onPress={onPressRightIcon}>
-            <Icon
-              onPress={onPressRightIcon}
+            <Ionicons
               name={rightIcon}
               color={rightColor}
               size={rightSize}
-              style={{marginTop: 5, paddingRight: 15}}
+              style={headerProductsStyles.rightIcon}
             />
           </TouchableOpacity>
         )}

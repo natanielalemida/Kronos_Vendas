@@ -1,9 +1,10 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
   
   export const createProductsImageMigration = async () => {
     try {
       if (!(await knexConfig.schema.hasTable('produto_imagem'))) {
-        await knexConfig.schema.createTable('produto_imagem', table => {
+        await knexConfig.schema.createTable('produto_imagem', (table: Knex.TableBuilder) => {
             table.increments('id').primary().index();
             table.integer('Codigo').notNullable().index();
             table.integer('CodigoProduto').notNullable();

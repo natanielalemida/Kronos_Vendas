@@ -1,31 +1,14 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-
-type TagProps = {
-  color: string;
-  label: string;
-};
+import {View, Text} from 'react-native';
+import {getTagBackgroundStyle, tagStyles} from './tag.styles';
+import {TagProps} from './tag.types';
 
 const Tag: React.FC<TagProps> = ({color, label}) => {
   return (
-    <View style={[styles.tag, {backgroundColor: color}]}>
-      <Text style={styles.tagText}>{label}</Text>
+    <View style={[tagStyles.tag, getTagBackgroundStyle(color)]}>
+      <Text style={tagStyles.tagText}>{label}</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  tag: {
-    paddingVertical: 3,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    margin: 5,
-    alignSelf: 'flex-end',
-  },
-  tagText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-});
 
 export default Tag;

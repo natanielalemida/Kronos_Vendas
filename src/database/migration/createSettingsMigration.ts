@@ -1,9 +1,10 @@
+import {Knex} from 'knex';
 import {knexConfig} from '../connection';
 
 export const createSettingsTable = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('settings'))) {
-      await knexConfig.schema.createTable('settings', table => {
+      await knexConfig.schema.createTable('settings', (table: Knex.TableBuilder) => {
         table.increments('id').primary();
         table.string('host', 50).notNullable();
         table.integer('cod_loja').notNullable().defaultTo(0);

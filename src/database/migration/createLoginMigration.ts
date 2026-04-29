@@ -1,9 +1,10 @@
-import { knexConfig } from '../connection';
+import {Knex} from 'knex';
+import {knexConfig} from '../connection';
 
 export const createUsuariosMigration = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('usuarios'))) {
-      await knexConfig.schema.createTable('usuarios', (table) => {
+      await knexConfig.schema.createTable('usuarios', (table: Knex.TableBuilder) => {
         table.increments('id').primary();
         table.integer('codigo').notNullable().index();
         table.integer('codigo_pessoa').notNullable();
@@ -32,7 +33,7 @@ export const createUsuariosMigration = async () => {
 export const createPrivilegiosMigration = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('privilegios'))) {
-      await knexConfig.schema.createTable('privilegios', (table) => {
+      await knexConfig.schema.createTable('privilegios', (table: Knex.TableBuilder) => {
         table.increments('id').primary();
         table.integer('usuario_id').unsigned().notNullable();
         table.string('privilegio').notNullable();
@@ -50,7 +51,7 @@ export const createPrivilegiosMigration = async () => {
 export const createEmpresaJson = async () => {
   try {
     if (!(await knexConfig.schema.hasTable('empresaLogin'))) {
-      await knexConfig.schema.createTable('empresaLogin', (table) => {
+      await knexConfig.schema.createTable('empresaLogin', (table: Knex.TableBuilder) => {
         table.integer('empresaJson').unsigned().notNullable();
         table.string('codigo_empresa').notNullable();
       });

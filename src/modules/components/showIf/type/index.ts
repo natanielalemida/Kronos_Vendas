@@ -1,1 +1,1 @@
-export * from './ShowIfProps';
+export * from './showIfProps';

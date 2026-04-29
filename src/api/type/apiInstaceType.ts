@@ -1,6 +1,8 @@
-export type OpenUrlFirstTimeProps = {
+import {ApiHeaders, ApiMethod} from '@/services/api/types/api-client.types';
+
+export type OpenUrlFirstTimeProps<TBody = unknown> = {
   endPoint?: string;
-  method: 'get' | 'post' | 'put' | 'delete';
-  data: any | undefined;
-  headers: any | undefined;
+  method: ApiMethod;
+  data?: TBody;
+  headers?: ApiHeaders;
 };

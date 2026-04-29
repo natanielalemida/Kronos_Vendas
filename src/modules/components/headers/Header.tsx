@@ -1,8 +1,9 @@
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React from 'react';
+import {Ionicons} from '@expo/vector-icons';
+import {Text, View, TouchableOpacity} from 'react-native';
 import {HeaderProps} from './type';
 import {ShowIf} from '../showIf';
-import { colors } from '../../styles';
+import {headerStyles} from './Header.styles';
 
 export function Header({
   label,
@@ -18,70 +19,26 @@ export function Header({
   onPressRighttIcon,
 }: HeaderProps) {
   return (
-    <View style={styles.container}>
-      <View style={styles.leftContainer}>
+    <View style={headerStyles.container}>
+      <View style={headerStyles.leftContainer}>
         <ShowIf condition={!!leftIcon}>
           <TouchableOpacity
             onPress={onPressLeftIcon}
             disabled={leftButtonDisable}
-            style={styles.iconButton} // Estilo adicionado
-          >
-            <Icon
-              onPress={onPressLeftIcon}
-              name={leftIcon}
-              size={leftSize}
-              color={leftColor}
-              style={styles.icon}
-            />
+            style={headerStyles.iconButton}>
+            <Ionicons name={leftIcon!} size={leftSize} color={leftColor} />
           </TouchableOpacity>
         </ShowIf>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={headerStyles.label}>{label}</Text>
       </View>
       <ShowIf condition={!!rightIcon}>
         <TouchableOpacity
           onPress={onPressRighttIcon}
           disabled={rightButtonDisable}
-          style={styles.iconButton} // Estilo adicionado
-        >
-          <Icon
-            name={rightIcon}
-            size={rightSize}
-            onPress={onPressRighttIcon}
-            color={rightColor}
-            style={styles.icon}
-          />
+          style={headerStyles.iconButton}>
+          <Ionicons name={rightIcon!} size={rightSize} color={rightColor} />
         </TouchableOpacity>
       </ShowIf>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.arcGreen,
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    minHeight: '11%',
-    paddingHorizontal: 15,
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  leftContainer: {
-    flexDirection: 'row',
-    alignItems: 'center', // Alinha os it
-    width: '65%',
-    marginTop: 20,
-  },
-  label: {
-    color: 'white',
-    fontSize: 18,
-  },
-  icon: {
-    // Estilo para o ícone
-  },
-  iconButton: {
-    padding: 20,
-    alignItems: 'center', // Centraliza o conteúdo dentro do TouchableOpacity
-    justifyContent: 'center',
-  },
-});
