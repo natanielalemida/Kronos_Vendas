@@ -23,7 +23,7 @@ export function useSyncExecution() {
     }
 
     return {
-      message: message ?? activeStep?.label ?? 'Synchronizing data...',
+      message: message ?? activeStep?.label ?? 'Sincronizando dados...',
       progress: progressPercentage,
     };
   }, [activeStep?.label, message, progressPercentage, status]);

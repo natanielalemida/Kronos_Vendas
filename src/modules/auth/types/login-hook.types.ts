@@ -8,7 +8,6 @@ export type UseSetupLoginPageParams = {
 
 export type UseLoginPageEffectsParams = {
   form: LoginFormState;
-  getOrganizations: () => Promise<void>;
   login: (
     cpf: string | undefined,
     password: string | undefined,

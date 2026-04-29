@@ -135,12 +135,12 @@ A configuração inicial de Expo foi centralizada em [app.config.ts](/Users/nata
 
 Direção adotada nesta fase:
 
-- `runtimeVersion` com política `fingerprint`
+- `runtimeVersion` explícito no formato `DDMMYYYY.HHMM`
 - `updates.enabled = true`
 - `fallbackToCacheTimeout = 0`
 - suporte a canais `development`, `preview` e `production`
 
-Motivo: durante a migração teremos alterações frequentes em runtime nativo e queremos reduzir o risco de publicar OTA incompatível com builds antigos.
+Motivo: o runtime fica controlado de forma explícita para que build nativo e OTA publiquem com a mesma identificação quando necessário.
 
 ## 🧪 Como vamos validar a migração
 

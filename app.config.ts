@@ -1,6 +1,7 @@
 const {version} = require('./package.json');
 
-const projectId = process.env.EXPO_PROJECT_ID;
+const projectId =
+  process.env.EXPO_PROJECT_ID ?? 'f37b9d05-2657-4ea3-b8c4-14e474aaa145';
 
 export default () => ({
   expo: {
@@ -11,6 +12,9 @@ export default () => ({
     scheme: 'kronosvendas',
     userInterfaceStyle: 'light',
     assetBundlePatterns: ['**/*'],
+    android: {
+      package: 'com.kronos_vendas',
+    },
     plugins: [
       'expo-font',
       [
@@ -27,15 +31,14 @@ export default () => ({
       fallbackToCacheTimeout: 0,
       ...(projectId ? {url: `https://u.expo.dev/${projectId}`} : {}),
     },
-    runtimeVersion: {
-      policy: 'fingerprint',
-    },
+    runtimeVersion: version,
     extra: {
       eas: {
         projectId,
       },
       apiBaseUrl: process.env.EXPO_PUBLIC_API_URL ?? '',
       environment: process.env.APP_ENV ?? 'development',
+      runtimeVersion: version,
     },
   },
 });

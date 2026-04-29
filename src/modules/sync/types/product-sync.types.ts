@@ -3,6 +3,25 @@ export type SyncProductImageReference = {
   isDefault: boolean;
 };
 
+export type SyncApiProductDto = {
+  Estoque: number;
+  Codigo: number;
+  Referencia: string | null;
+  Descricao: string | null;
+  UnidadeMedida: string | null;
+  CodigoDeBarras: string | null;
+  ValorVenda: number;
+  VendeProdutoNoAtacado: boolean;
+  ValorVendaAtacado: number;
+  CodigoBarrasAtacado: string | null;
+  UnidadeMedidaAtacado: string | null;
+  PermiteFracionar: boolean;
+  CodigoSetor: number;
+  CodigoGrupo: number | null;
+  CodigoSubGrupo: number | null;
+  CodigoMarca: number | null;
+};
+
 export type ProdutoDto = {
   Estoque: number;
   Codigo: number;
@@ -45,7 +64,7 @@ export type ProdutoBodyCreateQtAndObsDto = {
 };
 
 export type SyncProductsApiResponse = {
-  Resultado: ProdutoDto[];
+  Resultado: SyncApiProductDto[];
   Status: number;
   Mensagens: string[];
 };

@@ -23,7 +23,7 @@ export class PaymentMethodSyncService {
       );
 
     if (response.Status !== 1) {
-      throw new Error('Failed to synchronize payment methods.');
+      throw new Error('Falha ao sincronizar formas de pagamento.');
     }
 
     await this.paymentMethodSyncRepository.replacePaymentMethods(
@@ -32,7 +32,7 @@ export class PaymentMethodSyncService {
 
     return {
       itemCount: response.Resultado.length,
-      message: 'Payment methods synchronized.',
+      message: 'Formas de pagamento sincronizadas.',
     };
   }
 }

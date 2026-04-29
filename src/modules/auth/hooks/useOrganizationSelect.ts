@@ -1,5 +1,4 @@
-import {useFocusEffect} from '@react-navigation/native';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {OrganizationOption} from '@/shared/types';
 
 import {useAppStorage} from '@/modules/storage/hooks/useAppStorage';
@@ -13,6 +12,7 @@ export function useOrganizationSelect({
   const [isModalVisible, setModalVisible] = useState(false);
   const {companyCode} = useAppStorage();
   const {setOfflineOrganization} = useAppStorageActions();
+  const lastAppliedOrganizationCodeRef = useRef<number | null>(null);
 
   const defaultOrganization = useMemo(() => {
     const matchedOrganization = data.find(
@@ -24,6 +24,7 @@ export function useOrganizationSelect({
 
   const applyOrganization = useCallback(
     async (organization: OrganizationOption) => {
+      lastAppliedOrganizationCodeRef.current = organization.Codigo;
       onChange(organization);
       await setOfflineOrganization(organization);
     },
@@ -35,14 +36,12 @@ export function useOrganizationSelect({
       return;
     }
 
+    if (lastAppliedOrganizationCodeRef.current === defaultOrganization.Codigo) {
+      return;
+    }
+
     await applyOrganization(defaultOrganization);
   }, [applyOrganization, defaultOrganization]);
-
-  useFocusEffect(
-    useCallback(() => {
-      syncDefaultOrganization().catch(console.error);
-    }, [syncDefaultOrganization]),
-  );
 
   useEffect(() => {
     syncDefaultOrganization().catch(console.error);

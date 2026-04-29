@@ -1,6 +1,7 @@
 import {knexConfig} from '@/database/connection';
 import {UserDto} from '@/shared/types';
 import {CustomerEditRepository} from '@/modules/customers/repositories/customer-edit.repository';
+import {Knex} from 'knex';
 
 import {CustomerUploadMapper} from '../mappers/customer-upload.mapper';
 import {
@@ -30,16 +31,11 @@ export class SingleCustomerUploadRepository {
         'pessoa.NomeFantasia',
         'pessoa.CNPJCPF',
         'pessoa.IERG',
-        'pessoa.BloquearCliente',
-        'pessoa.ForcarAtualizacaoCadastro',
-        'pessoa.CarenciaPagamento',
-        'pessoa.DataNascimento',
-        'pessoa.PessoaReferencia',
-        'pessoa.Veiculos',
         'pessoa.TipoContribuinte',
         'pessoa.Observacao',
         'pessoa.Ativo',
         'pessoa.DataCadastro',
+        'pessoa.CodigoPessoa',
         'endereco.Codigo as CodigoEndereco',
         'endereco.Tipo',
         'endereco.TipoDescricao',
@@ -60,9 +56,23 @@ export class SingleCustomerUploadRepository {
         'contato.Codigo as CodigoContato',
         'contato.Contato',
       )
-      .innerJoin('endereco', 'endereco.CodigoPessoa', 'pessoa.id')
+      .leftJoin('endereco', function joinAddress(this: Knex.JoinClause) {
+        this.on(function joinAddressRows(this: Knex.JoinClause) {
+          this.on('pessoa.CodigoPessoa', '=', 'endereco.CodigoPessoa').orOn(
+            knexConfig.raw(
+              'pessoa.Codigo IS NULL AND pessoa.id = endereco.CodigoPessoa',
+            ),
+          );
+        });
+      })
       .innerJoin('municipio', 'municipio.Codigo', 'endereco.CodigoMunicipio')
-      .innerJoin('contato', 'contato.CodigoPessoa', 'pessoa.CodigoPessoa')
+      .leftJoin('contato', function joinContact(this: Knex.JoinClause) {
+        this.on('contato.CodigoPessoa', '=', 'pessoa.CodigoPessoa').orOn(
+          'contato.CodigoPessoa',
+          '=',
+          'pessoa.id',
+        );
+      })
       .where('pessoa.isSincronizado', '0');
 
     return this.mapper.mapPendingCustomers(rows, user);

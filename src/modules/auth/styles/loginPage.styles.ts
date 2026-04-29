@@ -36,6 +36,16 @@ export const styles = StyleSheet.create({
     fontFamily: 'Segoe UI',
     color: '#051f1e',
   },
+  organizationLoadingContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  organizationLoadingText: {
+    color: colors.white,
+    fontSize: width * 0.035,
+    fontWeight: '600',
+  },
   formContainer: {
     backgroundColor: colors.arcGreen400,
     height: height * 0.37,

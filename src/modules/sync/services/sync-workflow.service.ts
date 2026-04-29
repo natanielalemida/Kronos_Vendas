@@ -60,6 +60,28 @@ export class SyncWorkflowService {
     new ProductImageSyncRepository(),
   );
 
+  private normalizeError(error: unknown): Error {
+    if (error instanceof Error) {
+      return error;
+    }
+
+    if (typeof error === 'string' && error.trim().length > 0) {
+      return new Error(error);
+    }
+
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'message' in error &&
+      typeof error.message === 'string' &&
+      error.message.trim().length > 0
+    ) {
+      return new Error(error.message);
+    }
+
+    return new Error('Erro inesperado na sincronização.');
+  }
+
   async run(
     mode: SyncRunMode,
     user: UserDto,
@@ -77,14 +99,12 @@ export class SyncWorkflowService {
           const result = await step.run();
           this.syncSessionService.finishStep(step.id, result);
         } catch (error) {
-          const normalizedError =
-            error instanceof Error
-              ? error
-              : new Error('Unexpected synchronization error.');
+          const normalizedError = this.normalizeError(error);
+          const errorTitle = normalizedError.name || 'Erro de sincronização';
 
           this.syncSessionService.failStep(step.id, normalizedError.message);
           this.syncSessionService.failRun(normalizedError.message);
-          Alert.alert(normalizedError.name, normalizedError.message);
+          Alert.alert(errorTitle, normalizedError.message);
           throw normalizedError;
         }
       }
@@ -93,7 +113,7 @@ export class SyncWorkflowService {
         new Date().toISOString(),
       );
 
-      this.syncSessionService.completeRun('Synchronization completed.');
+      this.syncSessionService.completeRun('Sincronização concluída.');
     } finally {
       if (mode !== 'sync-images') {
         await AppStorageGateway.ensureHydrated();
@@ -110,7 +130,7 @@ export class SyncWorkflowService {
       return [
         {
           id: 'product-images',
-          label: 'Synchronizing product images',
+          label: 'Sincronizando imagens dos produtos',
           run: () => this.productImageSyncService.sync(user, organizationCode),
         },
       ];
@@ -127,16 +147,16 @@ export class SyncWorkflowService {
             : 'clear-synced-records',
         label:
           mode === 'reset-and-sync'
-            ? 'Clearing all local records'
-            : 'Clearing synchronized local records',
+            ? 'Limpando todos os registros locais'
+            : 'Limpando registros locais sincronizados',
         run: async (): Promise<SyncStepRunResult> => {
           if (mode === 'reset-and-sync') {
             await this.localDataResetRepository.clearAllRecords();
-            return {message: 'All local records cleared.'};
+            return {message: 'Todos os registros locais foram removidos.'};
           }
 
           await this.localDataResetRepository.clearSyncedRecords();
-          return {message: 'Synchronized local records cleared.'};
+          return {message: 'Os registros locais sincronizados foram removidos.'};
         },
       },
     ];
@@ -144,7 +164,7 @@ export class SyncWorkflowService {
     if (mode === 'sync-all') {
       steps.push({
         id: 'upload-pending-customers',
-        label: 'Uploading pending customers',
+        label: 'Enviando clientes pendentes',
         run: async (): Promise<SyncStepRunResult> => {
           const result =
             await this.customerUploadService.uploadPendingCustomers(
@@ -156,8 +176,8 @@ export class SyncWorkflowService {
             itemCount: result.uploadedCustomersCount,
             message:
               result.uploadedCustomersCount > 0
-                ? 'Pending customers uploaded.'
-                : 'No pending customers to upload.',
+                ? 'Clientes pendentes enviados.'
+                : 'Nenhum cliente pendente para enviar.',
             skipped: result.uploadedCustomersCount === 0,
           };
         },
@@ -167,28 +187,28 @@ export class SyncWorkflowService {
     steps.push(
       {
         id: 'municipalities',
-        label: 'Synchronizing municipalities',
+        label: 'Sincronizando municípios',
         run: () =>
           this.municipalitySyncService.sync(user, organizationCode, mode),
       },
       {
         id: 'products',
-        label: 'Synchronizing products',
+        label: 'Sincronizando produtos',
         run: () => this.productSyncService.sync(user, organizationCode),
       },
       {
         id: 'payment-methods',
-        label: 'Synchronizing payment methods',
+        label: 'Sincronizando formas de pagamento',
         run: () => this.paymentMethodSyncService.sync(user, organizationCode),
       },
       {
         id: 'customers',
-        label: 'Synchronizing customers',
+        label: 'Sincronizando clientes',
         run: () => this.customerSyncService.sync(user, organizationCode),
       },
       {
         id: 'orders',
-        label: 'Synchronizing orders',
+        label: 'Sincronizando pedidos',
         run: () => this.orderSyncService.sync(user, organizationCode),
       },
     );
@@ -196,7 +216,7 @@ export class SyncWorkflowService {
     if (shouldSyncProductImages) {
       steps.push({
         id: 'product-images',
-        label: 'Synchronizing product images',
+        label: 'Sincronizando imagens dos produtos',
         run: () => this.productImageSyncService.sync(user, organizationCode),
       });
     }

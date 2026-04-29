@@ -22,14 +22,14 @@ export class CustomerSyncService {
     );
 
     if (response.Status !== 1) {
-      throw new Error('Failed to synchronize customers.');
+      throw new Error('Falha ao sincronizar clientes.');
     }
 
     await this.customerSyncRepository.replaceCustomers(response.Resultado);
 
     return {
       itemCount: response.Resultado.length,
-      message: 'Customers synchronized.',
+      message: 'Clientes sincronizados.',
     };
   }
 }

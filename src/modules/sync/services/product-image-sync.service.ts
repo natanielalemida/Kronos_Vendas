@@ -24,7 +24,7 @@ export class ProductImageSyncService {
       );
 
     if (response.Status !== 1) {
-      throw new Error('Failed to synchronize product images.');
+      throw new Error('Falha ao sincronizar imagens dos produtos.');
     }
 
     await this.productImageSyncRepository.replaceProductImages(
@@ -34,7 +34,7 @@ export class ProductImageSyncService {
 
     return {
       itemCount: response.Resultado.length,
-      message: 'Product images synchronized.',
+      message: 'Imagens dos produtos sincronizadas.',
     };
   }
 }

@@ -18,7 +18,7 @@ export type FormaPagamentoFromQueryDto = {
   FormaPagamentoPadrao: number;
   Identificador: number;
   EmissaoCupomFiscalObrigatoria: boolean;
-  UtilizaCreditoDevolucao: boolean;
+  UtilizaCreditoDevolucao: boolean | null;
   SolicitarDadosOperadoraBandeiraCartao: boolean;
   IsPrazo: boolean;
   IsCartao: boolean;
@@ -36,7 +36,7 @@ export type FormaPagamentoDto = {
   Operadora?: string | null;
   Identificador: number;
   EmissaoCupomFiscalObrigatoria: boolean;
-  UtilizaCreditoDevolucao: boolean;
+  UtilizaCreditoDevolucao: boolean | null;
   SolicitarDadosOperadoraBandeiraCartao: boolean;
   CodigoContaBancaria?: number | null;
   IsPrazo: boolean;
@@ -67,7 +67,7 @@ export type FormaPagamento = {
   QtdeParcelas: number;
   SolicitarDadosOperadoraBandeiraCartao: boolean;
   Tarifas: string;
-  UtilizaCreditoDevolucao: boolean;
+  UtilizaCreditoDevolucao: boolean | null;
   CondicaoPagamento: CondicaoPagamento[];
 };
 

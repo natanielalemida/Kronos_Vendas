@@ -1,3 +1,4 @@
+import {useCallback} from 'react';
 import {useController} from 'react-hook-form';
 
 import {OrganizationSelectProps} from '../types/organization-select.types';
@@ -13,12 +14,17 @@ export function useSetupOrganizationSelect({
     defaultValue: '',
     name: 'organization',
   });
-  const {handlers, isModalVisible} = useOrganizationSelect({
-    data,
-    onChange: async organization => {
+  const handleChange = useCallback(
+    (organization: typeof data[number]) => {
       field.onChange(organization.NomeFantasia);
       onSelect(organization);
     },
+    [field, onSelect],
+  );
+
+  const {handlers, isModalVisible} = useOrganizationSelect({
+    data,
+    onChange: handleChange,
   });
 
   return {

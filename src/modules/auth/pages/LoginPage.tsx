@@ -1,14 +1,15 @@
 import {Ionicons} from '@expo/vector-icons';
 import React from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
 
-import Loading from '@/modules/components/loading/Loading';
 import {LoadingLogin} from '@/modules/components/loading';
 import {ShowIf} from '@/modules/components/showIf';
 import {colors} from '@/modules/styles';
@@ -51,8 +52,13 @@ export default function LoginPage({
 
       {progress ? <LoadingLogin progress={progress} /> : null}
 
-      <ShowIf condition={isLoadingOrganization}>
-        <Loading isModalLoadingActive={isLoadingOrganization} />
+      <ShowIf condition={isLoadingOrganization && !progress}>
+        <View style={styles.organizationLoadingContainer}>
+          <ActivityIndicator size="small" color={colors.arcGreenNeon} />
+          <Text style={styles.organizationLoadingText}>
+            Carregando empresas...
+          </Text>
+        </View>
       </ShowIf>
 
       <ShowIf condition={!progress}>

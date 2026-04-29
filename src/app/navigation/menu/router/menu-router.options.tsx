@@ -73,7 +73,6 @@ export function getOrdersOptions(): DrawerNavigationOptions {
 export function getProductsOptions(): DrawerNavigationOptions {
   return {
     drawerIcon: props => <MenuDrawerIcon {...props} name="pricetag-outline" />,
-    headerShown: false,
   };
 }
 

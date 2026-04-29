@@ -1,4 +1,3 @@
-import {useFocusEffect} from '@react-navigation/native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import {useCallback, useEffect} from 'react';
 import {Keyboard} from 'react-native';
@@ -9,7 +8,6 @@ import {UseLoginPageEffectsParams} from '../types/login-hook.types';
 
 export function useLoginPageEffects({
   form,
-  getOrganizations,
   login,
   state,
 }: UseLoginPageEffectsParams) {
@@ -70,12 +68,6 @@ export function useLoginPageEffects({
       await handleBiometricLogin(loginValue, passwordValue);
     }
   }, [form, handleBiometricLogin, state, storedCredentials]);
-
-  useFocusEffect(
-    useCallback(() => {
-      getOrganizations().catch(console.error);
-    }, [getOrganizations]),
-  );
 
   useEffect(() => {
     if (!form.organizationCode && !form.getValues('organizationCode')) {

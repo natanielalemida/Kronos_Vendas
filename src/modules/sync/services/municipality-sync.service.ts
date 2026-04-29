@@ -37,7 +37,7 @@ export class MunicipalitySyncService {
       );
 
     if (versionResponse.Status !== 1) {
-      throw new Error('Failed to load municipality version.');
+      throw new Error('Falha ao carregar a versão dos municípios.');
     }
 
     const normalizedVersion = normalizeVersion(versionResponse.Resultado);
@@ -51,7 +51,7 @@ export class MunicipalitySyncService {
     if (!shouldRefresh) {
       return {
         skipped: true,
-        message: 'Municipalities already up to date.',
+        message: 'Os municípios já estão atualizados.',
       };
     }
 
@@ -63,7 +63,7 @@ export class MunicipalitySyncService {
       );
 
     if (municipalityResponse.Status !== 1) {
-      throw new Error('Failed to synchronize municipalities.');
+      throw new Error('Falha ao sincronizar municípios.');
     }
 
     await this.municipalitySyncRepository.replaceMunicipalities(
@@ -73,7 +73,7 @@ export class MunicipalitySyncService {
 
     return {
       itemCount: municipalityResponse.Resultado.length,
-      message: 'Municipalities synchronized.',
+      message: 'Municípios sincronizados.',
     };
   }
 }

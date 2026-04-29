@@ -11,16 +11,12 @@ export function useSetupLoginPage({navigation}: UseSetupLoginPageParams) {
   const {form, state} = useLoginPageState();
   const {
     data: organizations = [],
-    isFetching: isLoadingOrganization,
-    refetch,
+    isLoading: isLoadingOrganization,
   } = useOrganizationSummariesQuery();
   const {login, progress} = useLoginMutation();
   const {handleChangeOrganization, handleRestoreUser, usesBiometrics} =
     useLoginPageEffects({
       form,
-      getOrganizations: async () => {
-        await refetch();
-      },
       login,
       state,
     });

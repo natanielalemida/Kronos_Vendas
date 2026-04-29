@@ -89,7 +89,7 @@ export class OrderSyncService {
     );
 
     if (response.Status !== 1) {
-      throw new Error('Failed to synchronize orders.');
+      throw new Error('Falha ao sincronizar pedidos.');
     }
 
     await this.orderSyncRepository.replaceOrders(
@@ -98,7 +98,7 @@ export class OrderSyncService {
 
     return {
       itemCount: response.Resultado.length,
-      message: 'Orders synchronized.',
+      message: 'Pedidos sincronizados.',
     };
   }
 

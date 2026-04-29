@@ -8,10 +8,15 @@ import {OrganizationService} from '../services/organization.service';
 const organizationService = new OrganizationService();
 
 export function useOrganizationSummariesQuery() {
-  const {activeConnectionId} = useAppStorage();
+  const {activeConnectionId, connectionOptions, hasHydrated} = useAppStorage();
+  const hasActiveConnection =
+    activeConnectionId !== undefined &&
+    connectionOptions.some(
+      connectionOption => connectionOption.id === activeConnectionId,
+    );
 
   return useQuery({
-    enabled: activeConnectionId !== undefined,
+    enabled: hasHydrated && hasActiveConnection,
     queryFn: () => organizationService.getSummaries(),
     queryKey: authQueryKeys.organizationSummaries(activeConnectionId),
     staleTime: 1000 * 60 * 5,

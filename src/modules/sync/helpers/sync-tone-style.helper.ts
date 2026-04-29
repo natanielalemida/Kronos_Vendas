@@ -4,13 +4,25 @@ import {SyncActionCardTone} from '../types/sync-page.types';
 export function getSyncToneStyle(tone: SyncActionCardTone) {
   switch (tone) {
     case 'success':
-      return styles.actionButtonSuccess;
+      return {
+        card: styles.actionCardSuccess,
+        badge: styles.actionBadgeSuccess,
+      };
     case 'info':
-      return styles.actionButtonInfo;
+      return {
+        card: styles.actionCardInfo,
+        badge: styles.actionBadgeInfo,
+      };
     case 'warning':
-      return styles.actionButtonWarning;
+      return {
+        card: styles.actionCardWarning,
+        badge: styles.actionBadgeWarning,
+      };
     case 'neutral':
     default:
-      return styles.actionButtonNeutral;
+      return {
+        card: styles.actionCardNeutral,
+        badge: styles.actionBadgeNeutral,
+      };
   }
 }

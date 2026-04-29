@@ -11,6 +11,7 @@ import {useSyncExecution} from '@/modules/sync/hooks/useSyncExecution';
 import {syncQueryKeys} from '../query-keys/sync.query-keys';
 import {useLastSyncQuery} from '../queries/last-sync.query';
 import {syncExecutionContextSchema} from '../schemas/sync.schema';
+import {SyncSessionService} from '../services/sync-session.service';
 import {
   NOT_AVAILABLE_SYNC_LABEL,
   SyncActionCard,
@@ -26,6 +27,7 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
     errorMessage,
     isRunning: isSyncing,
     progress,
+    status,
     steps,
   } = useSyncExecution();
   const syncContext = syncExecutionContextSchema.safeParse({
@@ -47,6 +49,9 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
   const databaseShareController = useMemo(() => {
     return new DatabaseShareController();
   }, []);
+  const syncSessionService = useMemo(() => {
+    return new SyncSessionService();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -61,6 +66,11 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
   const navigateToHome = useCallback(() => {
     navigation.navigate('Novo Pedido' as never);
   }, [navigation]);
+
+  const resetSyncFeedback = useCallback(() => {
+    animationRef.current?.reset();
+    syncSessionService.reset();
+  }, [syncSessionService]);
 
   const withAnimation = useCallback(async (callback: () => Promise<void>) => {
     animationRef.current?.play();
@@ -83,7 +93,18 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
         queryKey: syncQueryKeys.lastSync(organizationCode),
       });
     });
-  }, [organizationCode, queryClient, syncController, user, withAnimation]);
+
+    resetSyncFeedback();
+    navigateToHome();
+  }, [
+    navigateToHome,
+    organizationCode,
+    queryClient,
+    resetSyncFeedback,
+    syncController,
+    user,
+    withAnimation,
+  ]);
 
   const handleResetAndSync = useCallback(async () => {
     if (!syncController) {
@@ -97,8 +118,16 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
       });
     });
 
+    resetSyncFeedback();
     navigateToHome();
-  }, [navigateToHome, organizationCode, queryClient, syncController, withAnimation]);
+  }, [
+    navigateToHome,
+    organizationCode,
+    queryClient,
+    resetSyncFeedback,
+    syncController,
+    withAnimation,
+  ]);
 
   const handleSyncImages = useCallback(async () => {
     if (!syncController) {
@@ -112,8 +141,16 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
       });
     });
 
+    resetSyncFeedback();
     navigateToHome();
-  }, [navigateToHome, organizationCode, queryClient, syncController, withAnimation]);
+  }, [
+    navigateToHome,
+    organizationCode,
+    queryClient,
+    resetSyncFeedback,
+    syncController,
+    withAnimation,
+  ]);
 
   const handleShareDatabase = useCallback(async () => {
     await databaseShareController.share();
@@ -123,25 +160,29 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
     () => [
       {
         id: 'sync-images',
-        label: 'Sync product images',
+        label: 'Sincronizar imagens',
+        description: 'Atualiza somente as imagens dos produtos.',
         tone: 'info',
         onPress: handleSyncImages,
       },
       {
         id: 'sync-all',
-        label: 'Sync all data',
+        label: 'Sincronizar tudo',
+        description: 'Atualiza os dados principais do aplicativo.',
         tone: 'success',
         onPress: handleSyncAll,
       },
       {
         id: 'reset-sync',
-        label: 'Reset and sync local data',
+        label: 'Resetar e sincronizar',
+        description: 'Refaz a base local do zero.',
         tone: 'warning',
         onPress: handleResetAndSync,
       },
       {
         id: 'share-database',
-        label: 'Share local database',
+        label: 'Compartilhar banco local',
+        description: 'Exporta o banco para suporte.',
         tone: 'neutral',
         onPress: handleShareDatabase,
       },
@@ -150,6 +191,7 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
   );
 
   return {
+    status,
     errorMessage,
     progress,
     lastSyncLabel: lastSyncQuery.data ?? NOT_AVAILABLE_SYNC_LABEL,

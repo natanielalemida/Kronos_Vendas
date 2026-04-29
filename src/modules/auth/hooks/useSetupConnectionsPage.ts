@@ -82,6 +82,20 @@ export function useSetupConnectionsPage({
     [deleteCurrentConnection],
   );
 
+  const handleGoBack = useCallback(() => {
+    if (isModalVisible) {
+      closeModal();
+      return;
+    }
+
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
+    navigation.navigate('Settings');
+  }, [closeModal, isModalVisible, navigation]);
+
   return {
     connections: connectionOptions,
     selectedConnectionId,
@@ -91,7 +105,7 @@ export function useSetupConnectionsPage({
       activateConnection,
       closeModal,
       confirmDelete,
-      goBack: () => navigation.goBack(),
+      goBack: handleGoBack,
       openCreateModal: () => setModalVisible(true),
       openEditModal: (id: number) => {
         setSelectedConnectionId(id);

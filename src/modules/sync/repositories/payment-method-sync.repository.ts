@@ -28,7 +28,7 @@ type PaymentConditionRow = {
   IntervaloDias: number;
   QtdeDiasParcelaInicial: number;
   Ativo: boolean;
-  Tarifas: number | null;
+  Tarifas: string;
 };
 
 export class PaymentMethodSyncRepository {
@@ -48,7 +48,8 @@ export class PaymentMethodSyncRepository {
         Identificador: paymentMethod.Identificador,
         EmissaoCupomFiscalObrigatoria:
           paymentMethod.EmissaoCupomFiscalObrigatoria,
-        UtilizaCreditoDevolucao: paymentMethod.UtilizaCreditoDevolucao,
+        UtilizaCreditoDevolucao:
+          paymentMethod.UtilizaCreditoDevolucao ?? false,
         SolicitarDadosOperadoraBandeiraCartao:
           paymentMethod.SolicitarDadosOperadoraBandeiraCartao,
         IsPrazo: paymentMethod.IsPrazo,
@@ -66,7 +67,7 @@ export class PaymentMethodSyncRepository {
           IntervaloDias: condition.IntervaloDias,
           QtdeDiasParcelaInicial: condition.QtdeDiasParcelaInicial,
           Ativo: condition.Ativo,
-          Tarifas: condition.Tarifas ?? null,
+          Tarifas: String(condition.Tarifas ?? 0),
         })),
     );
 
