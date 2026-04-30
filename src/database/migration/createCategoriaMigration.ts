@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createCategoriaTable = async () => {
   try {
@@ -9,11 +10,11 @@ export const createCategoriaTable = async () => {
         table.integer('Codigo').notNullable().unique().index();
         table.string('Descricao').notNullable().index();
       });
-      console.log('Table CATEGORIA created successfully.');
+      logger.info('DatabaseMigration', 'Table CATEGORIA created successfully.');
     } else {
-      console.log('Table CATEGORIA already exists.');
+      logger.info('DatabaseMigration', 'Table CATEGORIA already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating CATEGORIA table.', error);
   }
 };

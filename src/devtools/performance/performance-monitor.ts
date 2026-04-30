@@ -1,4 +1,5 @@
 import type { ProfilerOnRenderCallback } from 'react';
+import {logger} from '@/shared/utils/logger';
 
 type RenderPhase = 'mount' | 'update' | 'nested-update';
 
@@ -88,7 +89,7 @@ function emitSummary(lines: string[]) {
 
   const message = `${devLogPrefix} ${lines.join(' || ')}`;
 
-  console.warn(message);
+  logger.warn('RenderProfiler', message);
   console.tron?.display({
     name: 'render-profiler',
     preview: lines[0],
@@ -154,8 +155,9 @@ export const appProfilerOnRender: ProfilerOnRenderCallback = (
   stat.lastTrigger = `${phase}@${Math.round(commitTime - startTime)}ms`;
 
   if (stat.commits <= 2 || actualDuration >= 8) {
-    console.warn(
-      `${devLogPrefix} commit ${componentId} | phase=${phase} | actual=${actualDuration.toFixed(1)}ms | base=${baseDuration.toFixed(1)}ms`,
+    logger.warn(
+      'RenderProfiler',
+      `commit ${componentId} | phase=${phase} | actual=${actualDuration.toFixed(1)}ms | base=${baseDuration.toFixed(1)}ms`,
     );
   }
 

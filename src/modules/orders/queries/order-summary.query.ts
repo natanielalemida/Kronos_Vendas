@@ -12,8 +12,10 @@ export function useOrderSummaryQuery(
 
   return useQuery({
     enabled: typeof orderId === 'number',
+    gcTime: 1000 * 60 * 15,
+    placeholderData: previousData => previousData,
     queryFn: () => repositoryRef.current.findById(orderId as number, terminal ?? 0),
     queryKey: ordersQueryKeys.summary(orderId, terminal ?? 0),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 60 * 5,
   });
 }

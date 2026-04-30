@@ -1,5 +1,7 @@
 import {useEffect} from 'react';
 
+import {logger} from '@/shared/utils/logger';
+
 import {UseProductDetailsEffectsParams} from '../types/products-hooks.types';
 
 export function useProductDetailsEffects({
@@ -20,7 +22,11 @@ export function useProductDetailsEffects({
         setProduct(result ?? undefined);
       })
       .catch(error => {
-        console.error('Error while loading product details', error);
+        logger.error(
+          'ProductDetails',
+          'Error while loading product details.',
+          error,
+        );
         setProduct(undefined);
       })
       .finally(() => {

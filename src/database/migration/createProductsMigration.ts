@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createProductsMigration = async () => {
   try {
@@ -23,11 +24,11 @@ export const createProductsMigration = async () => {
         table.integer('CodigoMarca').nullable().index();
         table.integer('Estoque');
       });
-      console.log('Table PRODUTOS created successfully.');
+      logger.info('DatabaseMigration', 'Table PRODUTOS created successfully.');
     } else {
-      console.log('Table PRODUTOS already exists.');
+      logger.info('DatabaseMigration', 'Table PRODUTOS already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating PRODUTOS table.', error);
   }
 };

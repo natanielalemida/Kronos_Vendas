@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createFormaPagamentoTable = async () => {
   try {
@@ -20,11 +21,21 @@ export const createFormaPagamentoTable = async () => {
         table.boolean('IsCartao').notNullable();
         table.boolean('IsRecebimentoEmConta').notNullable();
       });
-      console.log('Table FORMA-PAGAMENTO created successfully.');
+      logger.info(
+        'DatabaseMigration',
+        'Table FORMAPAGAMENTO created successfully.',
+      );
     } else {
-      console.log('Table FORMA-PAGAMENTO already exists.');
+      logger.info(
+        'DatabaseMigration',
+        'Table FORMAPAGAMENTO already exists.',
+      );
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error(
+      'DatabaseMigration',
+      'Error creating FORMAPAGAMENTO table.',
+      error,
+    );
   }
 };

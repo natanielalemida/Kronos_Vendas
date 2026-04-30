@@ -1,10 +1,10 @@
-import {useSyncExecution} from '@/modules/sync/hooks/useSyncExecution';
+import {useSyncExecutionStore} from '@/modules/sync/stores/useSyncExecutionStore';
 import {useAppStore} from '@/shared/store/useAppStore';
 
 import {AppSession} from '../types/app-session.types';
 
 export function useAppSession(): AppSession {
-  const {isRunning} = useSyncExecution();
+  const isSyncing = useSyncExecutionStore(store => store.status === 'running');
   const {
     customerForm,
     salesDraft,
@@ -51,7 +51,7 @@ export function useAppSession(): AppSession {
     setValorPago: setPaidAmount,
     organizationCode,
     setOrganizationCode,
-    isSyncing: isRunning,
+    isSyncing,
     setIsSyncing: () => undefined,
     params: localParameters,
     setParams: setLocalParameters,

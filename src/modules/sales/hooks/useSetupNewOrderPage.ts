@@ -1,7 +1,7 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useCallback, useMemo} from 'react';
 
-import {useAppSession} from '@/shared/hooks/useAppSession';
+import {useAppStore} from '@/shared/store/useAppStore';
 
 import {
   calculateSelectedProductsTotal,
@@ -20,7 +20,10 @@ import {UseSetupNewOrderPageResult} from '../types/sales-page.types';
 export function useSetupNewOrderPage(): UseSetupNewOrderPageResult {
   const navigation = useNavigation() as SalesPageNavigation;
   const route = useRoute() as SalesPageRoute;
-  const {clienteOnContext, ProdutosSelecionados} = useAppSession();
+  const selectedCustomer = useAppStore(
+    state => state.salesDraft.selectedCustomer,
+  );
+  const draftProducts = useAppStore(state => state.salesDraft.selectedProducts);
 
   const handleOpenProductActions = useCallback(() => {
     navigation.navigate('ListClientes', {
@@ -28,47 +31,47 @@ export function useSetupNewOrderPage(): UseSetupNewOrderPageResult {
     });
   }, [navigation]);
 
-  const handleOpenCustomerHistory = () => {
+  const handleOpenCustomerHistory = useCallback(() => {
     navigation.navigate('PedidosCliente', {
-      clienteId: clienteOnContext?.id,
+      clienteId: selectedCustomer?.id,
     });
-  };
+  }, [navigation, selectedCustomer?.id]);
 
-  const handleOpenCustomers = () => {
+  const handleOpenCustomers = useCallback(() => {
     navigation.navigate('ListClientes', {
       screen: 'SelectClientes',
     });
-  };
+  }, [navigation]);
 
-  const handleOpenProducts = () => {
+  const handleOpenProducts = useCallback(() => {
     navigation.navigate('ListClientes', {
       screen: 'SelectProdutos',
     });
-  };
+  }, [navigation]);
 
-  const handleGoToCheckout = () => {
+  const handleGoToCheckout = useCallback(() => {
     navigation.navigate('ListClientes', {
       screen: 'FormaPagamento',
       params: {
         id: route.params?.id,
       },
     });
-  };
+  }, [navigation, route.params?.id]);
 
   const customerSummary = useMemo(() => {
-    const documentValue = formatCustomerDocument(clienteOnContext?.CNPJCPF);
-    const documentLabel = getCustomerDocumentLabel(clienteOnContext?.CNPJCPF);
+    const documentValue = formatCustomerDocument(selectedCustomer?.CNPJCPF);
+    const documentLabel = getCustomerDocumentLabel(selectedCustomer?.CNPJCPF);
 
     return {
-      id: clienteOnContext?.id,
-      name: clienteOnContext?.NomeFantasia,
+      id: selectedCustomer?.id,
+      name: selectedCustomer?.NomeFantasia,
       document: documentValue ? `${documentLabel}: ${documentValue}` : '',
-      addressLines: mapCustomerAddressLines(clienteOnContext?.Enderecos),
+      addressLines: mapCustomerAddressLines(selectedCustomer?.Enderecos),
     };
-  }, [clienteOnContext]);
+  }, [selectedCustomer]);
 
   const selectedProducts = useMemo(() => {
-    return ProdutosSelecionados.map((product, index) => ({
+    return draftProducts.map((product, index) => ({
       id: product.Codigo.toString(),
       code: product.Codigo,
       description: product.Descricao,
@@ -84,15 +87,15 @@ export function useSetupNewOrderPage(): UseSetupNewOrderPageResult {
       ),
       onPress: handleOpenProductActions,
     }));
-  }, [ProdutosSelecionados, handleOpenProductActions]);
+  }, [draftProducts, handleOpenProductActions]);
 
   return {
     customerSummary,
-    hasSelectedCustomer: !!clienteOnContext,
-    hasSelectedProducts: ProdutosSelecionados.length > 0,
+    hasSelectedCustomer: !!selectedCustomer,
+    hasSelectedProducts: draftProducts.length > 0,
     selectedProducts,
     totalPriceLabel: formatCurrency(
-      calculateSelectedProductsTotal(ProdutosSelecionados),
+      calculateSelectedProductsTotal(draftProducts),
     ),
     handleOpenProductActions,
     handleOpenCustomerHistory,

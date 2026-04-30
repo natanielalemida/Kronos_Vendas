@@ -4,13 +4,22 @@ import {colors} from '@/modules/styles';
 
 export const menuRouterScreenBaseStyles = {
   headerStyle: {
-    backgroundColor: colors.arcGreen,
+    backgroundColor: colors.headerPrimary,
   },
   drawerStyle: {backgroundColor: colors.arcGreen400},
   headerTintColor: colors.white,
+  headerTitleStyle: {
+    color: colors.white,
+    fontWeight: '700',
+  },
+  headerShadowVisible: false,
 };
 
 export const menuRouterStyles = StyleSheet.create({
+  headerBackground: {
+    flex: 1,
+    backgroundColor: colors.headerPrimary,
+  },
   drawerContentContainer: {
     paddingTop: 0,
     paddingBottom: 35,
@@ -31,7 +40,7 @@ export const menuRouterStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    backgroundColor: colors.arcGreen,
+    backgroundColor: colors.headerPrimary,
     padding: 16,
     minHeight: '14%',
   },

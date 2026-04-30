@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createPessoaTable = async () => {
   try {
@@ -38,11 +39,11 @@ export const createPessoaTable = async () => {
           .inTable('categoria');
         table.foreign('RegiaoCodigo').references('Codigo').inTable('regiao');
       });
-      console.log('Table PESSOA created successfully.');
+      logger.info('DatabaseMigration', 'Table PESSOA created successfully.');
     } else {
-      console.log('Table PESSOA already exists.');
+      logger.info('DatabaseMigration', 'Table PESSOA already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating PESSOA table.', error);
   }
 };

@@ -8,7 +8,9 @@ export function useSalesPaymentMethodsQuery() {
   const repositoryRef = useRef(new SalesCheckoutRepository());
 
   return useQuery({
+    gcTime: 1000 * 60 * 30,
     queryKey: salesQueryKeys.paymentMethods(),
     queryFn: () => repositoryRef.current.getPaymentMethods(),
+    staleTime: 1000 * 60 * 10,
   });
 }

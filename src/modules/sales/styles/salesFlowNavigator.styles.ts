@@ -16,5 +16,5 @@ export const salesFlowNavigatorStyles = StyleSheet.create({
 });
 
 export const salesFlowNavigatorHeaderStyles = {
-  backgroundColor: colors.arcGreen,
+  backgroundColor: colors.headerPrimary,
 };

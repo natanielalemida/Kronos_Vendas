@@ -48,7 +48,10 @@ export default function Menu() {
         isActive={isModalActive}
         setIsActive={setIsModalActive}
       />
-      <StatusBar backgroundColor={colors.arcGreen} barStyle="light-content" />
+      <StatusBar
+        backgroundColor={colors.headerPrimary}
+        barStyle="light-content"
+      />
       <Drawer.Navigator
         initialRouteName="Novo Pedido"
         screenOptions={({

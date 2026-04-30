@@ -89,7 +89,6 @@ export type SalesSelectedEditableProductItem = {
   quantityLabel: string;
   totalPriceLabel: string;
   unitPriceLabel: string;
-  onPress: () => void;
 };
 
 export type UseSetupSalesEditProductsPageResult = {

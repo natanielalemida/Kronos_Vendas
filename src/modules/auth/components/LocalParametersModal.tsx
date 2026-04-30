@@ -2,6 +2,8 @@ import {Ionicons} from '@expo/vector-icons';
 import React from 'react';
 import {Modal, Switch, Text, TouchableOpacity, View} from 'react-native';
 
+import {logger} from '@/shared/utils/logger';
+
 import {useSetupLocalParametersModal} from '../hooks/useSetupLocalParametersModal';
 import {styles} from '../styles/localParametersModal.styles';
 import {LocalParametersModalProps} from '../types/local-parameters.types';
@@ -28,7 +30,13 @@ export function LocalParametersModal({
             <Switch
               value={biometricsEnabled}
               onValueChange={value => {
-                handlers.setBiometricsEnabled(value).catch(console.error);
+                handlers.setBiometricsEnabled(value).catch(error => {
+                  logger.error(
+                    'LocalParametersModal',
+                    'Failed to toggle biometrics preference.',
+                    error,
+                  );
+                });
               }}
             />
           </View>

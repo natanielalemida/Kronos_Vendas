@@ -1,14 +1,16 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useQueryClient} from '@tanstack/react-query';
 import {Alert} from 'react-native';
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {CustomerEditRepository} from '@/modules/customers/repositories/customer-edit.repository';
 import {useAppStorage} from '@/modules/storage/hooks/useAppStorage';
 import {useAppSession} from '@/shared/hooks/useAppSession';
+import {logger} from '@/shared/utils/logger';
 
 import {
   calculateDiscountPercent,
+  formatOrderSummaryDate,
   mapEditableCustomerRecordToClienteDto,
   mapOrderSummaryProductsToDraft,
 } from '../helpers/order-summary.helpers';
@@ -19,6 +21,8 @@ import {OrderSummaryRepository} from '../repositories/order-summary.repository';
 import {orderSummaryRouteParamsSchema} from '../schemas/order-summary.schema';
 import {
   OrderSummaryCompany,
+  OrderSummaryDisplayPaymentMethod,
+  OrderSummaryDisplayProduct,
   OrderSummaryNavigation,
   UseSetupOrderSummaryPageResult,
 } from '../types/order-summary.types';
@@ -52,11 +56,15 @@ export function useSetupOrderSummaryPage(): UseSetupOrderSummaryPageResult {
       return;
     }
 
-    console.error('Error while loading order summary', orderSummaryQuery.error);
+    logger.error(
+      'OrderSummary',
+      'Error while loading order summary.',
+      orderSummaryQuery.error,
+    );
     Alert.alert('Erro', 'Não foi possível carregar o pedido.');
   }, [orderSummaryQuery.error]);
 
-  const resolveCustomerFromOrder = async () => {
+  const resolveCustomerFromOrder = useCallback(async () => {
     if (!order) {
       throw new Error('Pedido não carregado.');
     }
@@ -66,16 +74,16 @@ export function useSetupOrderSummaryPage(): UseSetupOrderSummaryPageResult {
     }
 
     return customerRepositoryRef.current.findById(order.Pessoa.id);
-  };
+  }, [order]);
 
-  const syncOrderIntoDraft = async () => {
+  const syncOrderIntoDraft = useCallback(async () => {
     const editableCustomer = await resolveCustomerFromOrder();
 
     setClienteOnContext(mapEditableCustomerRecordToClienteDto(editableCustomer));
     setProdutosSelecionados(mapOrderSummaryProductsToDraft(order?.Itens ?? []));
-  };
+  }, [order?.Itens, resolveCustomerFromOrder, setClienteOnContext, setProdutosSelecionados]);
 
-  const handleSendOrder = async () => {
+  const handleSendOrder = useCallback(async () => {
     if (!routeParams || !usuario || !company?.Codigo) {
       Alert.alert('Erro', 'Usuário ou empresa não estão disponíveis.');
       return;
@@ -105,14 +113,25 @@ export function useSetupOrderSummaryPage(): UseSetupOrderSummaryPageResult {
       Alert.alert('Sucesso', 'Pedido enviado com sucesso');
       navigation.navigate('Menu');
     } catch (error) {
-      console.error('Error while sending order from summary', error);
+      logger.error(
+        'OrderSummary',
+        'Error while sending order from summary.',
+        error,
+      );
       Alert.alert('Erro', 'Não foi possível enviar o pedido.');
     } finally {
       setIsPerformingAction(false);
     }
-  };
+  }, [
+    company?.Codigo,
+    navigation,
+    routeParams,
+    sendOrdersMutation,
+    terminal,
+    usuario,
+  ]);
 
-  const handleDeleteOrder = () => {
+  const handleDeleteOrder = useCallback(() => {
     if (!routeParams) {
       return;
     }
@@ -132,7 +151,7 @@ export function useSetupOrderSummaryPage(): UseSetupOrderSummaryPageResult {
               });
               navigation.navigate('Menu');
             } catch (error) {
-              console.error('Error while deleting order', error);
+              logger.error('OrderSummary', 'Error while deleting order.', error);
               Alert.alert('Erro', 'Não foi possível deletar o pedido.');
             } finally {
               setIsPerformingAction(false);
@@ -142,18 +161,23 @@ export function useSetupOrderSummaryPage(): UseSetupOrderSummaryPageResult {
         },
       ],
     );
-  };
+  }, [navigation, queryClient, routeParams]);
 
-  const handleEditOrder = async () => {
+  const handleEditOrder = useCallback(async () => {
     if (!routeParams || !order) {
       return;
     }
 
-    await syncOrderIntoDraft();
-    navigation.navigate('Novo Pedido', {id: routeParams.id});
-  };
+    try {
+      await syncOrderIntoDraft();
+      navigation.navigate('Novo Pedido', {id: routeParams.id});
+    } catch (error) {
+      logger.error('OrderSummary', 'Error while opening order editor.', error);
+      Alert.alert('Erro', 'Não foi possível abrir o pedido para edição.');
+    }
+  }, [navigation, order, routeParams, syncOrderIntoDraft]);
 
-  const handleDuplicateOrder = () => {
+  const handleDuplicateOrder = useCallback(() => {
     Alert.alert(
       'Duplicar pedido',
       'Você tem certeza que deseja Duplicar o pedido atual?',
@@ -172,31 +196,105 @@ export function useSetupOrderSummaryPage(): UseSetupOrderSummaryPageResult {
         },
       ],
     );
-  };
+  }, [navigation, order, syncOrderIntoDraft]);
 
-  const handleGoBack = () => {
+  const handleGoBack = useCallback(() => {
     if (routeParams?.goBack) {
       navigation.pop(2);
       return;
     }
 
     navigation.goBack();
-  };
+  }, [navigation, routeParams?.goBack]);
 
-  const totalGross = order?.Itens.reduce(
-    (currentTotal, item) => currentTotal + item.Quantidade * item.ValorUnitario,
-    0,
-  ) ?? 0;
-  const totalNet = order?.MeiosPagamentos.reduce(
-    (currentTotal, item) => currentTotal + item.ValorRecebido,
-    0,
-  ) ?? 0;
+  const totalGross = useMemo(
+    () =>
+      order?.Itens.reduce(
+        (currentTotal, item) =>
+          currentTotal + item.Quantidade * item.ValorUnitario,
+        0,
+      ) ?? 0,
+    [order?.Itens],
+  );
+  const totalNet = useMemo(
+    () =>
+      order?.MeiosPagamentos.reduce(
+        (currentTotal, item) => currentTotal + item.ValorRecebido,
+        0,
+      ) ?? 0,
+    [order?.MeiosPagamentos],
+  );
+  const products = useMemo<OrderSummaryDisplayProduct[]>(
+    () =>
+      (order?.Itens ?? []).map((product, index) => {
+        const discountValue =
+          product.ValorVendaDesconto !== product.ValorUnitario
+            ? (product.ValorUnitario - product.ValorVendaDesconto) *
+              product.Quantidade
+            : 0;
+        const discountPercent =
+          product.ValorVendaDesconto !== product.ValorUnitario
+            ? calculateDiscountPercent(
+                product.ValorUnitario,
+                product.ValorVendaDesconto,
+              )
+            : '0.00';
+
+        return {
+          id: `${product.CodigoProduto}-${index}`,
+          description: product.Descricao,
+          discountLabel:
+            discountValue > 0
+              ? `${discountValue.toFixed(2)} (${discountPercent}%)`
+              : '0.00',
+          quantityLabel: String(product.Quantidade),
+          totalPriceLabel: `R$ ${(
+            product.ValorVendaDesconto * product.Quantidade
+          ).toFixed(2)}`,
+          unitPriceLabel: `R$ ${product.ValorUnitario.toFixed(2)}`,
+        };
+      }),
+    [order?.Itens],
+  );
+  const paymentMethods = useMemo<OrderSummaryDisplayPaymentMethod[]>(
+    () =>
+      (order?.MeiosPagamentos ?? []).map((paymentMethod, index) => ({
+        id: `${paymentMethod.FormaPagamento.Descricao}-${index}`,
+        amountLabel: `R$ ${paymentMethod.ValorRecebido.toFixed(2)}`,
+        description: paymentMethod.FormaPagamento.Descricao,
+      })),
+    [order?.MeiosPagamentos],
+  );
+  const discountAmount = totalGross - totalNet;
+  const discountPercentLabel =
+    totalGross > 0 ? (((discountAmount / totalGross) * 100).toFixed(2)) : '0.00';
+  const handleSharePdf = useCallback(async () => {
+    if (!order) {
+      return;
+    }
+
+    try {
+      await exportOrderPdf(order);
+    } catch (error) {
+      logger.error('OrderSummary', 'Error while exporting order pdf.', error);
+      Alert.alert('Erro', 'Não foi possível compartilhar o PDF.');
+    }
+  }, [exportOrderPdf, order]);
 
   return {
     data: {
+      customerDocumentLabel: order?.Pessoa?.CNPJCPF ?? '',
+      customerName: order?.Pessoa?.NomeFantasia ?? '',
+      discountAmountLabel: `R$ ${discountAmount.toFixed(2)}`,
+      discountPercentLabel,
+      issuedAtLabel: formatOrderSummaryDate(order?.DataEmissao),
       order,
+      paymentMethods,
+      products,
       totalGross,
+      totalGrossLabel: `R$ ${totalGross.toFixed(2)}`,
       totalNet,
+      totalNetLabel: `R$ ${totalNet.toFixed(2)}`,
     },
     derivedState: {
       isSyncedOrder: !!order?.Codigo,
@@ -207,13 +305,7 @@ export function useSetupOrderSummaryPage(): UseSetupOrderSummaryPageResult {
       handleEditOrder,
       handleGoBack,
       handleSendOrder,
-      handleSharePdf: async () => {
-        if (!order) {
-          return;
-        }
-
-        await exportOrderPdf(order);
-      },
+      handleSharePdf,
     },
     viewState: {
       isLoading:

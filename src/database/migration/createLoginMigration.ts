@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createUsuariosMigration = async () => {
   try {
@@ -21,12 +22,12 @@ export const createUsuariosMigration = async () => {
         table.timestamp('created_at').defaultTo(knexConfig.fn.now());
         table.timestamp('updated_at').defaultTo(knexConfig.fn.now());
       });
-      console.log('Table USUARIOS created successfully.');
+      logger.info('DatabaseMigration', 'Table USUARIOS created successfully.');
     } else {
-      console.log('Table USUARIOS already exists.');
+      logger.info('DatabaseMigration', 'Table USUARIOS already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating USUARIOS table.', error);
   }
 };
 
@@ -39,12 +40,16 @@ export const createPrivilegiosMigration = async () => {
         table.string('privilegio').notNullable();
         table.foreign('usuario_id').references('usuarios.id').onDelete('CASCADE');
       });
-      console.log('Table PRIVILEGIOS created successfully.');
+      logger.info('DatabaseMigration', 'Table PRIVILEGIOS created successfully.');
     } else {
-      console.log('Table PRIVILEGIOS already exists.');
+      logger.info('DatabaseMigration', 'Table PRIVILEGIOS already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error(
+      'DatabaseMigration',
+      'Error creating PRIVILEGIOS table.',
+      error,
+    );
   }
 };
 
@@ -55,11 +60,15 @@ export const createEmpresaJson = async () => {
         table.integer('empresaJson').unsigned().notNullable();
         table.string('codigo_empresa').notNullable();
       });
-      console.log('Table empresaLogin created successfully.');
+      logger.info('DatabaseMigration', 'Table empresaLogin created successfully.');
     } else {
-      console.log('Table empresaLogin already exists.');
+      logger.info('DatabaseMigration', 'Table empresaLogin already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error(
+      'DatabaseMigration',
+      'Error creating empresaLogin table.',
+      error,
+    );
   }
 };

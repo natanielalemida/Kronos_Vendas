@@ -51,6 +51,7 @@ export type LoginSuccessPayload = {
 };
 
 export type LoginPageHandlers = {
+  handleBiometricLogin: () => Promise<void>;
   handleChangeOrganization: (value: OrganizationOption) => void;
   handleLogin: () => Promise<void>;
   handleOpenSettings: () => void;

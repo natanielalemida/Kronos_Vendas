@@ -1,10 +1,12 @@
 import {Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useQueryClient} from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 
 import {useAppSession} from '@/shared/hooks/useAppSession';
 
 import {mapEditableCustomerRecordToForm} from '../mappers/customer-form.mapper';
+import {customersQueryKeys} from '../query-keys/customers.query-keys';
 import {CustomerEditRepository} from '../repositories/customer-edit.repository';
 import {CustomerActionsModalProps, UseCustomerActionsModalResult} from '../types/customer-edit.types';
 
@@ -16,6 +18,7 @@ export function useCustomerEditActions({
   'customer' | 'onClose'
 >): UseCustomerActionsModalResult {
   const navigation = useNavigation() as {navigate: (routeName: string) => void};
+  const queryClient = useQueryClient();
   const repository = new CustomerEditRepository();
   const {setForm} = useAppSession();
 
@@ -51,6 +54,9 @@ export function useCustomerEditActions({
           onPress: async () => {
             try {
               await repository.deleteById(customer.id);
+              await queryClient.invalidateQueries({
+                queryKey: customersQueryKeys.all,
+              });
               await Toast.show({
                 type: 'success',
                 text1: 'Sucesso',

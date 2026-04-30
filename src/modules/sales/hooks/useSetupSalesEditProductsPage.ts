@@ -26,16 +26,14 @@ export function useSetupSalesEditProductsPage(): UseSetupSalesEditProductsPageRe
       );
     });
   }, [ProdutosSelecionados, debouncedSearchText]);
-  const selectedProduct = ProdutosSelecionados.find(
-    product => product.Codigo === selectedProductCode,
+  const selectedProduct = useMemo(
+    () =>
+      ProdutosSelecionados.find(product => product.Codigo === selectedProductCode),
+    [ProdutosSelecionados, selectedProductCode],
   );
-  const handleSearchTextChange = (value: string) => {
-    setSearchText(salesSearchSchema.parse({searchText: value}).searchText);
-  };
-
-  return {
-    data: {
-      products: filteredProducts.map(product => ({
+  const products = useMemo(
+    () =>
+      filteredProducts.map(product => ({
         id: String(product.Codigo),
         code: product.Codigo,
         description: product.Descricao,
@@ -44,8 +42,16 @@ export function useSetupSalesEditProductsPage(): UseSetupSalesEditProductsPageRe
           product.Quantidade * product.ValorVendaDesconto,
         ),
         unitPriceLabel: formatCurrency(product.ValorVendaDesconto),
-        onPress: () => setSelectedProductCode(product.Codigo),
       })),
+    [filteredProducts],
+  );
+  const handleSearchTextChange = (value: string) => {
+    setSearchText(salesSearchSchema.parse({searchText: value}).searchText);
+  };
+
+  return {
+    data: {
+      products,
       searchText,
       selectedProduct,
     },

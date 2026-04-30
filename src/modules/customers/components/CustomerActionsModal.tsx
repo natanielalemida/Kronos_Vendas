@@ -2,6 +2,7 @@ import React from 'react';
 import {Modal, Text, TouchableOpacity, View} from 'react-native';
 
 import {ShowIf} from '@/modules/components/showIf';
+import {logger} from '@/shared/utils/logger';
 
 import {useCustomerEditActions} from '../hooks/useCustomerEditActions';
 import {customerActionsModalStyles} from '../styles/customerActionsModal.styles';
@@ -38,7 +39,13 @@ export function CustomerActionsModal({
                 <TouchableOpacity
                   style={customerActionsModalStyles.actionButton}
                   onPress={() => {
-                    handlers.handleEditCustomer().catch(console.error);
+                    handlers.handleEditCustomer().catch(error => {
+                      logger.error(
+                        'CustomerActionsModal',
+                        'Failed to open customer editor.',
+                        error,
+                      );
+                    });
                   }}>
                   <Text style={customerActionsModalStyles.actionLabel}>
                     Alterar
@@ -58,7 +65,13 @@ export function CustomerActionsModal({
               <TouchableOpacity
                 style={customerActionsModalStyles.actionButton}
                 onPress={() => {
-                  handlers.handleEditCustomer().catch(console.error);
+                  handlers.handleEditCustomer().catch(error => {
+                    logger.error(
+                      'CustomerActionsModal',
+                      'Failed to open customer details.',
+                      error,
+                    );
+                  });
                 }}>
                 <Text style={customerActionsModalStyles.actionLabel}>
                   Visualizar

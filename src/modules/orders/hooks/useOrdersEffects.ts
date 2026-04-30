@@ -1,6 +1,8 @@
 import {useCallback, useEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 
+import {logger} from '@/shared/utils/logger';
+
 import {UseOrdersEffectsParams} from '../types/orders-hooks.types';
 
 export function useOrdersEffects({
@@ -19,7 +21,7 @@ export function useOrdersEffects({
         setOrders(result);
       })
       .catch(error => {
-        console.error('Error while loading orders', error);
+        logger.error('OrdersPage', 'Error while loading orders.', error);
       });
   }, [getOrders, options, setOrders]);
 

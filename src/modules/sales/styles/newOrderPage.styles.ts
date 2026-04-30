@@ -12,6 +12,9 @@ export const newOrderPageStyles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  itemsListContent: {
+    paddingBottom: spacing.md,
+  },
   customerCard: {
     marginTop: spacing.xs,
     marginHorizontal: spacing.xs,

@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createCondicaoPagamentoTable = async () => {
   try {
@@ -12,18 +13,28 @@ export const createCondicaoPagamentoTable = async () => {
         table.integer('IntervaloDias').notNullable().defaultTo(0);
         table.integer('QtdeDiasParcelaInicial').notNullable().defaultTo(0);
         table.boolean('Ativo').notNullable();
-        table.string('Tarifas').notNullable().defaultTo(0);
+        table.string('Tarifas').notNullable();
 
         table
           .foreign('CodigoFormaPagamento')
           .references('Codigo')
           .inTable('formaPagamento');
       });
-      console.log('Table SETTINGS created successfully.');
+      logger.info(
+        'DatabaseMigration',
+        'Table CONDICAOPAGAMENTO created successfully.',
+      );
     } else {
-      console.log('Table SETTINGS already exists.');
+      logger.info(
+        'DatabaseMigration',
+        'Table CONDICAOPAGAMENTO already exists.',
+      );
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error(
+      'DatabaseMigration',
+      'Error creating CONDICAOPAGAMENTO table.',
+      error,
+    );
   }
 };

@@ -1,14 +1,18 @@
 import {StyleSheet} from 'react-native';
 
+import {spacing} from '@/shared/theme';
+
 import {colors} from '../../styles';
 
 export const headerStyles = StyleSheet.create({
   container: {
-    backgroundColor: colors.arcGreen,
+    backgroundColor: colors.headerPrimary,
     alignItems: 'flex-end',
     flexDirection: 'row',
-    minHeight: '11%',
-    paddingHorizontal: 15,
+    minHeight: 96,
+    paddingTop: spacing.xxl,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.sm,
     justifyContent: 'space-between',
     width: '100%',
   },
@@ -16,14 +20,13 @@ export const headerStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '65%',
-    marginTop: 20,
   },
   label: {
     color: colors.white,
     fontSize: 18,
   },
   iconButton: {
-    padding: 20,
+    padding: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -12,11 +12,13 @@ export function useCustomersQuery(searchText: string) {
   const parsedFilter = customersFilterSchema.parse({searchText});
 
   return useQuery<CustomerListItem[], Error>({
+    gcTime: 1000 * 60 * 15,
+    placeholderData: previousData => previousData,
     queryFn: async (): Promise<CustomerListItem[]> => {
       const response = await repository.search(parsedFilter.searchText);
       return response.data as CustomerListItem[];
     },
     queryKey: customersQueryKeys.list(parsedFilter.searchText),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 60 * 2,
   });
 }

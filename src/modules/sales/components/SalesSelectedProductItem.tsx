@@ -1,3 +1,4 @@
+import React, {memo} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 
 import {ShowIf} from '@/modules/components/showIf';
@@ -6,7 +7,7 @@ import {getSelectedProductContainerStyle} from '../helpers/sales-page.helpers';
 import {newOrderPageStyles} from '../styles/newOrderPage.styles';
 import {SalesSelectedProductItemProps} from '../types/sales-page.types';
 
-export function SalesSelectedProductItem({
+function SalesSelectedProductItemBase({
   product,
 }: SalesSelectedProductItemProps) {
   return (
@@ -49,3 +50,5 @@ export function SalesSelectedProductItem({
     </TouchableOpacity>
   );
 }
+
+export const SalesSelectedProductItem = memo(SalesSelectedProductItemBase);

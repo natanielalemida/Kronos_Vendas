@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createPedidoTable = async () => {
   try {
@@ -21,11 +22,11 @@ export const createPedidoTable = async () => {
         table.boolean('IsOperacaoProcessada').notNullable();
         table.integer('CodigoPessoa').notNullable().index();
       });
-      console.log('Table PEDIDO created successfully.');
+      logger.info('DatabaseMigration', 'Table PEDIDO created successfully.');
     } else {
-      console.log('Table PEDIDO already exists.');
+      logger.info('DatabaseMigration', 'Table PEDIDO already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating PEDIDO table.', error);
   }
 };

@@ -7,15 +7,21 @@ import {ProductListItem} from '@/modules/products/types/product.types';
 import {salesSearchSchema} from '../schemas/sales.schema';
 import {UseSetupSalesProductsSelectionPageResult} from '../types/sales-selection.types';
 
+const EMPTY_PRODUCTS: ProductListItem[] = [];
+
 export function useSetupSalesProductsSelectionPage(): UseSetupSalesProductsSelectionPageResult {
   const [searchText, setSearchText] = useState('');
   const [selectedProductCode, setSelectedProductCode] = useState<number>();
   const debouncedSearchText = useDebouncedSearchText(searchText);
   const query = useProductsQuery(debouncedSearchText);
-  const products = useMemo(() => query.data ?? [], [query.data]);
-  const selectedProduct = products.find(
-    product => product.Codigo === selectedProductCode,
-  ) as ProductListItem | undefined;
+  const products = query.data ?? EMPTY_PRODUCTS;
+  const selectedProduct = useMemo(
+    () =>
+      products.find(
+        product => product.Codigo === selectedProductCode,
+      ) as ProductListItem | undefined,
+    [products, selectedProductCode],
+  );
   const handleSearchTextChange = (value: string) => {
     setSearchText(salesSearchSchema.parse({searchText: value}).searchText);
   };

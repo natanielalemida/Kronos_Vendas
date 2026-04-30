@@ -15,7 +15,7 @@ import {useAppStorage} from '@/modules/storage/hooks/useAppStorage';
 import {useAppSession} from '@/shared/hooks/useAppSession';
 import {mapEditableCustomerRecordToClienteDto} from '@/modules/customers/helpers/customer-sync.helpers';
 import {CustomerEditRepository} from '@/modules/customers/repositories/customer-edit.repository';
-import {useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {useSendOrdersMutation} from '../mutations/send-orders.mutation';
 
@@ -53,9 +53,13 @@ export function useSetupOrdersPage(): UseSetupOrdersPageResult {
   );
   const setTextFilter = useOrdersPageStore(state => state.setTextFilter);
 
-  if (options.clienteId !== customerId) {
+  useEffect(() => {
+    if (options.clienteId === customerId) {
+      return;
+    }
+
     setOptions(currentValue => ({...currentValue, clienteId: customerId}));
-  }
+  }, [customerId, options.clienteId, setOptions]);
 
   const query = useOrdersQuery(options);
   const sendOrdersMutation = useSendOrdersMutation();

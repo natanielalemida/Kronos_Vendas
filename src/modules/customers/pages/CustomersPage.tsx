@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {FlatList, Text, View} from 'react-native';
 
 import Search from '@/modules/components/search';
@@ -7,9 +7,29 @@ import {CustomerActionsModal} from '@/modules/customers/components/CustomerActio
 import {CustomerListItem} from '../components/CustomerListItem';
 import {useSetupCustomersPage} from '../hooks/useSetupCustomersPage';
 import {styles} from '../styles/customersPage.styles';
+import {CustomerListItem as CustomerListItemData} from '../types/customer-list.types';
 
 export default function CustomersPage() {
   const {data, handlers, viewState} = useSetupCustomersPage();
+  const keyExtractor = useCallback((item: CustomerListItemData) => {
+    return `${item.Codigo}`;
+  }, []);
+  const renderItem = useCallback(
+    ({
+      item,
+      index,
+    }: {
+      item: CustomerListItemData;
+      index: number;
+    }) => (
+      <CustomerListItem
+        customer={item}
+        index={index}
+        onPress={handlers.handleOpenCustomerActions}
+      />
+    ),
+    [handlers.handleOpenCustomerActions],
+  );
 
   return (
     <View style={styles.container}>
@@ -31,15 +51,14 @@ export default function CustomersPage() {
         ) : (
           <FlatList
             data={data.customers}
-            renderItem={({item, index}) => (
-              <CustomerListItem
-                customer={item}
-                index={index}
-                onPress={handlers.handleOpenCustomerActions}
-              />
-            )}
+            renderItem={renderItem}
             keyboardShouldPersistTaps="always"
-            keyExtractor={item => `${item.Codigo}`}
+            keyExtractor={keyExtractor}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            updateCellsBatchingPeriod={50}
+            windowSize={7}
+            removeClippedSubviews
           />
         )}
       </View>

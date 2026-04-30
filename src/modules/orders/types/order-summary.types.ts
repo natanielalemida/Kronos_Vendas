@@ -75,11 +75,35 @@ export type OrderSummaryCompany = {
   ImgLogo?: string;
 };
 
+export type OrderSummaryDisplayProduct = {
+  id: string;
+  description: string;
+  discountLabel: string;
+  quantityLabel: string;
+  totalPriceLabel: string;
+  unitPriceLabel: string;
+};
+
+export type OrderSummaryDisplayPaymentMethod = {
+  id: string;
+  amountLabel: string;
+  description: string;
+};
+
 export type UseSetupOrderSummaryPageResult = {
   data: {
+    customerDocumentLabel: string;
+    customerName: string;
+    discountAmountLabel: string;
+    discountPercentLabel: string;
+    issuedAtLabel: string;
     order?: OrderSummaryRecord;
+    paymentMethods: OrderSummaryDisplayPaymentMethod[];
+    products: OrderSummaryDisplayProduct[];
     totalGross: number;
+    totalGrossLabel: string;
     totalNet: number;
+    totalNetLabel: string;
   };
   derivedState: {
     isSyncedOrder: boolean;

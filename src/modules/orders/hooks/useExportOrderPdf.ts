@@ -1,5 +1,6 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import {useCallback, useRef} from 'react';
 
 import {CustomerEditRepository} from '@/modules/customers/repositories/customer-edit.repository';
 import {useAppSession} from '@/shared/hooks/useAppSession';
@@ -45,12 +46,12 @@ function formatDateTime(dateValue: string | Date): string {
 }
 
 export function useExportOrderPdf() {
-  const customerRepository = new CustomerEditRepository();
+  const customerRepositoryRef = useRef(new CustomerEditRepository());
   const {empresa, usuario} = useAppSession();
   const company = empresa as OrderSummaryCompany | undefined;
 
-  const exportOrderPdf = async (order: OrderSummaryRecord) => {
-    const editableCustomer = await customerRepository.findByDocument(
+  const exportOrderPdf = useCallback(async (order: OrderSummaryRecord) => {
+    const editableCustomer = await customerRepositoryRef.current.findByDocument(
       order.Pessoa.CNPJCPF,
     );
     const customer = mapEditableCustomerRecordToClienteDto(editableCustomer);
@@ -251,7 +252,7 @@ export function useExportOrderPdf() {
         mimeType: 'application/pdf',
       });
     }
-  };
+  }, [company, usuario]);
 
   return {
     exportOrderPdf,

@@ -75,7 +75,7 @@ export function LoginForm({
         <ShowIf condition={shouldShowBiometricButton}>
           <TouchableOpacity
             style={styles.biometricButton}
-            onPress={handlers.handleRestoreUser}>
+            onPress={handlers.handleBiometricLogin}>
             <Ionicons
               style={styles.iconSpacing}
               name="finger-print"

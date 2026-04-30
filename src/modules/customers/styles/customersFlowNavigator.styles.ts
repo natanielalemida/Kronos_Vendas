@@ -9,9 +9,9 @@ export const customersFlowNavigatorStyles = StyleSheet.create({
 });
 
 export const customersFlowNavigatorTheme = {
-  headerStyle: {backgroundColor: colors.arcGreen},
+  headerStyle: {backgroundColor: colors.headerPrimary},
   headerTintColor: '#fff',
   tabBarActiveTintColor: '#fff',
   tabBarInactiveTintColor: 'gray',
-  tabBarStyle: {backgroundColor: colors.arcGreen},
+  tabBarStyle: {backgroundColor: colors.headerPrimary},
 };

@@ -11,8 +11,10 @@ export function useOrdersQuery(options: OrdersFilterOptions) {
   const parsedOptions = ordersFilterSchema.parse(options);
 
   return useQuery({
+    gcTime: 1000 * 60 * 15,
+    placeholderData: previousData => previousData,
     queryFn: () => controller.fetchOrders(parsedOptions),
     queryKey: ordersQueryKeys.list(parsedOptions),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 60 * 2,
   });
 }

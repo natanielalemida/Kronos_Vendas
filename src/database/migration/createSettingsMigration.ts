@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createSettingsTable = async () => {
   try {
@@ -11,11 +12,11 @@ export const createSettingsTable = async () => {
         table.integer('terminal').notNullable().defaultTo(0);
         table.integer('idConecction').notNullable().defaultTo(0);
       });
-      console.log('Table SETTINGS created successfully.');
+      logger.info('DatabaseMigration', 'Table SETTINGS created successfully.');
     } else {
-      console.log('Table SETTINGS already exists.');
+      logger.info('DatabaseMigration', 'Table SETTINGS already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating SETTINGS table.', error);
   }
 };

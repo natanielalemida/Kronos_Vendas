@@ -8,6 +8,7 @@ import Loading from '@/modules/components/loading/Loading';
 import {HeaderProducts} from '@/modules/components/headers/HeaderProducts';
 import Tag from '@/modules/components/tag/tag';
 import {colors} from '@/modules/styles';
+import {logger} from '@/shared/utils/logger';
 
 import {OrdersFilterModal} from '../components/OrdersFilterModal';
 import {formatOrderDate} from '../helpers/order-formatters';
@@ -38,7 +39,11 @@ export default function OrdersPage(): React.JSX.Element {
         }
         onPressRightIcon={() => {
           handlers.handleSendOrders().catch(error => {
-            console.error('Error while sending selected orders', error);
+            logger.error(
+              'OrdersPage',
+              'Error while sending selected orders.',
+              error,
+            );
           });
         }}
       />

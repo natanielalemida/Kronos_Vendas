@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createPedidoVinculoProdutoTable = async () => {
   try {
@@ -17,11 +18,21 @@ export const createPedidoVinculoProdutoTable = async () => {
         table.decimal('ValorVendaDesconto');
         table.boolean('iSincronizado');
       });
-      console.log('Table PEDIDO-VINCULO-PRODUTO created successfully.');
+      logger.info(
+        'DatabaseMigration',
+        'Table PEDIDO_VINCULO_PRODUTO created successfully.',
+      );
     } else {
-      console.log('Table PEDIDO-VINCULO-PRODUTO already exists.');
+      logger.info(
+        'DatabaseMigration',
+        'Table PEDIDO_VINCULO_PRODUTO already exists.',
+      );
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error(
+      'DatabaseMigration',
+      'Error creating PEDIDO_VINCULO_PRODUTO table.',
+      error,
+    );
   }
 };

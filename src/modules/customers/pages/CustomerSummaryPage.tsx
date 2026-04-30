@@ -4,6 +4,7 @@ import {ScrollView, Text, View} from 'react-native';
 import {HeaderProducts} from '@/modules/components/headers/HeaderProducts';
 import Loading from '@/modules/components/loading/Loading';
 import {ShowIf} from '@/modules/components/showIf';
+import {logger} from '@/shared/utils/logger';
 
 import {formatCustomerDocument} from '../helpers/customer-form.helpers';
 import {useSetupCustomerSummaryPage} from '../hooks/useSetupCustomerSummaryPage';
@@ -30,12 +31,20 @@ export default function CustomerSummaryPage(): React.JSX.Element {
         rightSize2={25}
         onPressRightIcon={() => {
           handlers.handleSaveCustomer().catch(error => {
-            console.error('Error while saving customer', error);
+            logger.error(
+              'CustomerSummary',
+              'Error while saving customer.',
+              error,
+            );
           });
         }}
         onPressRightIcon2={() => {
           handlers.handleSyncCustomer().catch(error => {
-            console.error('Error while syncing customer', error);
+            logger.error(
+              'CustomerSummary',
+              'Error while syncing customer.',
+              error,
+            );
           });
         }}
       />

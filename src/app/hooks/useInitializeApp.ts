@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 
 import {initializeDatabase} from '@/modules/auth/lib/initializeDatabase';
 import {useAppStorageActions} from '@/modules/storage/hooks/useAppStorageActions';
+import {logger} from '@/shared/utils/logger';
 
 type AppInitializationState = {
   isReady: boolean;
@@ -46,7 +47,9 @@ export function useInitializeApp(): AppInitializationState {
       }
     };
 
-    initialize().catch(console.error);
+    initialize().catch(error => {
+      logger.error('AppInit', 'Unexpected app initialization failure.', error);
+    });
 
     return () => {
       isMounted = false;

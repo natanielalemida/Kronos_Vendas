@@ -1,5 +1,6 @@
 import {Alert} from 'react-native';
 import Toast from 'react-native-toast-message';
+import {logger} from '@/shared/utils/logger';
 
 import {OrderListItem} from '../types/order.types';
 import {UseOrdersHandlersParams} from '../types/orders-hooks.types';
@@ -92,7 +93,11 @@ export function useOrdersHandlers({
         visibilityTime: 2000,
       });
     } catch (error) {
-      console.error('Error while syncing selected orders', error);
+      logger.error(
+        'OrdersHandlers',
+        'Error while syncing selected orders.',
+        error,
+      );
       Alert.alert('Erro', 'Não foi possível enviar os pedidos selecionados.');
     } finally {
       setLoading(false);

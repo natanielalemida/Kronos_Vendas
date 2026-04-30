@@ -28,12 +28,15 @@ export function useSyncExecution() {
     };
   }, [activeStep?.label, message, progressPercentage, status]);
 
-  return {
-    status,
-    mode,
-    progress,
-    steps,
-    errorMessage,
-    isRunning: status === 'running',
-  };
+  return useMemo(
+    () => ({
+      status,
+      mode,
+      progress,
+      steps,
+      errorMessage,
+      isRunning: status === 'running',
+    }),
+    [errorMessage, mode, progress, status, steps],
+  );
 }

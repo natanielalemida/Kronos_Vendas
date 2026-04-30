@@ -1,13 +1,14 @@
-import {Alert} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {Alert, InteractionManager} from 'react-native';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 
 import {useAppStorage} from '@/modules/storage/hooks/useAppStorage';
 import {useAppStorageActions} from '@/modules/storage/hooks/useAppStorageActions';
+import {logger} from '@/shared/utils/logger';
 import {useSyncExecution} from '@/modules/sync/hooks/useSyncExecution';
 import {UserDto} from '@/shared/types';
 import {useAuthStore} from '@/shared/store/authStore';
 import {useAppStore} from '@/shared/store/useAppStore';
-import {SyncController} from '@/modules/sync/controllers/sync.controller';
+import {SyncSessionService} from '@/modules/sync/services/sync-session.service';
 import {RootNavigationProp} from '@/app/navigation/types/root-navigation.types';
 
 import {LoginSessionRepository} from '../repositories/login-session.repository';
@@ -20,6 +21,7 @@ import {
 } from '../types/login-page.types';
 
 const authService = new AuthService();
+const syncSessionService = new SyncSessionService();
 
 export function useLoginMutation(): LoginMutationResult {
   const navigation = useNavigation<RootNavigationProp<'Login'>>();
@@ -39,6 +41,17 @@ export function useLoginMutation(): LoginMutationResult {
   } = useAppStore();
 
   const loginSessionRepository = new LoginSessionRepository();
+
+  const navigateToMenu = () => {
+    InteractionManager.runAfterInteractions(() => {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Menu'}],
+        }),
+      );
+    });
+  };
 
   const showAlert = (title: string, message: string) => {
     Alert.alert(title, message);
@@ -125,12 +138,10 @@ export function useLoginMutation(): LoginMutationResult {
         terminal,
         user,
       });
-
-      const syncController = new SyncController(user, organizationCode);
-      await syncController.syncAll();
-      navigation.navigate('Menu');
+      syncSessionService.reset();
+      navigateToMenu();
     } catch (error) {
-      console.error('Erro durante o login:', error);
+      logger.error('Login', 'Fallback login flow failed after remote company sync.', error);
       await handleCompanyFallback();
       await persistAuthenticatedSession({
         cpf,
@@ -139,7 +150,8 @@ export function useLoginMutation(): LoginMutationResult {
         terminal,
         user,
       });
-      navigation.navigate('Menu');
+      syncSessionService.reset();
+      navigateToMenu();
     }
   };
 
@@ -206,7 +218,7 @@ export function useLoginMutation(): LoginMutationResult {
         terminal,
       );
     } catch (error) {
-      console.error('Erro durante o login:', error);
+      logger.error('Login', 'Primary login request failed.', error);
 
       if (error instanceof Error && error.message.includes('Network Error')) {
         const offlineResponse = await handleOfflineLogin(

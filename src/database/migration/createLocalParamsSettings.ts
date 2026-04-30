@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createLocalParamsSettings = async () => {
   try {
@@ -10,11 +11,21 @@ export const createLocalParamsSettings = async () => {
         table.string('Valor').nullable();
         table.boolean('Ativo').notNullable();
       });
-      console.log('Table PARAMETROSLOCAIS created successfully.');
+      logger.info(
+        'DatabaseMigration',
+        'Table PARAMETROSLOCAIS created successfully.',
+      );
     } else {
-      console.log('Table PARAMETROSLOCAIS already exists.');
+      logger.info(
+        'DatabaseMigration',
+        'Table PARAMETROSLOCAIS already exists.',
+      );
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error(
+      'DatabaseMigration',
+      'Error creating PARAMETROSLOCAIS table.',
+      error,
+    );
   }
 };

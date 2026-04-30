@@ -9,11 +9,12 @@ const controller = new SettingsController();
 
 export function useLocalParametersQuery() {
   return useQuery<LocalParameter[], Error>({
+    gcTime: 1000 * 60 * 30,
     queryFn: async () => {
       const result = await controller.getLocalParameters();
       return localParametersSchema.parse(result);
     },
     queryKey: settingsQueryKeys.localParameters(),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 60 * 10,
   });
 }

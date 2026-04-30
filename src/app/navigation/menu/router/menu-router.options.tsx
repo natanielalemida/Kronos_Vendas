@@ -1,10 +1,14 @@
+import {View} from 'react-native';
 import {DrawerNavigationOptions} from '@react-navigation/drawer';
 import {ShowIf} from '@/modules/components/showIf';
 
 import {MenuDrawerIcon} from './components/MenuDrawerIcon';
 import {MenuDrawerToggleButton} from './components/MenuDrawerToggleButton';
 import {MenuHeaderActionButton} from './components/MenuHeaderActionButton';
-import {menuRouterScreenBaseStyles} from './styles/menuRouter.styles';
+import {
+  menuRouterScreenBaseStyles,
+  menuRouterStyles,
+} from './styles/menuRouter.styles';
 import {
   DrawerScreenOptionsInput,
   NewOrderOptionsInput,
@@ -16,6 +20,7 @@ export function getDrawerScreenOptions({
 }: DrawerScreenOptionsInput): DrawerNavigationOptions {
   return {
     ...menuRouterScreenBaseStyles,
+    headerBackground: () => <View style={menuRouterStyles.headerBackground} />,
     headerLeft: () => (
       <MenuDrawerToggleButton
         disabled={isSyncing}

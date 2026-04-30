@@ -2,6 +2,7 @@ export const colors = {
   menuPrimary: "#cce8e7",
   arcGreen: 'rgb(0, 106, 106)',
   arcGreenNeon: 'rgb(0, 255, 153)',
+  headerPrimary: 'rgb(0, 106, 106)',
   white: '#fff',
   graySearch: 'gray',
   black: 'black',

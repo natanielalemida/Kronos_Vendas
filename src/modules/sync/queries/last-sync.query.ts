@@ -26,11 +26,12 @@ export function useLastSyncQuery(
 
   return useQuery({
     enabled: !!syncController,
+    gcTime: 1000 * 60 * 15,
     queryFn: async () => {
       const lastSyncLabel = await syncController?.getLastSyncLabel();
       return lastSyncLabel ?? NOT_AVAILABLE_SYNC_LABEL;
     },
     queryKey: syncQueryKeys.lastSync(organizationCode),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 60 * 5,
   });
 }

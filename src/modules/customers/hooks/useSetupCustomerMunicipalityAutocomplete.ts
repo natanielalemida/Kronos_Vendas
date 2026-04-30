@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from 'react';
 import {Keyboard} from 'react-native';
 
 import {useAppSession} from '@/shared/hooks/useAppSession';
+import {logger} from '@/shared/utils/logger';
 
 import {
   createUpdatedCustomerForm,
@@ -24,7 +25,11 @@ export function useSetupCustomerMunicipalityAutocomplete() {
       .getMunicipalities()
       .then(setMunicipios)
       .catch(error => {
-        console.error('Error while loading municipalities', error);
+        logger.error(
+          'CustomerMunicipality',
+          'Error while loading municipalities.',
+          error,
+        );
       });
   }, [municipios.length, setMunicipios]);
 

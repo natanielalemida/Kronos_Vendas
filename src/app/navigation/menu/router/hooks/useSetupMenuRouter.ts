@@ -1,20 +1,27 @@
 import {useCallback, useState} from 'react';
 
-import {useAppSession} from '@/shared/hooks/useAppSession';
+import {useAppStore} from '@/shared/store/useAppStore';
+import {useSyncExecution} from '@/modules/sync/hooks/useSyncExecution';
 
 export function useSetupMenuRouter() {
   const [isModalActive, setIsModalActive] = useState(false);
-  const {clienteOnContext, isSyncing, ProdutosSelecionados} = useAppSession();
+  const {isRunning: isSyncing} = useSyncExecution();
+  const selectedCustomer = useAppStore(
+    state => state.salesDraft.selectedCustomer,
+  );
+  const selectedProductsLength = useAppStore(
+    state => state.salesDraft.selectedProducts.length,
+  );
 
   const handleToggleFilterModal = useCallback(() => {
     setIsModalActive(currentValue => !currentValue);
   }, []);
 
   return {
-    clienteOnContext,
+    clienteOnContext: selectedCustomer,
     isModalActive,
     isSyncing,
-    produtosSelecionadosLength: ProdutosSelecionados.length,
+    produtosSelecionadosLength: selectedProductsLength,
     setIsModalActive,
     handleToggleFilterModal,
   };

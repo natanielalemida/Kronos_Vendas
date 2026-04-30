@@ -1,4 +1,4 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useQueryClient} from '@tanstack/react-query';
 import {useCallback, useMemo, useRef} from 'react';
 import LottieView from 'lottie-react-native';
@@ -52,16 +52,6 @@ export function useSetupSyncPage(): UseSetupSyncPageResult {
   const syncSessionService = useMemo(() => {
     return new SyncSessionService();
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      lastSyncQuery.refetch().catch(error => {
-        console.error('Failed to load last sync label:', error);
-      });
-
-      return () => undefined;
-    }, [lastSyncQuery]),
-  );
 
   const navigateToHome = useCallback(() => {
     navigation.navigate('Novo Pedido' as never);

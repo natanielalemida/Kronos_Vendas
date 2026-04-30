@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {OrganizationOption} from '@/shared/types';
+import {logger} from '@/shared/utils/logger';
 
 import {useAppStorage} from '@/modules/storage/hooks/useAppStorage';
 import {useAppStorageActions} from '@/modules/storage/hooks/useAppStorageActions';
@@ -44,7 +45,13 @@ export function useOrganizationSelect({
   }, [applyOrganization, defaultOrganization]);
 
   useEffect(() => {
-    syncDefaultOrganization().catch(console.error);
+    syncDefaultOrganization().catch(error => {
+      logger.error(
+        'OrganizationSelect',
+        'Failed to sync default organization.',
+        error,
+      );
+    });
   }, [syncDefaultOrganization]);
 
   return {

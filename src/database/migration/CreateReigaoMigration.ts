@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createRegiaoTable = async () => {
   try {
@@ -9,11 +10,11 @@ export const createRegiaoTable = async () => {
         table.integer('Codigo').notNullable().unique().index();
         table.string('Descricao').notNullable().index();
       });
-      console.log('Table REGIAO created successfully.');
+      logger.info('DatabaseMigration', 'Table REGIAO created successfully.');
     } else {
-      console.log('Table REGIAO already exists.');
+      logger.info('DatabaseMigration', 'Table REGIAO already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating REGIAO table.', error);
   }
 };

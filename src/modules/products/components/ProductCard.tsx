@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 
 import {
@@ -9,7 +9,7 @@ import {formatCurrency} from '../helpers/product-formatters';
 import {styles} from '../styles/productsPage.styles';
 import {ProductCardProps} from '../types/products-components.types';
 
-export function ProductCard({item, onPress}: ProductCardProps) {
+function ProductCardBase({item, onPress}: ProductCardProps) {
   const defaultImage = getDefaultProductImage(item.images);
   const imageUri = defaultImage
     ? decodeGzipImageToBase64(defaultImage.path)
@@ -66,3 +66,5 @@ export function ProductCard({item, onPress}: ProductCardProps) {
     </TouchableOpacity>
   );
 }
+
+export const ProductCard = memo(ProductCardBase);

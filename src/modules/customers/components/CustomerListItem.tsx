@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 
 import {ShowIf} from '@/modules/components/showIf';
@@ -12,7 +12,7 @@ import {styles} from '../styles/customersPage.styles';
 import {CustomerListItemProps} from '../types/customers-components.types';
 import {CustomerAddressList} from './CustomerAddressList';
 
-export function CustomerListItem({
+function CustomerListItemBase({
   customer,
   index,
   onPress,
@@ -53,3 +53,5 @@ export function CustomerListItem({
     </TouchableOpacity>
   );
 }
+
+export const CustomerListItem = memo(CustomerListItemBase);

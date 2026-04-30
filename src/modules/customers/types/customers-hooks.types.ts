@@ -11,7 +11,6 @@ export type UseCustomersPageEffectsParams = {
 };
 
 export type UseCustomersPageHandlersParams = {
-  fetchCustomers: FetchCustomers;
   handleVerifyCliente: (customer: CustomerListItem) => void;
   setActive: (value: boolean) => void;
   setSearchText: (value: string) => void;

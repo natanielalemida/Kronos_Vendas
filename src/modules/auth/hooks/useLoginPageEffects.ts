@@ -1,9 +1,10 @@
 import * as LocalAuthentication from 'expo-local-authentication';
-import {useCallback, useEffect} from 'react';
-import {Keyboard} from 'react-native';
+import {useCallback, useEffect, useRef} from 'react';
+import {Alert, Keyboard} from 'react-native';
 import {OrganizationOption} from '@/shared/types';
 
 import {useAppStorage} from '@/modules/storage/hooks/useAppStorage';
+import {logger} from '@/shared/utils/logger';
 import {UseLoginPageEffectsParams} from '../types/login-hook.types';
 
 export function useLoginPageEffects({
@@ -13,6 +14,7 @@ export function useLoginPageEffects({
 }: UseLoginPageEffectsParams) {
   const {biometricsEnabled: usesBiometrics, storedCredentials} =
     useAppStorage();
+  const hasAttemptedRestoreRef = useRef(false);
 
   const handleChangeOrganization = useCallback(
     (value: OrganizationOption) => {
@@ -25,8 +27,19 @@ export function useLoginPageEffects({
   );
 
   const handleBiometricLogin = useCallback(
-    async (username?: string, storedPassword?: string) => {
+    async (
+      username?: string,
+      storedPassword?: string,
+      shouldShowAlert = true,
+    ) => {
       if (!username || !storedPassword) {
+        if (shouldShowAlert) {
+          Alert.alert(
+            'Biometria indisponível',
+            'Não há credenciais salvas para autenticar com biometria.',
+          );
+        }
+
         return;
       }
 
@@ -34,6 +47,15 @@ export function useLoginPageEffects({
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware || !isEnrolled) {
+        if (shouldShowAlert) {
+          Alert.alert(
+            'Biometria indisponível',
+            !hasHardware
+              ? 'Este dispositivo não possui suporte à biometria.'
+              : 'Nenhuma biometria está cadastrada neste dispositivo.',
+          );
+        }
+
         return;
       }
 
@@ -49,10 +71,30 @@ export function useLoginPageEffects({
           storedPassword,
           form.organizationCode ?? form.getValues('organizationCode'),
         );
+        return;
+      }
+
+      if (
+        shouldShowAlert &&
+        result.error !== 'user_cancel' &&
+        result.error !== 'system_cancel'
+      ) {
+        Alert.alert(
+          'Falha na autenticação',
+          'Não foi possível concluir a autenticação por biometria.',
+        );
       }
     },
     [form, login],
   );
+
+  const handleBiometricLoginFromStorage = useCallback(async () => {
+    await handleBiometricLogin(
+      storedCredentials?.login,
+      storedCredentials?.password,
+      true,
+    );
+  }, [handleBiometricLogin, storedCredentials]);
 
   const handleRestoreUser = useCallback(async () => {
     const loginValue = storedCredentials?.login;
@@ -65,17 +107,45 @@ export function useLoginPageEffects({
     if (passwordValue) {
       form.setValue('password', passwordValue);
       state.setLastPassword(passwordValue);
-      await handleBiometricLogin(loginValue, passwordValue);
     }
-  }, [form, handleBiometricLogin, state, storedCredentials]);
+  }, [form, state, storedCredentials]);
 
   useEffect(() => {
     if (!form.organizationCode && !form.getValues('organizationCode')) {
       return;
     }
 
-    handleRestoreUser().catch(console.error);
-  }, [form, form.organizationCode, handleRestoreUser]);
+    if (hasAttemptedRestoreRef.current) {
+      return;
+    }
+
+    hasAttemptedRestoreRef.current = true;
+
+    handleRestoreUser().catch(error => {
+      logger.error('LoginPage', 'Failed to restore saved user credentials.', error);
+    });
+
+    if (usesBiometrics) {
+      handleBiometricLogin(
+        storedCredentials?.login,
+        storedCredentials?.password,
+        false,
+      ).catch(error => {
+        logger.error(
+          'LoginPage',
+          'Biometric login bootstrap failed.',
+          error,
+        );
+      });
+    }
+  }, [
+    form,
+    form.organizationCode,
+    handleBiometricLogin,
+    handleRestoreUser,
+    storedCredentials,
+    usesBiometrics,
+  ]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -94,7 +164,7 @@ export function useLoginPageEffects({
   }, [state]);
 
   return {
-    handleBiometricLogin,
+    handleBiometricLogin: handleBiometricLoginFromStorage,
     handleChangeOrganization,
     handleRestoreUser,
     usesBiometrics,

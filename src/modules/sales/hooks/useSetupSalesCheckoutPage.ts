@@ -70,10 +70,24 @@ export function useSetupSalesCheckoutPage(): UseSetupSalesCheckoutPageResult {
   const [isFinalizeModalVisible, setFinalizeModalVisible] = useState(false);
   const [isPaymentModalVisible, setPaymentModalVisible] = useState(false);
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const grossTotal = useMemo(
+    () => calculateGrossTotal(ProdutosSelecionados),
+    [ProdutosSelecionados],
+  );
+  const netTotal = useMemo(
+    () => calculateNetTotal(ProdutosSelecionados),
+    [ProdutosSelecionados],
+  );
+  const remainingAmount = useMemo(
+    () =>
+      getRemainingPaymentAmount({
+        checkout: finalizarVenda,
+        paidAmount: valorPago,
+      }),
+    [finalizarVenda, valorPago],
+  );
 
   useEffect(() => {
-    const grossTotal = calculateGrossTotal(ProdutosSelecionados);
-    const netTotal = calculateNetTotal(ProdutosSelecionados);
     const draftDiscountPercent =
       finalizarVenda?.Desconto ??
       calculateDiscountPercent({
@@ -84,13 +98,10 @@ export function useSetupSalesCheckoutPage(): UseSetupSalesCheckoutPageResult {
     setDiscountPercentInput(formatCurrencyInput(draftDiscountPercent));
     setNetTotalInput(formatCurrencyInput(finalizarVenda?.ValorTotal ?? netTotal));
     setNote(finalizarVenda?.Observacao ?? '');
-  }, [ProdutosSelecionados, finalizarVenda]);
+  }, [ProdutosSelecionados, finalizarVenda, grossTotal, netTotal]);
 
   useEffect(() => {
     if (!finalizarVenda && ProdutosSelecionados.length > 0) {
-      const grossTotal = calculateGrossTotal(ProdutosSelecionados);
-      const netTotal = calculateNetTotal(ProdutosSelecionados);
-
       setDiscountPercentInput(
         formatCurrencyInput(
           calculateDiscountPercent({
@@ -102,7 +113,7 @@ export function useSetupSalesCheckoutPage(): UseSetupSalesCheckoutPageResult {
       setNetTotalInput(formatCurrencyInput(netTotal));
       setFinalizeModalVisible(true);
     }
-  }, [ProdutosSelecionados, finalizarVenda]);
+  }, [ProdutosSelecionados.length, finalizarVenda, grossTotal, netTotal]);
 
   const selectedPaymentMethod = useMemo(() => {
     return paymentMethodsQuery.data?.find(
@@ -246,9 +257,6 @@ export function useSetupSalesCheckoutPage(): UseSetupSalesCheckoutPageResult {
   };
 
   const openFinalizeModal = () => {
-    const grossTotal = calculateGrossTotal(ProdutosSelecionados);
-    const netTotal = calculateNetTotal(ProdutosSelecionados);
-
     setDiscountPercentInput(
       formatCurrencyInput(
         calculateDiscountPercent({
@@ -269,11 +277,6 @@ export function useSetupSalesCheckoutPage(): UseSetupSalesCheckoutPageResult {
   };
 
   const openPaymentModal = () => {
-    const remainingAmount = getRemainingPaymentAmount({
-      checkout: finalizarVenda,
-      paidAmount: valorPago,
-    });
-
     setPaymentAmountInput(formatCurrencyInput(remainingAmount));
     setPaymentModalVisible(true);
   };
@@ -367,17 +370,12 @@ export function useSetupSalesCheckoutPage(): UseSetupSalesCheckoutPageResult {
   return {
     data: {
       discountPercentInput,
-      grossTotalLabel: formatCurrency(calculateGrossTotal(ProdutosSelecionados)),
+      grossTotalLabel: formatCurrency(grossTotal),
       netTotalInput,
       note,
       paidAmountLabel: formatCurrency(valorPago),
       paymentMethods: paymentMethodsQuery.data ?? [],
-      remainingAmountLabel: formatCurrency(
-        getRemainingPaymentAmount({
-          checkout: finalizarVenda,
-          paidAmount: valorPago,
-        }),
-      ),
+      remainingAmountLabel: formatCurrency(remainingAmount),
       selectedPaymentCondition,
       selectedPaymentMethod,
       selectedPaymentMethods,

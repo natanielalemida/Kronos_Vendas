@@ -1,4 +1,5 @@
-import {ScrollView, StatusBar, Text, View} from 'react-native';
+import React, {useCallback} from 'react';
+import {FlatList, StatusBar, Text, View} from 'react-native';
 
 import {ShowIf} from '@/modules/components/showIf';
 import {colors} from '@/modules/styles';
@@ -8,6 +9,7 @@ import {SalesCustomerSummaryCard} from '../components/SalesCustomerSummaryCard';
 import {SalesSelectedProductItem} from '../components/SalesSelectedProductItem';
 import {useSetupNewOrderPage} from '../hooks/useSetupNewOrderPage';
 import {newOrderPageStyles} from '../styles/newOrderPage.styles';
+import {SalesProductListItem} from '../types/sales-page.types';
 
 export function NewOrderPage() {
   const {
@@ -21,24 +23,47 @@ export function NewOrderPage() {
     handleOpenProducts,
     handleGoToCheckout,
   } = useSetupNewOrderPage();
+  const keyExtractor = useCallback(
+    (item: SalesProductListItem) => item.id,
+    [],
+  );
+  const renderItem = useCallback(
+    ({item}: {item: SalesProductListItem}) => (
+      <SalesSelectedProductItem product={item} />
+    ),
+    [],
+  );
 
   return (
     <View style={newOrderPageStyles.container}>
-      <StatusBar backgroundColor={colors.arcGreen} barStyle="light-content" />
+      <StatusBar
+        backgroundColor={colors.headerPrimary}
+        barStyle="light-content"
+      />
 
       <View style={newOrderPageStyles.content}>
-        <SalesCustomerSummaryCard
-          customer={customerSummary}
-          onOpenHistory={handleOpenCustomerHistory}
+        <FlatList
+          data={selectedProducts}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          ListHeaderComponent={
+            <>
+              <SalesCustomerSummaryCard
+                customer={customerSummary}
+                onOpenHistory={handleOpenCustomerHistory}
+              />
+              <Text style={newOrderPageStyles.sectionTitle}>Itens</Text>
+            </>
+          }
+          contentContainerStyle={newOrderPageStyles.itemsListContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          initialNumToRender={6}
+          maxToRenderPerBatch={6}
+          updateCellsBatchingPeriod={50}
+          windowSize={5}
+          removeClippedSubviews
         />
-
-        <Text style={newOrderPageStyles.sectionTitle}>Itens</Text>
-
-        <ScrollView>
-          {selectedProducts.map(product => (
-            <SalesSelectedProductItem key={product.id} product={product} />
-          ))}
-        </ScrollView>
       </View>
 
       <View style={newOrderPageStyles.footer}>

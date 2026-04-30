@@ -1,16 +1,19 @@
 import {StyleSheet} from 'react-native';
+
+import {spacing} from '@/shared/theme';
+
 import {colors} from '../../styles';
 
 export const headerProductsStyles = StyleSheet.create({
   container: {
-    backgroundColor: colors.arcGreen,
+    backgroundColor: colors.headerPrimary,
     alignItems: 'flex-end',
     flexDirection: 'row',
-    height: '11%',
+    minHeight: 96,
     justifyContent: 'space-between',
-    paddingTop: 25,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingTop: spacing.xxl,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.sm,
     width: '100%',
   },
   leftContainer: {
@@ -19,7 +22,7 @@ export const headerProductsStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   leftButton: {
-    paddingRight: 15,
+    paddingRight: spacing.sm,
     paddingTop: 1,
   },
   label: {
@@ -33,6 +36,6 @@ export const headerProductsStyles = StyleSheet.create({
   },
   rightIcon: {
     marginTop: 5,
-    paddingRight: 15,
+    paddingRight: spacing.sm,
   },
 });

@@ -1,5 +1,7 @@
 import {useEffect} from 'react';
 
+import {logger} from '@/shared/utils/logger';
+
 import {UseProductsPageEffectsParams} from '../types/products-hooks.types';
 
 const SEARCH_DEBOUNCE_DELAY = 500;
@@ -23,7 +25,7 @@ export function useProductsPageEffects({
           setProducts(result);
         })
         .catch(error => {
-          console.error('Error while loading products', error);
+          logger.error('ProductsPage', 'Error while loading products.', error);
         })
         .finally(() => {
           setLoading(false);

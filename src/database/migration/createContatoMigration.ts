@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createContatoTable = async () => {
   try {
@@ -11,11 +12,11 @@ export const createContatoTable = async () => {
         table.integer('Tipo').notNullable().index();
         table.string('Contato').notNullable().index();
       });
-      console.log('Table CATEGORIA created successfully.');
+      logger.info('DatabaseMigration', 'Table CONTATO created successfully.');
     } else {
-      console.log('Table CATEGORIA already exists.');
+      logger.info('DatabaseMigration', 'Table CONTATO already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating CONTATO table.', error);
   }
 };

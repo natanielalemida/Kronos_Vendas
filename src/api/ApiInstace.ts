@@ -1,5 +1,6 @@
 import {OpenUrlFirstTimeProps} from './type';
 import {ApiClientService} from '@/services/api/services/api-client.service';
+import {logger} from '@/shared/utils/logger';
 
 class ApiService {
   private readonly apiClientService = new ApiClientService();
@@ -12,7 +13,7 @@ class ApiService {
         | TResponse
         | undefined;
     } catch (error) {
-      console.error(error);
+      logger.error('ApiService', 'Failed to validate local API connection.', error);
       return undefined;
     }
   }
@@ -28,7 +29,7 @@ class ApiService {
         method: props.method,
       });
     } catch (error) {
-      console.error(error);
+      logger.error('ApiService', 'Failed to request API endpoint.', error);
       throw error;
     }
   }
@@ -44,7 +45,7 @@ class ApiService {
         method: props.method,
       });
     } catch (error) {
-      console.error(error);
+      logger.error('ApiService', 'Failed to request API response.', error);
       throw error;
     }
   }
@@ -61,7 +62,7 @@ class ApiService {
         timeout: this.apiClientService.getShortTimeout(),
       });
     } catch (error) {
-      console.error(error);
+      logger.error('ApiService', 'Timed API request failed.', error);
       throw error;
     }
   }

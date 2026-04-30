@@ -1,5 +1,6 @@
 import {Knex} from 'knex';
 import {knexConfig} from '../connection';
+import {logger} from '../../shared/utils/logger';
 
 export const createMunicipioTable = async () => {
   try {
@@ -15,11 +16,11 @@ export const createMunicipioTable = async () => {
         table.string('PaisCodigo').notNullable();
         table.string('PaisNome').notNullable();
       });
-      console.log('Table MUNICIPIO created successfully.');
+      logger.info('DatabaseMigration', 'Table MUNICIPIO created successfully.');
     } else {
-      console.log('Table MUNICIPIO already exists.');
+      logger.info('DatabaseMigration', 'Table MUNICIPIO already exists.');
     }
   } catch (error) {
-    console.error('Error creating table:', error);
+    logger.error('DatabaseMigration', 'Error creating MUNICIPIO table.', error);
   }
 };

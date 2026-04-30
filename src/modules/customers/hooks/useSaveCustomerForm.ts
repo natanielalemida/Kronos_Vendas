@@ -4,6 +4,7 @@ import Toast from 'react-native-toast-message';
 
 import {useAppSession} from '@/shared/hooks/useAppSession';
 import {CustomerForm} from '@/shared/types/customer-form.types';
+import {logger} from '@/shared/utils/logger';
 
 import {CustomerFormService} from '../services/customer-form.service';
 
@@ -32,7 +33,7 @@ export function useSaveCustomerForm() {
       });
       navigation.goBack();
     } catch (error) {
-      console.error(error);
+      logger.error('CustomerForm', 'Failed to save customer form.', error);
       Toast.show({
         text1: 'Cadastro Cliente',
         text1Style: {fontSize: 18, fontWeight: 'bold'},

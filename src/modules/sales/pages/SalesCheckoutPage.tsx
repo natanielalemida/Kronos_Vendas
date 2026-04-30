@@ -21,7 +21,10 @@ export function SalesCheckoutPage() {
 
   return (
     <View style={salesCheckoutPageStyles.container}>
-      <StatusBar backgroundColor={colors.arcGreen} barStyle="light-content" />
+      <StatusBar
+        backgroundColor={colors.headerPrimary}
+        barStyle="light-content"
+      />
 
       <Modal
         animationType="slide"

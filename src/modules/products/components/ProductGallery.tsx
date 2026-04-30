@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {Image, ScrollView, View} from 'react-native';
 
 import {decodeGzipImageToBase64} from '../helpers/product-image.helpers';
 import {styles} from '../styles/productDetailsPage.styles';
 import {ProductGalleryProps} from '../types/products-components.types';
 
-export function ProductGallery({
+function ProductGalleryBase({
   images,
   onChangeIndex,
   selectedIndex,
@@ -50,3 +50,5 @@ export function ProductGallery({
     </>
   );
 }
+
+export const ProductGallery = memo(ProductGalleryBase);
