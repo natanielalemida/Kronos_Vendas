@@ -16,16 +16,19 @@ export function formatCustomerDocument(document?: string): string {
   const normalizedDocument = document.replace(/\D/g, '');
 
   if (normalizedDocument.length > 11) {
-    return normalizedDocument.replace(
-      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
-      '$1.$2.$3/$4-$5',
-    );
+    return normalizedDocument
+      .slice(0, 14)
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2');
   }
 
-  return normalizedDocument.replace(
-    /(\d{3})(\d{3})(\d{3})(\d{2})/,
-    '$1.$2.$3-$4',
-  );
+  return normalizedDocument
+    .slice(0, 11)
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/\.(\d{3})(\d)/, '.$1-$2');
 }
 
 export function isCompanyDocument(document?: string): boolean {

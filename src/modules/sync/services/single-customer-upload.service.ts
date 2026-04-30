@@ -19,6 +19,7 @@ import {
   customerUploadApiResponseSchema,
   customerUploadPayloadSchema,
 } from '../schemas/customer-upload.schema';
+import {resolveSyncMessage} from '../helpers/resolve-sync-message.helper';
 import {syncExecutionContextSchema} from '../schemas/sync.schema';
 
 export class SingleCustomerUploadService {
@@ -65,12 +66,9 @@ export class SingleCustomerUploadService {
   }
 
   private getFailureMessage(response: CustomerUploadApiResponse) {
-    const [firstMessage] = response.Mensagens ?? [];
-
-    return (
-      firstMessage?.Conteudo ??
-      firstMessage?.conteudo ??
-      'Falha ao enviar cliente.'
+    return resolveSyncMessage(
+      response.Mensagens,
+      'Falha ao enviar cliente.',
     );
   }
 

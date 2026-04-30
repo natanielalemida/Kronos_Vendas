@@ -80,7 +80,10 @@ export function SalesCheckoutPage() {
 
             <View style={salesCheckoutPageStyles.modalActions}>
               <TouchableOpacity
-                style={salesCheckoutPageStyles.modalActionButton}
+                style={[
+                  salesCheckoutPageStyles.modalActionButton,
+                  salesCheckoutPageStyles.modalActionButtonCancel,
+                ]}
                 onPress={handlers.closeFinalizeModal}>
                 <Ionicons name="close-circle-sharp" size={24} color={colors.white} />
                 <Text style={salesCheckoutPageStyles.modalActionLabel}>
@@ -185,7 +188,10 @@ export function SalesCheckoutPage() {
 
           <View style={salesCheckoutPageStyles.modalActions}>
             <TouchableOpacity
-              style={salesCheckoutPageStyles.modalActionButton}
+              style={[
+                salesCheckoutPageStyles.modalActionButton,
+                salesCheckoutPageStyles.modalActionButtonCancel,
+              ]}
               onPress={handlers.closePaymentModal}>
               <Ionicons name="close-circle-sharp" size={24} color={colors.white} />
               <Text style={salesCheckoutPageStyles.modalActionLabel}>Cancelar</Text>

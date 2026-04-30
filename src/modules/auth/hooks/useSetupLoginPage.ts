@@ -15,6 +15,7 @@ export function useSetupLoginPage({navigation}: UseSetupLoginPageParams) {
   } = useOrganizationSummariesQuery();
   const {login, progress} = useLoginMutation();
   const {
+    hasBiometricCredentials,
     handleBiometricLogin,
     handleChangeOrganization,
     handleRestoreUser,
@@ -23,6 +24,7 @@ export function useSetupLoginPage({navigation}: UseSetupLoginPageParams) {
     useLoginPageEffects({
       form,
       login,
+      organizations,
       state,
     });
 
@@ -76,9 +78,13 @@ export function useSetupLoginPage({navigation}: UseSetupLoginPageParams) {
     progress,
     usesBiometrics,
     derivedState: {
-      shouldShowBiometricButton: !!state.lastPassword && usesBiometrics,
+      shouldShowBiometricButton:
+        usesBiometrics && hasBiometricCredentials && !!state.lastPassword,
       compactLayout:
-        state.isKeyboardVisible && !!state.lastPassword && usesBiometrics,
+        state.isKeyboardVisible &&
+        usesBiometrics &&
+        hasBiometricCredentials &&
+        !!state.lastPassword,
       compactForm: state.isKeyboardVisible,
     },
     handlers: {

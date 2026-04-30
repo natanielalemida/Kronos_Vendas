@@ -6,6 +6,7 @@ import {SyncProductImageDto} from '../types/product-image-sync.types';
 import {KnexBatchRepository} from './knex-batch.repository';
 
 type ProductImageRow = {
+  Codigo: number;
   CodigoProduto: number;
   Image: string;
   IsDefault: number;
@@ -17,11 +18,17 @@ export class ProductImageSyncRepository {
   async replaceProductImages(
     productImages: SyncProductImageDto[],
   ): Promise<void> {
-    const imageRows: ProductImageRow[] = productImages.map(productImage => ({
-      CodigoProduto: productImage.CodigoProduto,
-      Image: productImage.Image,
-      IsDefault: productImage.IsDefault ? 1 : 0,
-    }));
+    const imageRows: ProductImageRow[] = productImages.map(
+      (productImage, index) => ({
+        Codigo:
+          productImage.Codigo ??
+          productImage.CodigoProduto ??
+          index + 1,
+        CodigoProduto: productImage.CodigoProduto,
+        Image: productImage.Image,
+        IsDefault: productImage.IsDefault ? 1 : 0,
+      }),
+    );
 
     await knexConfig.transaction(async (transaction: Knex.Transaction) => {
       await transaction('produto_imagem').del();

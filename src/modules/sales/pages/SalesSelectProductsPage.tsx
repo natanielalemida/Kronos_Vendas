@@ -1,16 +1,26 @@
+import {useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
+import {useLayoutEffect} from 'react';
 import {ActivityIndicator, FlatList, Text, View} from 'react-native';
 
 import Search from '@/modules/components/search';
 import {ProductCard} from '@/modules/products/components/ProductCard';
 import {colors} from '@/modules/styles';
 
+import {SalesNavigatorHeaderButton} from '../components/SalesNavigatorHeaderButton';
 import {SalesProductEditorModal} from '../components/SalesProductEditorModal';
 import {useSetupSalesProductsSelectionPage} from '../hooks/useSetupSalesProductsSelectionPage';
 import {salesSelectionPageStyles} from '../styles/salesSelectionPage.styles';
+import {SalesPageNavigation} from '../types/sales-navigation.types';
 import {ProductListItem} from '@/modules/products/types/product.types';
 
 export function SalesSelectProductsPage() {
+  const navigation = useNavigation() as SalesPageNavigation & {
+    setOptions: (options: {
+      headerShown?: boolean;
+      headerRight?: (() => React.JSX.Element | null) | undefined;
+    }) => void;
+  };
   const {data, handlers, viewState} = useSetupSalesProductsSelectionPage();
   const keyExtractor = useCallback((item: ProductListItem) => {
     return item.Codigo.toString();
@@ -21,6 +31,21 @@ export function SalesSelectProductsPage() {
     ),
     [handlers.handleOpenEditor],
   );
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: !viewState.shouldShowEditor,
+      headerRight: viewState.shouldShowEditor
+        ? undefined
+        : () => (
+            <SalesNavigatorHeaderButton
+              iconName="checkmark-sharp"
+              onPress={() => navigation.navigate('Menu')}
+              confirm
+            />
+          ),
+    });
+  }, [navigation, viewState.shouldShowEditor]);
 
   return (
     <View style={salesSelectionPageStyles.container}>

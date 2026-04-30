@@ -71,7 +71,6 @@ export function getClientsOptions(
 export function getOrdersOptions(): DrawerNavigationOptions {
   return {
     drawerIcon: props => <MenuDrawerIcon {...props} name="cart-outline" />,
-    headerShown: false,
   };
 }
 

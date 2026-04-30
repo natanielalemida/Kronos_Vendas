@@ -5,7 +5,7 @@ import {
   SyncCustomerEnderecoDto,
   SyncCustomerResponsavelCadastroDto,
 } from './customer-sync.types';
-import {SyncProgress} from './sync.types';
+import {SyncMessageCollection, SyncProgress} from './sync.types';
 
 export type UploadCustomersResult = {
   uploadedCustomersCount: number;
@@ -90,10 +90,7 @@ export type CustomerUploadResult = ClienteDto & {
 export type CustomerUploadApiResponse = {
   Resultado: CustomerUploadResult;
   Status: number;
-  Mensagens: {
-    Conteudo?: string;
-    conteudo?: string;
-  }[];
+  Mensagens: SyncMessageCollection;
 };
 
 export type {SyncProgress};

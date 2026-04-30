@@ -1,11 +1,17 @@
+import {SyncMessageCollection} from './sync.types';
+
 export type SyncProductImageDto = {
+  Codigo?: number | null;
   CodigoProduto: number;
   Image: string;
-  IsDefault: boolean;
+  IsDefault: boolean | null;
 };
 
 export type SyncProductImagesApiResponse = {
-  Resultado: SyncProductImageDto[];
+  Resultado?: SyncProductImageDto[] | null;
+  resultado?: SyncProductImageDto[] | null;
   Status: number;
-  Mensagens: string[];
+  status?: number;
+  Mensagens?: SyncMessageCollection;
+  mensagens?: SyncMessageCollection;
 };

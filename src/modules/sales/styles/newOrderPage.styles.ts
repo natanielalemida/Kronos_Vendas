@@ -26,7 +26,7 @@ export const newOrderPageStyles = StyleSheet.create({
     ...typography.titleMd,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.white,
+    color: colors.black,
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
     marginBottom: spacing.sm,

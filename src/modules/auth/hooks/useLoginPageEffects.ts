@@ -10,9 +10,14 @@ import {UseLoginPageEffectsParams} from '../types/login-hook.types';
 export function useLoginPageEffects({
   form,
   login,
+  organizations,
   state,
 }: UseLoginPageEffectsParams) {
-  const {biometricsEnabled: usesBiometrics, storedCredentials} =
+  const {
+    biometricsEnabled: usesBiometrics,
+    companyCode,
+    storedCredentials,
+  } =
     useAppStorage();
   const hasAttemptedRestoreRef = useRef(false);
 
@@ -69,7 +74,9 @@ export function useLoginPageEffects({
         await login(
           username,
           storedPassword,
-          form.organizationCode ?? form.getValues('organizationCode'),
+          form.organizationCode ??
+            form.getValues('organizationCode') ??
+            companyCode,
         );
         return;
       }
@@ -99,6 +106,21 @@ export function useLoginPageEffects({
   const handleRestoreUser = useCallback(async () => {
     const loginValue = storedCredentials?.login;
     const passwordValue = storedCredentials?.password;
+    const selectedOrganizationCode =
+      form.organizationCode ?? form.getValues('organizationCode') ?? companyCode;
+
+    if (selectedOrganizationCode) {
+      form.setValue('organizationCode', selectedOrganizationCode);
+      form.setOrganizationCode(selectedOrganizationCode);
+
+      const selectedOrganization = organizations.find(
+        organization => organization.Codigo === selectedOrganizationCode,
+      );
+
+      if (selectedOrganization) {
+        handleChangeOrganization(selectedOrganization);
+      }
+    }
 
     if (loginValue) {
       form.setValue('cpf', loginValue);
@@ -108,10 +130,21 @@ export function useLoginPageEffects({
       form.setValue('password', passwordValue);
       state.setLastPassword(passwordValue);
     }
-  }, [form, state, storedCredentials]);
+  }, [
+    companyCode,
+    form,
+    handleChangeOrganization,
+    organizations,
+    state,
+    storedCredentials,
+  ]);
 
   useEffect(() => {
-    if (!form.organizationCode && !form.getValues('organizationCode')) {
+    if (
+      !form.organizationCode &&
+      !form.getValues('organizationCode') &&
+      !companyCode
+    ) {
       return;
     }
 
@@ -139,6 +172,7 @@ export function useLoginPageEffects({
       });
     }
   }, [
+    companyCode,
     form,
     form.organizationCode,
     handleBiometricLogin,
@@ -164,6 +198,8 @@ export function useLoginPageEffects({
   }, [state]);
 
   return {
+    hasBiometricCredentials:
+      !!storedCredentials?.login && !!storedCredentials?.password,
     handleBiometricLogin: handleBiometricLoginFromStorage,
     handleChangeOrganization,
     handleRestoreUser,

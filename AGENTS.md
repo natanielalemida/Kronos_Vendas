@@ -61,6 +61,7 @@ Arquivos `.tsx` devem conter apenas:
 Arquivos `.tsx` não devem conter:
 
 - chamada direta de API
+- `useEffect`, `useLayoutEffect`, `useMemo`, `useCallback` ou qualquer hook de orquestração de tela, exceto em casos muito específicos e justificados
 - transformação complexa de payload
 - regras de negócio longas
 - handlers extensos
@@ -68,6 +69,8 @@ Arquivos `.tsx` não devem conter:
 - cálculos grandes
 - lógica de sincronização
 - estilos inline complexos
+
+Se uma tela precisar de efeito, memoização, integração com navegação, side effect, subscribe/unsubscribe, cálculo derivado ou coordenação entre estados, isso deve ser movido para o hook central da tela ou para hooks menores compostos por ele.
 
 ## 5. Regras para hooks
 
@@ -83,6 +86,13 @@ Esse hook central pode compor hooks menores:
 - `useOrdersFilters`
 - `useOrdersHandlers`
 - `useOrdersEffects`
+
+Regra obrigatória:
+
+- efeitos colaterais devem ficar em hooks como `useOrdersEffects`
+- handlers devem ficar em hooks como `useOrdersHandlers`
+- cálculos derivados e memoizações devem ficar fora do `.tsx`
+- `navigation.setOptions`, listeners, loading orchestration e integração entre store/query também devem ficar fora do `.tsx`
 
 ## 6. Estilo e design system
 
@@ -164,6 +174,8 @@ Antes de deletar algo relevante:
 ## 11. Anti-patterns proibidos
 
 - API chamada direto no `.tsx`
+- `useEffect` ou `useLayoutEffect` dentro de page component quando isso puder viver em hook customizado
+- `useMemo` ou `useCallback` dentro de `.tsx` de tela para compensar falta de extração de lógica
 - componente gigante com múltiplas responsabilidades
 - `any` como solução padrão
 - `../../../../../` em cascata quando houver alternativa

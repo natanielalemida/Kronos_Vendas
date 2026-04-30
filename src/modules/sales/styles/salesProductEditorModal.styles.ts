@@ -15,7 +15,14 @@ export const salesProductEditorModalStyles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.white,
     borderRadius: radius.lg,
-    padding: spacing.lg,
+    maxHeight: '90%',
+    overflow: 'hidden',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+  scrollContent: {
+    paddingBottom: spacing.md,
   },
   modalTitle: {
     ...typography.titleMd,
@@ -72,8 +79,14 @@ export const salesProductEditorModalStyles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   noteInput: {
-    minHeight: 72,
+    minHeight: 64,
     textAlignVertical: 'top',
+  },
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: colors.grayLight,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
   quantityRow: {
     flexDirection: 'row',
@@ -94,7 +107,7 @@ export const salesProductEditorModalStyles = StyleSheet.create({
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: spacing.md,
+    marginBottom: spacing.md,
   },
   totalLabel: {
     ...typography.bodyMd,
@@ -110,6 +123,7 @@ export const salesProductEditorModalStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: spacing.sm,
+    paddingBottom: spacing.xs,
   },
   cancelButton: {
     alignItems: 'center',

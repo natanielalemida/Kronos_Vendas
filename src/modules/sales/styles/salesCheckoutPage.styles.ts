@@ -179,6 +179,9 @@ export const salesCheckoutPageStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  modalActionButtonCancel: {
+    backgroundColor: colors.danger,
+  },
   modalActionLabel: {
     ...typography.caption,
     color: colors.white,
